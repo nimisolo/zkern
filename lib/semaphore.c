@@ -51,102 +51,102 @@
 
 void __up(struct semaphore *sem)
 {
-	waitq_wake_nr(&sem->wait, 1);
+    waitq_wake_nr(&sem->wait, 1);
 }
 
 void __down(struct semaphore *sem)
 {
-	struct task_struct *tsk = current;
-	DECLARE_WAITQ_ENTRY(wait, tsk);
-	unsigned long flags;
+    struct task_struct *tsk = current;
+    DECLARE_WAITQ_ENTRY(wait, tsk);
+    unsigned long flags;
 
-	tsk->state = TASK_UNINTERRUPTIBLE;
-	spin_lock_irqsave(&sem->wait.lock, flags);
-	waitq_add_entry_locked(&sem->wait, &wait);
+    tsk->state = TASK_UNINTERRUPTIBLE;
+    spin_lock_irqsave(&sem->wait.lock, flags);
+    waitq_add_entry_locked(&sem->wait, &wait);
 
-	sem->sleepers++;
+    sem->sleepers++;
 
-	for (;;) {
-		int sleepers = sem->sleepers;
+    for (;;) {
+        int sleepers = sem->sleepers;
 
-		/*
-		 * Add "everybody else" into it. They aren't
-		 * playing, because we own the spinlock in
-		 * the wait_queue_head.
-		 */
-		if (!atomic_add_negative(sleepers - 1, &sem->count)) {
-			sem->sleepers = 0;
-			break;
-		}
-		sem->sleepers = 1;	/* us - see -1 above */
-		spin_unlock_irqrestore(&sem->wait.lock, flags);
+        /*
+         * Add "everybody else" into it. They aren't
+         * playing, because we own the spinlock in
+         * the wait_queue_head.
+         */
+        if (!atomic_add_negative(sleepers - 1, &sem->count)) {
+            sem->sleepers = 0;
+            break;
+        }
+        sem->sleepers = 1;	/* us - see -1 above */
+        spin_unlock_irqrestore(&sem->wait.lock, flags);
 
-		schedule();
+        schedule();
 
-		spin_lock_irqsave(&sem->wait.lock, flags);
-		tsk->state = TASK_UNINTERRUPTIBLE;
-	}
-	waitq_remove_entry_locked(&sem->wait, &wait);
-	waitq_wake_nr_locked(&sem->wait, 1);
-	spin_unlock_irqrestore(&sem->wait.lock, flags);
-	tsk->state = TASK_RUNNING;
+        spin_lock_irqsave(&sem->wait.lock, flags);
+        tsk->state = TASK_UNINTERRUPTIBLE;
+    }
+    waitq_remove_entry_locked(&sem->wait, &wait);
+    waitq_wake_nr_locked(&sem->wait, 1);
+    spin_unlock_irqrestore(&sem->wait.lock, flags);
+    tsk->state = TASK_RUNNING;
 }
 
 int __down_interruptible(struct semaphore *sem)
 {
-	int retval = 0;
-	struct task_struct *tsk = current;
-	DECLARE_WAITQ_ENTRY(wait, tsk);
-	unsigned long flags;
+    int retval = 0;
+    struct task_struct *tsk = current;
+    DECLARE_WAITQ_ENTRY(wait, tsk);
+    unsigned long flags;
 
-	tsk->state = TASK_INTERRUPTIBLE;
-	spin_lock_irqsave(&sem->wait.lock, flags);
-	waitq_add_entry_locked(&sem->wait, &wait);
+    tsk->state = TASK_INTERRUPTIBLE;
+    spin_lock_irqsave(&sem->wait.lock, flags);
+    waitq_add_entry_locked(&sem->wait, &wait);
 
-	sem->sleepers++;
-	for (;;) {
-		int sleepers = sem->sleepers;
+    sem->sleepers++;
+    for (;;) {
+        int sleepers = sem->sleepers;
 
-		/*
-		 * With signals pending, this turns into
-		 * the trylock failure case - we won't be
-		 * sleeping, and we* can't get the lock as
-		 * it has contention. Just correct the count
-		 * and exit.
-		 */
+        /*
+         * With signals pending, this turns into
+         * the trylock failure case - we won't be
+         * sleeping, and we* can't get the lock as
+         * it has contention. Just correct the count
+         * and exit.
+         */
 #if 0
-		if (signal_pending(current)) {
-			retval = -EINTR;
-			sem->sleepers = 0;
-			atomic_add(sleepers, &sem->count);
-			break;
-		}
+        if (signal_pending(current)) {
+            retval = -EINTR;
+            sem->sleepers = 0;
+            atomic_add(sleepers, &sem->count);
+            break;
+        }
 #endif
 
-		/*
-		 * Add "everybody else" into it. They aren't
-		 * playing, because we own the spinlock in
-		 * wait_queue_head. The "-1" is because we're
-		 * still hoping to get the semaphore.
-		 */
-		if (!atomic_add_negative(sleepers - 1, &sem->count)) {
-			sem->sleepers = 0;
-			break;
-		}
-		sem->sleepers = 1;	/* us - see -1 above */
-		spin_unlock_irqrestore(&sem->wait.lock, flags);
+        /*
+         * Add "everybody else" into it. They aren't
+         * playing, because we own the spinlock in
+         * wait_queue_head. The "-1" is because we're
+         * still hoping to get the semaphore.
+         */
+        if (!atomic_add_negative(sleepers - 1, &sem->count)) {
+            sem->sleepers = 0;
+            break;
+        }
+        sem->sleepers = 1;	/* us - see -1 above */
+        spin_unlock_irqrestore(&sem->wait.lock, flags);
 
-		schedule();
+        schedule();
 
-		spin_lock_irqsave(&sem->wait.lock, flags);
-		tsk->state = TASK_INTERRUPTIBLE;
-	}
-	waitq_remove_entry_locked(&sem->wait, &wait);
-	waitq_wake_nr_locked(&sem->wait, 1);
-	spin_unlock_irqrestore(&sem->wait.lock, flags);
+        spin_lock_irqsave(&sem->wait.lock, flags);
+        tsk->state = TASK_INTERRUPTIBLE;
+    }
+    waitq_remove_entry_locked(&sem->wait, &wait);
+    waitq_wake_nr_locked(&sem->wait, 1);
+    spin_unlock_irqrestore(&sem->wait.lock, flags);
 
-	tsk->state = TASK_RUNNING;
-	return retval;
+    tsk->state = TASK_RUNNING;
+    return retval;
 }
 
 /*
@@ -159,22 +159,22 @@ int __down_interruptible(struct semaphore *sem)
  */
 int __down_trylock(struct semaphore *sem)
 {
-	int sleepers;
-	unsigned long flags;
+    int sleepers;
+    unsigned long flags;
 
-	spin_lock_irqsave(&sem->wait.lock, flags);
-	sleepers = sem->sleepers + 1;
-	sem->sleepers = 0;
+    spin_lock_irqsave(&sem->wait.lock, flags);
+    sleepers = sem->sleepers + 1;
+    sem->sleepers = 0;
 
-	/*
-	 * Add "everybody else" and us into it. They aren't
-	 * playing, because we own the spinlock in the
-	 * wait_queue_head.
-	 */
-	if (!atomic_add_negative(sleepers, &sem->count)) {
-		waitq_wake_nr_locked(&sem->wait, 1);
-	}
+    /*
+     * Add "everybody else" and us into it. They aren't
+     * playing, because we own the spinlock in the
+     * wait_queue_head.
+     */
+    if (!atomic_add_negative(sleepers, &sem->count)) {
+        waitq_wake_nr_locked(&sem->wait, 1);
+    }
 
-	spin_unlock_irqrestore(&sem->wait.lock, flags);
-	return 1;
+    spin_unlock_irqrestore(&sem->wait.lock, flags);
+    return 1;
 }

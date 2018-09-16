@@ -53,12 +53,12 @@ struct pisces_job_spec {
     char envp[256];
 
     union {
-	u64 flags;
-	struct {
-	    u64   use_large_pages : 1;
-	    u64   use_smartmap    : 1;
-	    u64   rsvd            : 62;
-	} __attribute__((packed));
+        u64 flags;
+        struct {
+            u64   use_large_pages : 1;
+            u64   use_smartmap    : 1;
+            u64   rsvd            : 62;
+        } __attribute__((packed));
     } __attribute__((packed));
 
     u8   num_ranks;

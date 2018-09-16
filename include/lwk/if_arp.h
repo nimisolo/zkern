@@ -11,10 +11,10 @@
 #define ATF_PUBL        0x08      /* publish entry        */
 
 struct lwk_arpreq {
-	struct sockaddr arp_pa;
-	char            arp_ha[MAX_ARP_ADDR_LEN];
-	int             arp_flags;
-	char            arp_dev[16];
+    struct sockaddr arp_pa;
+    char            arp_ha[MAX_ARP_ADDR_LEN];
+    int             arp_flags;
+    char            arp_dev[16];
 };
 
 extern int lwk_arp(struct lwk_arpreq* req);

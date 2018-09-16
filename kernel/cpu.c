@@ -5,18 +5,18 @@
 
 extern void arch_shutdown_cpu(void);
 
-static void
+    static void
 shutdown_cpu(void * info)
 {
-	arch_shutdown_cpu();
+    arch_shutdown_cpu();
 }
 
 /*
  * Shutdown all online cpus
  */
-void
+    void
 shutdown_cpus(void)
 {
-	printk("CPU #%u: shutting down all CPUs\n", this_cpu);
-	on_each_cpu(shutdown_cpu, NULL, 0);
+    printk("CPU #%u: shutting down all CPUs\n", this_cpu);
+    on_each_cpu(shutdown_cpu, NULL, 0);
 }

@@ -6,10 +6,10 @@
 
 #define ARCH_NUM_IRQS	NUM_IDT_ENTRIES
 
-static inline bool
+    static inline bool
 arch_in_interrupt(void)
 {
-	return (read_pda(irqcount) >= 0);
+    return (read_pda(irqcount) >= 0);
 }
 
 #endif

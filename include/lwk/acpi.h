@@ -36,40 +36,40 @@
 #include <arch/acpi.h>
 
 enum acpi_irq_model_id {
-	ACPI_IRQ_MODEL_PIC = 0,
-	ACPI_IRQ_MODEL_IOAPIC,
-	ACPI_IRQ_MODEL_IOSAPIC,
-	ACPI_IRQ_MODEL_PLATFORM,
-	ACPI_IRQ_MODEL_COUNT
+    ACPI_IRQ_MODEL_PIC = 0,
+    ACPI_IRQ_MODEL_IOAPIC,
+    ACPI_IRQ_MODEL_IOSAPIC,
+    ACPI_IRQ_MODEL_PLATFORM,
+    ACPI_IRQ_MODEL_COUNT
 };
 
 extern enum acpi_irq_model_id	acpi_irq_model;
 
 enum acpi_interrupt_id {
-	ACPI_INTERRUPT_PMI	= 1,
-	ACPI_INTERRUPT_INIT,
-	ACPI_INTERRUPT_CPEI,
-	ACPI_INTERRUPT_COUNT
+    ACPI_INTERRUPT_PMI	= 1,
+    ACPI_INTERRUPT_INIT,
+    ACPI_INTERRUPT_CPEI,
+    ACPI_INTERRUPT_COUNT
 };
 
 #define	ACPI_SPACE_MEM		0
 
 enum acpi_srat_entry_id {
-	ACPI_SRAT_PROCESSOR_AFFINITY = 0,
-	ACPI_SRAT_MEMORY_AFFINITY,
-	ACPI_SRAT_ENTRY_COUNT
+    ACPI_SRAT_PROCESSOR_AFFINITY = 0,
+    ACPI_SRAT_MEMORY_AFFINITY,
+    ACPI_SRAT_ENTRY_COUNT
 };
 
 enum acpi_address_range_id {
-	ACPI_ADDRESS_RANGE_MEMORY = 1,
-	ACPI_ADDRESS_RANGE_RESERVED = 2,
-	ACPI_ADDRESS_RANGE_ACPI = 3,
-	ACPI_ADDRESS_RANGE_NVS	= 4,
-	ACPI_ADDRESS_RANGE_COUNT
+    ACPI_ADDRESS_RANGE_MEMORY = 1,
+    ACPI_ADDRESS_RANGE_RESERVED = 2,
+    ACPI_ADDRESS_RANGE_ACPI = 3,
+    ACPI_ADDRESS_RANGE_NVS	= 4,
+    ACPI_ADDRESS_RANGE_COUNT
 };
 
 typedef int (*acpi_madt_entry_handler) (struct acpi_subtable_header *header,
-		        const unsigned long end);
+        const unsigned long end);
 
 /* Table Handlers */
 
@@ -78,8 +78,8 @@ typedef int (*acpi_table_handler) (struct acpi_table_header *table);
 typedef int (*acpi_table_entry_handler) (struct acpi_subtable_header *header, const unsigned long end);
 
 #define BAD_MADT_ENTRY(entry, end) (					    \
-		(!entry) || (unsigned long)entry + sizeof(*entry) > end ||  \
-		((struct acpi_subtable_header *)entry)->length < sizeof(*entry))
+        (!entry) || (unsigned long)entry + sizeof(*entry) > end ||  \
+        ((struct acpi_subtable_header *)entry)->length < sizeof(*entry))
 
 char * __acpi_map_table (unsigned long phys_addr, unsigned long size);
 void __acpi_unmap_table(char *map, unsigned long size);
@@ -93,7 +93,7 @@ int acpi_numa_init (void);
 int acpi_table_init (void);
 int acpi_table_parse (char *id, acpi_table_handler handler);
 int __init acpi_table_parse_entries(char *id, unsigned long table_size,
-	int entry_id, acpi_table_entry_handler handler, unsigned int max_entries);
+        int entry_id, acpi_table_entry_handler handler, unsigned int max_entries);
 int acpi_table_parse_madt (enum acpi_madt_type id, acpi_table_entry_handler handler, unsigned int max_entries);
 int acpi_parse_mcfg (struct acpi_table_header *header);
 void acpi_table_print_madt_entry (struct acpi_subtable_header *madt);
@@ -135,9 +135,9 @@ void acpi_penalize_isa_irq(int irq, int active);
 void acpi_pci_irq_disable (struct pci_dev *dev);
 
 struct acpi_pci_driver {
-	struct acpi_pci_driver *next;
-	int (*add)(acpi_handle handle);
-	void (*remove)(acpi_handle handle);
+    struct acpi_pci_driver *next;
+    int (*add)(acpi_handle handle);
+    void (*remove)(acpi_handle handle);
 };
 
 int acpi_pci_register_driver(struct acpi_pci_driver *driver);
@@ -146,8 +146,8 @@ void acpi_pci_unregister_driver(struct acpi_pci_driver *driver);
 extern int ec_read(u8 addr, u8 *val);
 extern int ec_write(u8 addr, u8 val);
 extern int ec_transaction(u8 command,
-                          const u8 *wdata, unsigned wdata_len,
-                          u8 *rdata, unsigned rdata_len);
+        const u8 *wdata, unsigned wdata_len,
+        u8 *rdata, unsigned rdata_len);
 
 #define ACPI_VIDEO_OUTPUT_SWITCHING			0x0001
 #define ACPI_VIDEO_DEVICE_POSTING			0x0002
@@ -172,10 +172,10 @@ extern int pnpacpi_disabled;
 #define NID_INVAL	(-1)
 
 struct acpi_osc_context {
-	char *uuid_str; /* uuid string */
-	int rev;
-	struct acpi_buffer cap; /* arg2/arg3 */
-	struct acpi_buffer ret; /* free by caller if success */
+    char *uuid_str; /* uuid string */
+    int rev;
+    struct acpi_buffer cap; /* arg2/arg3 */
+    struct acpi_buffer ret; /* free by caller if success */
 };
 
 #define OSC_QUERY_TYPE			0
@@ -215,18 +215,18 @@ acpi_status acpi_run_osc(acpi_handle handle, struct acpi_osc_context *context);
 #define OSC_PCI_EXPRESS_CAP_STRUCTURE_CONTROL	16
 
 #define OSC_PCI_CONTROL_MASKS 	(OSC_PCI_EXPRESS_NATIVE_HP_CONTROL | 	\
-				OSC_SHPC_NATIVE_HP_CONTROL | 		\
-				OSC_PCI_EXPRESS_PME_CONTROL |		\
-				OSC_PCI_EXPRESS_AER_CONTROL |		\
-				OSC_PCI_EXPRESS_CAP_STRUCTURE_CONTROL)
+        OSC_SHPC_NATIVE_HP_CONTROL | 		\
+        OSC_PCI_EXPRESS_PME_CONTROL |		\
+        OSC_PCI_EXPRESS_AER_CONTROL |		\
+        OSC_PCI_EXPRESS_CAP_STRUCTURE_CONTROL)
 extern acpi_status acpi_pci_osc_control_set(acpi_handle handle,
-					     u32 *mask, u32 req);
+        u32 *mask, u32 req);
 extern void acpi_early_init(void);
 
 static inline void __iomem *acpi_os_ioremap(acpi_physical_address phys,
-					    acpi_size size)
+        acpi_size size)
 {
-	return ioremap(phys, size);
+    return ioremap(phys, size);
 }
 
 #endif	/*_LWK_ACPI_H*/

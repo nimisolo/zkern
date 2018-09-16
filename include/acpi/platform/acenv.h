@@ -274,12 +274,12 @@
  *
  *****************************************************************************/
 
- /*
-  * Use local definitions of C library macros and functions
-  * NOTE: The function implementations may not be as efficient
-  * as an inline or assembly code implementation provided by a
-  * native C library.
-  */
+/*
+ * Use local definitions of C library macros and functions
+ * NOTE: The function implementations may not be as efficient
+ * as an inline or assembly code implementation provided by a
+ * native C library.
+ */
 
 #ifndef va_arg
 

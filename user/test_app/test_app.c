@@ -13,141 +13,141 @@ int dirTest();
 int pipeTest();
 
 int main(int argc, char *argv[], char *envp[]) {
-   int len = 32;
+    int len = 32;
 
-   statsTest();
-   pipeTest();
- 
-   while(1) {
-      printf("Please enter some text: ");
+    statsTest();
+    pipeTest();
 
-      char *str = fgets(buf, len, stdin);
-      //int i = strchr(str, '\n');
-      int len = strlen(str);
-      if(len > 0) {
-         str[len-1] = 0;
-      }
-      printf("You entered: \"%s\"\n", str);
+    while(1) {
+        printf("Please enter some text: ");
 
-      if(!strcmp(str, "exit")) {
-         exit(0);
-      }
-   }
+        char *str = fgets(buf, len, stdin);
+        //int i = strchr(str, '\n');
+        int len = strlen(str);
+        if(len > 0) {
+            str[len-1] = 0;
+        }
+        printf("You entered: \"%s\"\n", str);
 
-   return 0;
+        if(!strcmp(str, "exit")) {
+            exit(0);
+        }
+    }
+
+    return 0;
 }
 
 int statsTest() {
-   printf("MY PROCESS ID IS: %d\n", getpid());
+    printf("MY PROCESS ID IS: %d\n", getpid());
 
-   return 0;
+    return 0;
 }
 
 int pipeTest() {
-   struct dirent *dp;
-   int pipefd[2] = {0};
-   int ret = pipe(pipefd);
+    struct dirent *dp;
+    int pipefd[2] = {0};
+    int ret = pipe(pipefd);
 
-   printf("TESTING PIPES\n");
+    printf("TESTING PIPES\n");
 
-   printf("Returned: (%d,%d) = %d\n", pipefd[0], pipefd[1], ret);
+    printf("Returned: (%d,%d) = %d\n", pipefd[0], pipefd[1], ret);
 
-   char buffer[128];
-   sprintf(buffer, "/proc/%d/fd", getpid());
-   DIR *dir = opendir(buffer);
-   printf("Opened the dir (%s): %p\n", buffer, dir);
-   if(dir != NULL) {
-      while ((dp=readdir(dir)) != NULL) {
-         printf("%s\n", dp->d_name);
-      }
-      closedir(dir);
-   }
+    char buffer[128];
+    sprintf(buffer, "/proc/%d/fd", getpid());
+    DIR *dir = opendir(buffer);
+    printf("Opened the dir (%s): %p\n", buffer, dir);
+    if(dir != NULL) {
+        while ((dp=readdir(dir)) != NULL) {
+            printf("%s\n", dp->d_name);
+        }
+        closedir(dir);
+    }
 
-   FILE *readFile = fdopen(pipefd[0], "r");
-   FILE *writeFile = fdopen(pipefd[1], "w");
+    FILE *readFile = fdopen(pipefd[0], "r");
+    FILE *writeFile = fdopen(pipefd[1], "w");
 
-   printf("fdopen(): (%p,%p)\n", readFile, writeFile);
+    printf("fdopen(): (%p,%p)\n", readFile, writeFile);
 
-   if(readFile != NULL && writeFile != NULL) {
-      int one = 0;
-      int two = 0;
+    if(readFile != NULL && writeFile != NULL) {
+        int one = 0;
+        int two = 0;
 
-      fprintf(writeFile, "%d and %d\n", 234, 345);
-      fflush(writeFile);
-      //fclose(writeFile);
+        fprintf(writeFile, "%d and %d\n", 234, 345);
+        fflush(writeFile);
+        //fclose(writeFile);
 
-      fscanf(readFile, "%d and %d", &one, &two);
-      printf("Read from pipe: %d, %d\n", one, two);
+        fscanf(readFile, "%d and %d", &one, &two);
+        printf("Read from pipe: %d, %d\n", one, two);
 
-      fprintf(writeFile, "more");
+        fprintf(writeFile, "more");
 
-      fclose(readFile);
-      fclose(writeFile);
-   } else {
-      printf("Could not do fopen()\n");
-   }
+        fclose(readFile);
+        fclose(writeFile);
+    } else {
+        printf("Could not do fopen()\n");
+    }
 
-   return 0;
+    return 0;
 }
 
 int dirTest() {
-   struct dirent *dp;
-   DIR *dir = opendir("/");
+    struct dirent *dp;
+    DIR *dir = opendir("/");
 
-   printf("TESTING DIRS\n");
+    printf("TESTING DIRS\n");
 
-   printf("Opened the dir: %p\n", dir);
-   while ((dp=readdir(dir)) != NULL) {
-      //char *tmp;
-      //tmp = path_cat(dir_path, dp->d_name);
-      //printf("%s\n", tmp);
-      printf("%s\n", dp->d_name);
-      //free(tmp);
-      //tmp=NULL;
-   }
-   closedir(dir);
+    printf("Opened the dir: %p\n", dir);
+    while ((dp=readdir(dir)) != NULL) {
+        //char *tmp;
+        //tmp = path_cat(dir_path, dp->d_name);
+        //printf("%s\n", tmp);
+        printf("%s\n", dp->d_name);
+        //free(tmp);
+        //tmp=NULL;
+    }
+    closedir(dir);
 
-   dir = opendir("/test");
-   if(dir == NULL) {
-   printf("Dir did not exist! Creating!\n");
-   mkdir("/test", 0x0777);
-   } else {
-      printf("DIR /test exists!\n");
-   }
+    dir = opendir("/test");
+    if(dir == NULL) {
+        printf("Dir did not exist! Creating!\n");
+        mkdir("/test", 0x0777);
+    } else {
+        printf("DIR /test exists!\n");
+    }
 
-   char buffer[128];
-   sprintf(buffer, "/proc/%d", getpid());
-   dir = opendir(buffer);
-   printf("Opened the dir (%s): %p\n", buffer, dir);
-   while ((dp=readdir(dir)) != NULL) {
-      //char *tmp;
-      //tmp = path_cat(dir_path, dp->d_name);
-      //printf("%s\n", tmp);
-      printf("%s\n", dp->d_name);
-      //free(tmp);
-      //tmp=NULL;
-   }
-   closedir(dir);
+    char buffer[128];
+    sprintf(buffer, "/proc/%d", getpid());
+    dir = opendir(buffer);
+    printf("Opened the dir (%s): %p\n", buffer, dir);
+    while ((dp=readdir(dir)) != NULL) {
+        //char *tmp;
+        //tmp = path_cat(dir_path, dp->d_name);
+        //printf("%s\n", tmp);
+        printf("%s\n", dp->d_name);
+        //free(tmp);
+        //tmp=NULL;
+    }
+    closedir(dir);
 
-   FILE *f = fopen("/test/file.txt", "w+");
-   if(f == NULL) {
-      printf("ERROR: could not open file for writing!!\n");
-   } else {
-      fprintf(f, "before 13");
-      FILE *rd = fopen("/test/file.txt", "r");
-      fprintf(f, " after 14");
-      fflush(f);
-      if(rd == NULL) {
-         printf("ERROR: could not open file for reading!!\n");
-      } else {
-         int before = 0;
-         int after = 0;
-         int ret = fscanf(rd, "before %d after %d", &before, &after);
-         printf("SUCCESS: read %d, %d from 'pipe' (%d)\n", before, after, ret);
-         fclose(rd);
-      }
-      fclose(f);
-   }
+    FILE *f = fopen("/test/file.txt", "w+");
+    if(f == NULL) {
+        printf("ERROR: could not open file for writing!!\n");
+    } else {
+        fprintf(f, "before 13");
+        FILE *rd = fopen("/test/file.txt", "r");
+        fprintf(f, " after 14");
+        fflush(f);
+        if(rd == NULL) {
+            printf("ERROR: could not open file for reading!!\n");
+        } else {
+            int before = 0;
+            int after = 0;
+            int ret = fscanf(rd, "before %d after %d", &before, &after);
+            printf("SUCCESS: read %d, %d from 'pipe' (%d)\n", before, after, ret);
+            fclose(rd);
+        }
+        fclose(f);
+    }
 
-   return 0;
+    return 0;
 }

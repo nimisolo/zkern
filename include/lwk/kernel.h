@@ -23,11 +23,11 @@
 
 #include <lwk/print.h>
 #define _KDBG(fmt, args...) \
-print("(%d)%s:%s(%i) "fmt,current->id,__FILE__,__FUNCTION__, __LINE__, ## args)
+    print("(%d)%s:%s(%i) "fmt,current->id,__FILE__,__FUNCTION__, __LINE__, ## args)
 
 extern int __flag;
 #define __KDBG(fmt, args...) if ( current->id != 0  )\
-print("(%d)%s:%s(%i) "fmt,current->id,__FILE__,__FUNCTION__, __LINE__, ## args)
+                                                 print("(%d)%s:%s(%i) "fmt,current->id,__FILE__,__FUNCTION__, __LINE__, ## args)
 
 
 extern const char lwk_banner[];
@@ -56,10 +56,10 @@ extern char *get_options(const char *str, int nints, int *ints);
 extern unsigned long long memparse(char *ptr, char **retptr);
 
 extern int sscanf(const char *, const char *, ...)
-	__attribute__ ((format (scanf, 2, 3)));
+    __attribute__ ((format (scanf, 2, 3)));
 extern int vsscanf(const char *, const char *, va_list)
-	__attribute__ ((format (scanf, 2, 0)));
+    __attribute__ ((format (scanf, 2, 0)));
 
-DECLARE_PER_CPU(bool, umem_only);
+    DECLARE_PER_CPU(bool, umem_only);
 
 #endif

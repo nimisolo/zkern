@@ -60,7 +60,7 @@ static DECLARE_WAITQ(console_inbuf_waitq);
  */
 void console_register(struct console *con)
 {
-	list_add(&con->next, &console_list);
+    list_add(&con->next, &console_list);
 }
 
 /**
@@ -68,13 +68,13 @@ void console_register(struct console *con)
  */
 void console_write(const char *str)
 {
-	struct console *con;
-	unsigned long flags;
+    struct console *con;
+    unsigned long flags;
 
-	spin_lock_irqsave(&console_lock, flags);
-	list_for_each_entry(con, &console_list, next)
-		con->write(con, str);
-	spin_unlock_irqrestore(&console_lock, flags);
+    spin_lock_irqsave(&console_lock, flags);
+    list_for_each_entry(con, &console_list, next)
+        con->write(con, str);
+    spin_unlock_irqrestore(&console_lock, flags);
 }
 
 /**
@@ -82,34 +82,34 @@ void console_write(const char *str)
  */
 void console_inbuf_add(char c)
 {
-	unsigned long flags;
-	const unsigned short backspace = 0x08;
+    unsigned long flags;
+    const unsigned short backspace = 0x08;
 
-	spin_lock_irqsave(&console_inbuf_lock, flags);
+    spin_lock_irqsave(&console_inbuf_lock, flags);
 
-	if (c == backspace) {
-		// Delete a character from the console input buffer
-		if (console_inbuf_len > 0)
-			--console_inbuf_len;
-	} else {
-		// Store the character to the console input buffer
-		if (console_inbuf_len < CONSOLE_INBUF_SIZE)
-			console_inbuf[console_inbuf_len++] = c;
-		else
-			printk(KERN_WARNING "ERROR: Console input buffer full.\n");
-	}
+    if (c == backspace) {
+        // Delete a character from the console input buffer
+        if (console_inbuf_len > 0)
+            --console_inbuf_len;
+    } else {
+        // Store the character to the console input buffer
+        if (console_inbuf_len < CONSOLE_INBUF_SIZE)
+            console_inbuf[console_inbuf_len++] = c;
+        else
+            printk(KERN_WARNING "ERROR: Console input buffer full.\n");
+    }
 
-	// Remember that a newline has been encountered
-	if (c == '\n')
-		console_inbuf_has_newline = true;
+    // Remember that a newline has been encountered
+    if (c == '\n')
+        console_inbuf_has_newline = true;
 
-	spin_unlock_irqrestore(&console_inbuf_lock, flags);
+    spin_unlock_irqrestore(&console_inbuf_lock, flags);
 
-	// Echo the character to the console
-	printk("%c", c);
+    // Echo the character to the console
+    printk("%c", c);
 
-	// Wakeup anybody waiting for more console input
-	waitq_wakeup(&console_inbuf_waitq);
+    // Wakeup anybody waiting for more console input
+    waitq_wakeup(&console_inbuf_waitq);
 }
 
 /**
@@ -117,33 +117,33 @@ void console_inbuf_add(char c)
  */
 ssize_t console_inbuf_read(char *buf, size_t len)
 {
-	unsigned long flags;
-	ssize_t n;
+    unsigned long flags;
+    ssize_t n;
 
-	spin_lock_irqsave(&console_inbuf_lock, flags);
+    spin_lock_irqsave(&console_inbuf_lock, flags);
 
-	// If the input buffer is empty, wait until the user hits enter.
-	while (console_inbuf_len == 0) {
-		spin_unlock_irqrestore(&console_inbuf_lock, flags);
-		if (wait_event_interruptible(console_inbuf_waitq,
-		     (console_inbuf_has_newline == true)))
-			return -ERESTARTSYS;
-		spin_lock_irqsave(&console_inbuf_lock, flags);
-		if (console_inbuf_has_newline == true)
-			console_inbuf_has_newline = false;
-	}
+    // If the input buffer is empty, wait until the user hits enter.
+    while (console_inbuf_len == 0) {
+        spin_unlock_irqrestore(&console_inbuf_lock, flags);
+        if (wait_event_interruptible(console_inbuf_waitq,
+                    (console_inbuf_has_newline == true)))
+            return -ERESTARTSYS;
+        spin_lock_irqsave(&console_inbuf_lock, flags);
+        if (console_inbuf_has_newline == true)
+            console_inbuf_has_newline = false;
+    }
 
-	// At this point, we know there are characters in the buffer.
-	// Return as many characters as possible to the caller.
-	n = min(len, console_inbuf_len);
-	memcpy(buf, console_inbuf, n);
+    // At this point, we know there are characters in the buffer.
+    // Return as many characters as possible to the caller.
+    n = min(len, console_inbuf_len);
+    memcpy(buf, console_inbuf, n);
 
-	// Compact the buffer
-	memmove(console_inbuf, console_inbuf + n, console_inbuf_len - n); 
-	console_inbuf_len = console_inbuf_len - n;
+    // Compact the buffer
+    memmove(console_inbuf, console_inbuf + n, console_inbuf_len - n); 
+    console_inbuf_len = console_inbuf_len - n;
 
-	spin_unlock_irqrestore(&console_inbuf_lock, flags);
-	return n;
+    spin_unlock_irqrestore(&console_inbuf_lock, flags);
+    return n;
 }
 
 /**
@@ -151,5 +151,5 @@ ssize_t console_inbuf_read(char *buf, size_t len)
  */
 void console_init(void)
 {
-	driver_init_list("console", console_str);
+    driver_init_list("console", console_str);
 }

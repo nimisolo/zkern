@@ -30,7 +30,7 @@ extern cpumask_t cpu_initialized;
 /*
  * Private routines/data
  */
- 
+
 extern void smp_alloc_memory(void);
 extern volatile unsigned long smp_invalidate_needed;
 extern int pic_mode;
@@ -40,7 +40,7 @@ extern int smp_num_siblings;
 extern void smp_send_reschedule(int cpu);
 void smp_stop_cpu(void);
 extern int smp_call_function_single(int cpuid, void (*func) (void *info),
-				void *info, int retry, int wait);
+        void *info, int retry, int wait);
 
 extern cpumask_t cpu_sibling_map[NR_CPUS];
 extern cpumask_t cpu_core_map[NR_CPUS];
@@ -58,15 +58,15 @@ extern uint16_t cpu_llc_id[NR_CPUS];
 
 static inline int num_booting_cpus(void)
 {
-	return cpus_weight(cpu_callout_map);
+    return cpus_weight(cpu_callout_map);
 }
 
 #define raw_smp_processor_id() read_pda(cpunumber)
 
 static inline int hard_smp_processor_id(void)
 {
-	/* we don't want to mark this access volatile - bad code generation */
-	return GET_APIC_ID(*(unsigned int *)(APIC_BASE+APIC_ID));
+    /* we don't want to mark this access volatile - bad code generation */
+    return GET_APIC_ID(*(unsigned int *)(APIC_BASE+APIC_ID));
 }
 
 extern int safe_smp_processor_id(void);
@@ -92,32 +92,32 @@ extern u8 bios_cpu_apicid[];
 
 static inline unsigned int cpu_mask_to_apicid(cpumask_t cpumask)
 {
-	return cpus_addr(cpumask)[0];
+    return cpus_addr(cpumask)[0];
 }
 
 static inline int cpu_present_to_apicid(int mps_cpu)
 {
-	if (mps_cpu < NR_CPUS)
-		return (int)bios_cpu_apicid[mps_cpu];
-	else
-		return BAD_APICID;
+    if (mps_cpu < NR_CPUS)
+        return (int)bios_cpu_apicid[mps_cpu];
+    else
+        return BAD_APICID;
 }
 
 #endif /* !ASSEMBLY */
 
 #include <lwk/task.h>
 #define stack_smp_processor_id() \
-({ 									\
-	struct task_struct *task;						\
-	__asm__("andq %%rsp,%0; ":"=r" (task) : "0" (CURRENT_MASK));	\
-	task->arch.cpu;							\
-})
+    ({ 									\
+     struct task_struct *task;						\
+     __asm__("andq %%rsp,%0; ":"=r" (task) : "0" (CURRENT_MASK));	\
+     task->arch.cpu;							\
+     })
 
 #ifndef __ASSEMBLY__
 static __inline int logical_smp_processor_id(void)
 {
-	/* we don't want to mark this access volatile - bad code generation */
-	return GET_APIC_LOGICAL_ID(*(unsigned long *)(APIC_BASE+APIC_LDR));
+    /* we don't want to mark this access volatile - bad code generation */
+    return GET_APIC_LOGICAL_ID(*(unsigned long *)(APIC_BASE+APIC_LDR));
 }
 #endif
 

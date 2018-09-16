@@ -11,11 +11,11 @@
 #include <lwk/list.h>
 
 #define TIMER_INITIALIZER(_name, _function, _expires, _data) {	\
-		.link = LIST_HEAD_INIT((_name).link),		\
-		.function = (_function),			\
-		.expires = (_expires),				\
-		.data = (_data),				\
-	}
+    .link = LIST_HEAD_INIT((_name).link),		\
+    .function = (_function),			\
+    .expires = (_expires),				\
+    .data = (_data),				\
+}
 
 /**
  * This structure defines a timer, including when the timer should expire
@@ -27,11 +27,11 @@
  * \note The timer_add() function will initialize the link and cpu fields.
  */
 struct timer {
-	struct list_head link;           /**< Ordered list of callbacks */
-	id_t             cpu;            /**< CPU this timer is installed on */
-	uint64_t         expires;        /**< Time when this timer expires */
-	uintptr_t        data;           /**< arg to pass to function */
-	void (*function)(uintptr_t);     /**< executed when timer expires */
+    struct list_head link;           /**< Ordered list of callbacks */
+    id_t             cpu;            /**< CPU this timer is installed on */
+    uint64_t         expires;        /**< Time when this timer expires */
+    uintptr_t        data;           /**< arg to pass to function */
+    void (*function)(uintptr_t);     /**< executed when timer expires */
 };
 
 /** \name Core timer API.
@@ -71,8 +71,8 @@ timer_del(struct timer *timer);
  */
 extern uint64_t
 timer_sleep_until(
-	uint64_t		when
-);
+        uint64_t		when
+        );
 
 static inline int timer_pending(const struct timer * timer)
 {

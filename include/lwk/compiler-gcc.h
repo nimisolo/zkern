@@ -8,8 +8,8 @@
  * Common definitions for all gcc versions go here.
  */
 #define GCC_VERSION (__GNUC__ * 10000		\
-		     + __GNUC_MINOR__ * 100	\
-		     + __GNUC_PATCHLEVEL__)
+        + __GNUC_MINOR__ * 100	\
+        + __GNUC_PATCHLEVEL__)
 
 /* Optimization barrier */
 
@@ -49,34 +49,34 @@
  * case either is valid.
  */
 #define RELOC_HIDE(ptr, off)						\
-({									\
-	unsigned long __ptr;						\
-	__asm__ ("" : "=r"(__ptr) : "0"(ptr));				\
-	(typeof(ptr)) (__ptr + (off));					\
-})
+    ({									\
+     unsigned long __ptr;						\
+     __asm__ ("" : "=r"(__ptr) : "0"(ptr));				\
+     (typeof(ptr)) (__ptr + (off));					\
+     })
 
 /* Make the optimizer believe the variable can be manipulated arbitrarily. */
 #define OPTIMIZER_HIDE_VAR(var)						\
-	__asm__ ("" : "=r" (var) : "0" (var))
+    __asm__ ("" : "=r" (var) : "0" (var))
 
 #ifdef __CHECKER__
 #define __must_be_array(a)	0
 #else
-/* &a[0] degrades to a pointer: a different type from an array */
+                                    /* &a[0] degrades to a pointer: a different type from an array */
 #define __must_be_array(a)	BUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))
 #endif
 
-/*
- * Force always-inline if the user requests it so via the .config,
- * or if gcc is too old:
- */
+                                    /*
+                                     * Force always-inline if the user requests it so via the .config,
+                                     * or if gcc is too old:
+                                     */
 #if !defined(CONFIG_ARCH_SUPPORTS_OPTIMIZED_INLINING) ||		\
-    !defined(CONFIG_OPTIMIZE_INLINING) || (__GNUC__ < 4)
+                                        !defined(CONFIG_OPTIMIZE_INLINING) || (__GNUC__ < 4)
 #define inline		inline		__attribute__((always_inline)) notrace
 #define __inline__	__inline__	__attribute__((always_inline)) notrace
 #define __inline	__inline	__attribute__((always_inline)) notrace
 #else
-/* A lot of inline functions can cause havoc with function tracing */
+                                    /* A lot of inline functions can cause havoc with function tracing */
 #define inline		inline		notrace
 #define __inline__	__inline__	notrace
 #define __inline	__inline	notrace
@@ -90,32 +90,32 @@
 #define __weak		__attribute__((weak))
 #define __alias(symbol)	__attribute__((alias(#symbol)))
 
-/*
- * it doesn't make sense on ARM (currently the only user of __naked)
- * to trace naked functions because then mcount is called without
- * stack and frame pointer being set up and there is no chance to
- * restore the lr register to the value before mcount was called.
- *
- * The asm() bodies of naked functions often depend on standard calling
- * conventions, therefore they must be noinline and noclone.
- *
- * GCC 4.[56] currently fail to enforce this, so we must do so ourselves.
- * See GCC PR44290.
- */
+                                    /*
+                                     * it doesn't make sense on ARM (currently the only user of __naked)
+                                     * to trace naked functions because then mcount is called without
+                                     * stack and frame pointer being set up and there is no chance to
+                                     * restore the lr register to the value before mcount was called.
+                                     *
+                                     * The asm() bodies of naked functions often depend on standard calling
+                                     * conventions, therefore they must be noinline and noclone.
+                                     *
+                                     * GCC 4.[56] currently fail to enforce this, so we must do so ourselves.
+                                     * See GCC PR44290.
+                                     */
 #define __naked		__attribute__((naked)) noinline __noclone notrace
 
 #define __noreturn	__attribute__((noreturn))
 
-/*
- * From the GCC manual:
- *
- * Many functions have no effects except the return value and their
- * return value depends only on the parameters and/or global
- * variables.  Such a function can be subject to common subexpression
- * elimination and loop optimization just as an arithmetic operator
- * would be.
- * [...]
- */
+                                    /*
+                                     * From the GCC manual:
+                                     *
+                                     * Many functions have no effects except the return value and their
+                                     * return value depends only on the parameters and/or global
+                                     * variables.  Such a function can be subject to common subexpression
+                                     * elimination and loop optimization just as an arithmetic operator
+                                     * would be.
+                                     * [...]
+                                     */
 #define __pure			__attribute__((pure))
 #define __aligned(x)		__attribute__((aligned(x)))
 #define __printf(a, b)		__attribute__((format(printf, a, b)))
@@ -124,7 +124,7 @@
 #define __maybe_unused		__attribute__((unused))
 #define __always_unused		__attribute__((unused))
 
-/* gcc version specific checks */
+                                    /* gcc version specific checks */
 
 #if GCC_VERSION < 30200
 # error Sorry, your compiler is too old - please upgrade it.
@@ -148,7 +148,7 @@
 
 #if GCC_VERSION >= 40000
 
-/* GCC 4.1.[01] miscompiles __weak */
+                                    /* GCC 4.1.[01] miscompiles __weak */
 #ifdef __KERNEL__
 # if GCC_VERSION >= 40100 &&  GCC_VERSION <= 40101
 #  error Your version of gcc miscompiles the __weak directive
@@ -157,27 +157,27 @@
 
 #define __used			__attribute__((__used__))
 #define __compiler_offsetof(a, b)					\
-	__builtin_offsetof(a, b)
+                                        __builtin_offsetof(a, b)
 
 #if GCC_VERSION >= 40100 && GCC_VERSION < 40600
 # define __compiletime_object_size(obj) __builtin_object_size(obj, 0)
 #endif
 
 #if GCC_VERSION >= 40300
-/* Mark functions as cold. gcc will assume any path leading to a call
- * to them will be unlikely.  This means a lot of manual unlikely()s
- * are unnecessary now for any paths leading to the usual suspects
- * like BUG(), printk(), panic() etc. [but let's keep them for now for
- * older compilers]
- *
- * Early snapshots of gcc 4.3 don't support this and we can't detect this
- * in the preprocessor, but we can live with this because they're unreleased.
- * Maketime probing would be overkill here.
- *
- * gcc also has a __attribute__((__hot__)) to move hot functions into
- * a special section, but I don't see any sense in this right now in
- * the kernel context
- */
+                                    /* Mark functions as cold. gcc will assume any path leading to a call
+                                     * to them will be unlikely.  This means a lot of manual unlikely()s
+                                     * are unnecessary now for any paths leading to the usual suspects
+                                     * like BUG(), printk(), panic() etc. [but let's keep them for now for
+                                     * older compilers]
+                                     *
+                                     * Early snapshots of gcc 4.3 don't support this and we can't detect this
+                                     * in the preprocessor, but we can live with this because they're unreleased.
+                                     * Maketime probing would be overkill here.
+                                     *
+                                     * gcc also has a __attribute__((__hot__)) to move hot functions into
+                                     * a special section, but I don't see any sense in this right now in
+                                     * the kernel context
+                                     */
 #define __cold			__attribute__((__cold__))
 
 #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __COUNTER__)
@@ -189,38 +189,38 @@
 #endif /* GCC_VERSION >= 40300 */
 
 #if GCC_VERSION >= 40500
-/*
- * Mark a position in code as unreachable.  This can be used to
- * suppress control flow warnings after asm blocks that transfer
- * control elsewhere.
- *
- * Early snapshots of gcc 4.5 don't support this and we can't detect
- * this in the preprocessor, but we can live with this because they're
- * unreleased.  Really, we need to have autoconf for the kernel.
- */
+                                    /*
+                                     * Mark a position in code as unreachable.  This can be used to
+                                     * suppress control flow warnings after asm blocks that transfer
+                                     * control elsewhere.
+                                     *
+                                     * Early snapshots of gcc 4.5 don't support this and we can't detect
+                                     * this in the preprocessor, but we can live with this because they're
+                                     * unreleased.  Really, we need to have autoconf for the kernel.
+                                     */
 #define unreachable() __builtin_unreachable()
 
-/* Mark a function definition as prohibited from being cloned. */
+                                    /* Mark a function definition as prohibited from being cloned. */
 #define __noclone	__attribute__((__noclone__))
 
 #endif /* GCC_VERSION >= 40500 */
 
 #if GCC_VERSION >= 40600
-/*
- * Tell the optimizer that something else uses this function or variable.
- */
+                                    /*
+                                     * Tell the optimizer that something else uses this function or variable.
+                                     */
 #define __visible	__attribute__((externally_visible))
 #endif
 
-/*
- * GCC 'asm goto' miscompiles certain code sequences:
- *
- *   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=58670
- *
- * Work it around via a compiler barrier quirk suggested by Jakub Jelinek.
- *
- * (asm goto is automatically volatile - the naming reflects this.)
- */
+                                    /*
+                                     * GCC 'asm goto' miscompiles certain code sequences:
+                                     *
+                                     *   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=58670
+                                     *
+                                     * Work it around via a compiler barrier quirk suggested by Jakub Jelinek.
+                                     *
+                                     * (asm goto is automatically volatile - the naming reflects this.)
+                                     */
 #define asm_volatile_goto(x...)	do { asm goto(x); asm (""); } while (0)
 
 #ifdef CONFIG_ARCH_USE_BUILTIN_BSWAP
@@ -245,8 +245,8 @@
 #define __noclone	/* not needed */
 #endif
 
-/*
- * A trick to suppress uninitialized variable warning without generating any
- * code
- */
+                                    /*
+                                     * A trick to suppress uninitialized variable warning without generating any
+                                     * code
+                                     */
 #define uninitialized_var(x) x = x

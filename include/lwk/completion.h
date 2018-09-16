@@ -22,15 +22,15 @@
  * INIT_COMPLETION().
  */
 struct completion {
-	unsigned int done;
-	struct waitq wait;
+    unsigned int done;
+    struct waitq wait;
 };
 
 #define COMPLETION_INITIALIZER(work) \
-	{ 0, __WAIT_QUEUE_HEAD_INITIALIZER((work).wait) }
+{ 0, __WAIT_QUEUE_HEAD_INITIALIZER((work).wait) }
 
 #define COMPLETION_INITIALIZER_ONSTACK(work) \
-	({ init_completion(&work); work; })
+    ({ init_completion(&work); work; })
 
 /**
  * DECLARE_COMPLETION: - declare and initialize a completion structure
@@ -41,7 +41,7 @@ struct completion {
  * variables.
  */
 #define DECLARE_COMPLETION(work) \
-	struct completion work = COMPLETION_INITIALIZER(work)
+    struct completion work = COMPLETION_INITIALIZER(work)
 
 /*
  * Lockdep needs to run a non-constant initializer for on-stack
@@ -57,7 +57,7 @@ struct completion {
  */
 #ifdef CONFIG_LOCKDEP
 # define DECLARE_COMPLETION_ONSTACK(work) \
-	struct completion work = COMPLETION_INITIALIZER_ONSTACK(work)
+    struct completion work = COMPLETION_INITIALIZER_ONSTACK(work)
 #else
 # define DECLARE_COMPLETION_ONSTACK(work) DECLARE_COMPLETION(work)
 #endif
@@ -71,16 +71,16 @@ struct completion {
  */
 static inline void init_completion(struct completion *x)
 {
-	x->done = 0;
-	waitq_init(&x->wait);
+    x->done = 0;
+    waitq_init(&x->wait);
 }
 
 extern void wait_for_completion(struct completion *);
 extern int wait_for_completion_interruptible(struct completion *x);
 extern unsigned long wait_for_completion_timeout(struct completion *x,
-						   unsigned long timeout);
+        unsigned long timeout);
 extern unsigned long wait_for_completion_interruptible_timeout(
-			struct completion *x, unsigned long timeout);
+        struct completion *x, unsigned long timeout);
 extern bool try_wait_for_completion(struct completion *x);
 extern bool completion_done(struct completion *x);
 

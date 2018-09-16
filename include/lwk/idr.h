@@ -50,27 +50,27 @@
 #define IDR_FREE_MAX MAX_LEVEL + MAX_LEVEL
 
 struct idr_layer {
-	unsigned long		 bitmap; /* A zero bit means "space here" */
-	struct idr_layer	*ary[1<<IDR_BITS];
-	int			 count;	 /* When zero, we can release it */
-	int			 layer;	 /* distance from leaf */
+    unsigned long		 bitmap; /* A zero bit means "space here" */
+    struct idr_layer	*ary[1<<IDR_BITS];
+    int			 count;	 /* When zero, we can release it */
+    int			 layer;	 /* distance from leaf */
 };
 
 struct idr {
-	struct idr_layer *top;
-	struct idr_layer *id_free;
-	int		  layers; /* only valid without concurrent changes */
-	int		  id_free_cnt;
-	spinlock_t	  lock;
+    struct idr_layer *top;
+    struct idr_layer *id_free;
+    int		  layers; /* only valid without concurrent changes */
+    int		  id_free_cnt;
+    spinlock_t	  lock;
 };
 
 #define IDR_INIT(name)						\
 {								\
-	.top		= NULL,					\
-	.id_free	= NULL,					\
-	.layers 	= 0,					\
-	.id_free_cnt	= 0,					\
-	.lock		= __SPIN_LOCK_UNLOCKED(name.lock),	\
+    .top		= NULL,					\
+    .id_free	= NULL,					\
+    .layers 	= 0,					\
+    .id_free_cnt	= 0,					\
+    .lock		= __SPIN_LOCK_UNLOCKED(name.lock),	\
 }
 #define DEFINE_IDR(name)	struct idr name = IDR_INIT(name)
 
@@ -105,7 +105,7 @@ int idr_pre_get(struct idr *idp, gfp_t gfp_mask);
 int idr_get_new(struct idr *idp, void *ptr, int *id);
 int idr_get_new_above(struct idr *idp, void *ptr, int starting_id, int *id);
 int idr_for_each(struct idr *idp,
-		 int (*fn)(int id, void *p, void *data), void *data);
+        int (*fn)(int id, void *p, void *data), void *data);
 void *idr_replace(struct idr *idp, void *ptr, int id);
 void idr_remove(struct idr *idp, int id);
 void idr_remove_all(struct idr *idp);
@@ -122,13 +122,13 @@ void idr_init(struct idr *idp);
 #define IDA_BITMAP_BITS		(IDA_BITMAP_LONGS * sizeof(long) * 8)
 
 struct ida_bitmap {
-	long			nr_busy;
-	unsigned long		bitmap[IDA_BITMAP_LONGS];
+    long			nr_busy;
+    unsigned long		bitmap[IDA_BITMAP_LONGS];
 };
 
 struct ida {
-	struct idr		idr;
-	struct ida_bitmap	*free_bitmap;
+    struct idr		idr;
+    struct ida_bitmap	*free_bitmap;
 };
 
 #define IDA_INIT(name)		{ .idr = IDR_INIT(name), .free_bitmap = NULL, }

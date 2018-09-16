@@ -52,55 +52,55 @@ param_string(init_envp, init_envp_str, sizeof(init_envp_str));
 /**
  * Creates the init_task.
  */
-int
+    int
 create_init_task(void)
 {
-	int status;
-	start_state_t start_state = {
-		.task_id	= ANY_ID,
-		.task_name	= "init_task",
-		.user_id	= 0,
-		.group_id	= 0,
-		.cpu_id		= ANY_ID,
-		.use_args	= false,
-	};
+    int status;
+    start_state_t start_state = {
+        .task_id	= ANY_ID,
+        .task_name	= "init_task",
+        .user_id	= 0,
+        .group_id	= 0,
+        .cpu_id		= ANY_ID,
+        .use_args	= false,
+    };
 
-	if (!init_elf_image) {
-		printk("No init_elf_image found.\n");
-		return -EINVAL;
-	}
-	
-	/* This initializes start_state aspace_id, entry_point, and stack_ptr */
-	status =
-	elf_load(
-		__va(init_elf_image),
-		start_state.task_name,
-		INIT_ASPACE_ID,
-		PAGE_SIZE,
-		init_heap_size,
-		init_stack_size,
-		init_argv_str,
-		init_envp_str,
-		&start_state,
-		0,
-		&elf_dflt_alloc_pmem
-	);
-	if (status) {
-		printk("Failed to load init_task (status=%d).\n", status);
-		return status;
-	}
+    if (!init_elf_image) {
+        printk("No init_elf_image found.\n");
+        return -EINVAL;
+    }
 
-	/* This prevents the address space from being deleted by
-	 * user-space, since the kernel never releases this reference */
-	if (!aspace_acquire(INIT_ASPACE_ID)) {
-		printk("Failed to acquire INIT_ASPACE_ID.\n");
-		return status;
-	}
+    /* This initializes start_state aspace_id, entry_point, and stack_ptr */
+    status =
+        elf_load(
+                __va(init_elf_image),
+                start_state.task_name,
+                INIT_ASPACE_ID,
+                PAGE_SIZE,
+                init_heap_size,
+                init_stack_size,
+                init_argv_str,
+                init_envp_str,
+                &start_state,
+                0,
+                &elf_dflt_alloc_pmem
+                );
+    if (status) {
+        printk("Failed to load init_task (status=%d).\n", status);
+        return status;
+    }
+
+    /* This prevents the address space from being deleted by
+     * user-space, since the kernel never releases this reference */
+    if (!aspace_acquire(INIT_ASPACE_ID)) {
+        printk("Failed to acquire INIT_ASPACE_ID.\n");
+        return status;
+    }
 
 
-	struct task_struct *new_task = __task_create(&start_state, NULL);
+    struct task_struct *new_task = __task_create(&start_state, NULL);
 
-	sched_wakeup_task(new_task, TASK_STOPPED);
+    sched_wakeup_task(new_task, TASK_STOPPED);
 
-	return 0;
+    return 0;
 }

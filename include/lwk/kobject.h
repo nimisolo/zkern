@@ -34,20 +34,20 @@
 struct kobject;
 
 struct kobj_type {
-	void (*release)(struct kobject *kobj);
-	const struct sysfs_ops * sysfs_ops;
-	struct attribute ** default_attrs;
+    void (*release)(struct kobject *kobj);
+    const struct sysfs_ops * sysfs_ops;
+    struct attribute ** default_attrs;
 };
 
 extern struct kobj_type kfree_type;
 
 struct kobject {
-	struct kobject	     * parent;
-	char		     * name;
-	struct kref	       kref;
-	struct kobj_type     * ktype;
-	struct list_head       entry;
-	struct sysfs_dirent  * sd;
+    struct kobject	     * parent;
+    char		     * name;
+    struct kref	       kref;
+    struct kobj_type     * ktype;
+    struct list_head       entry;
+    struct sysfs_dirent  * sd;
 };
 
 
@@ -67,12 +67,12 @@ enum kobject_action {
 struct kobj_uevent_env {};
 
 static inline int kobject_uevent(struct kobject      * kobj,
-				 enum kobject_action   action)
+        enum kobject_action   action)
 { return 0; }
 
 static inline int add_uevent_var(struct kobj_uevent_env * env,
-				 const char             * format, 
-				 ...)
+        const char             * format, 
+        ...)
 { return 0; }
 
 
@@ -81,7 +81,7 @@ static inline int add_uevent_var(struct kobj_uevent_env * env,
 
 void
 kobject_init(struct kobject   * kobj, 
-	     struct kobj_type * ktype);
+        struct kobj_type * ktype);
 
 
 
@@ -95,39 +95,39 @@ struct kobject * kobject_get(struct kobject * kobj);
 
 int
 kobject_set_name_vargs(struct kobject * kobj,
-		       const char     * fmt, 
-		       va_list          args);
+        const char     * fmt, 
+        va_list          args);
 
 int
 kobject_add(struct kobject * kobj,
-	    struct kobject * parent,
-	    const char     * fmt, 
-	    ...);
+        struct kobject * parent,
+        const char     * fmt, 
+        ...);
 
 
 struct kobject *
 kobject_create_and_add(const char     * name,
-		       struct kobject * parent);
+        struct kobject * parent);
 
 
 int
 kobject_init_and_add(struct kobject   * kobj, 
-		     struct kobj_type * ktype,
-		     struct kobject   * parent, 
-		     const char       * fmt,
-		     ...);
+        struct kobj_type * ktype,
+        struct kobject   * parent, 
+        const char       * fmt,
+        ...);
 
 int 
 kobject_set_name(struct kobject * kobj,
-		 const char     * fmt,
-		 ...);
+        const char     * fmt,
+        ...);
 
 
-static inline char *
+    static inline char *
 kobject_name(const struct kobject *kobj)
 {
 
-	return kobj->name;
+    return kobj->name;
 }
 
 

@@ -72,14 +72,14 @@
  * for_each_present_cpu(cpu)		for-loop cpu over cpu_present_map
  *
  * Subtlety:
- * 1) The 'type-checked' form of cpu_isset() causes gcc (3.3.2, anyway)
- *    to generate slightly worse code.  Note for example the additional
- *    40 lines of assembly code compiling the "for each possible cpu"
- *    loops buried in the disk_stat_read() macros calls when compiling
- *    drivers/block/genhd.c (arch i386, CONFIG_SMP=y).  So use a simple
- *    one-line #define for cpu_isset(), instead of wrapping an inline
- *    inside a macro, the way we do the other calls.
- */
+* 1) The 'type-checked' form of cpu_isset() causes gcc (3.3.2, anyway)
+*    to generate slightly worse code.  Note for example the additional
+*    40 lines of assembly code compiling the "for each possible cpu"
+*    loops buried in the disk_stat_read() macros calls when compiling
+*    drivers/block/genhd.c (arch i386, CONFIG_SMP=y).  So use a simple
+*    one-line #define for cpu_isset(), instead of wrapping an inline
+*    inside a macro, the way we do the other calls.
+*/
 
 
 /**
@@ -94,9 +94,9 @@
  */
 #define CPU_MIN_ID 0     // Do not change this
 #define CPU_MAX_ID 1023  // CPU_MAX_ID+1 must be >= NR_CPUS and
-                         // CPU_MAX_ID must be multiple of (sizeof(unsigned long)*8)
+// CPU_MAX_ID must be multiple of (sizeof(unsigned long)*8)
 typedef struct {
-	unsigned long bits[(CPU_MAX_ID+1)/(sizeof(unsigned long)*8)];
+    unsigned long bits[(CPU_MAX_ID+1)/(sizeof(unsigned long)*8)];
 } user_cpumask_t;
 
 
@@ -118,16 +118,16 @@ typedef struct {
 # define __BITS_MASK(cpu)  ((unsigned long)1 << (((cpu) % __BITS_PER_LONG)))
 
 #define cpu_set(cpu, mask) \
-	(&mask)->bits[__BITS_INDEX(cpu)] |= __BITS_MASK(cpu)
+    (&mask)->bits[__BITS_INDEX(cpu)] |= __BITS_MASK(cpu)
 
 #define cpu_clear(cpu, mask) \
-	(&mask)->bits[__BITS_INDEX(cpu)] &= ~__BITS_MASK(cpu)
+    (&mask)->bits[__BITS_INDEX(cpu)] &= ~__BITS_MASK(cpu)
 
 #define cpus_clear(mask) \
-	memset((&mask), 0, sizeof(mask))
+    memset((&mask), 0, sizeof(mask))
 
 #define cpu_isset(cpu, mask) \
-	(((&mask)->bits[__BITS_INDEX(cpu)] & __BITS_MASK(cpu)) != 0)
+    (((&mask)->bits[__BITS_INDEX(cpu)] & __BITS_MASK(cpu)) != 0)
 
 #endif
 //@}
@@ -145,50 +145,50 @@ typedef struct {
 typedef struct cpumask { DECLARE_BITMAP(bits, NR_CPUS); } cpumask_t;
 extern cpumask_t _unused_cpumask_arg_;
 
-static inline user_cpumask_t
+    static inline user_cpumask_t
 cpumask_kernel2user(const cpumask_t *kernel)
 {
-	user_cpumask_t user;
+    user_cpumask_t user;
 
-	memset(&user, 0, sizeof(user));
-	memcpy(&user, kernel, min(sizeof(cpumask_t), sizeof(user_cpumask_t)));
+    memset(&user, 0, sizeof(user));
+    memcpy(&user, kernel, min(sizeof(cpumask_t), sizeof(user_cpumask_t)));
 
-	return user;
+    return user;
 }
 
-static inline cpumask_t
+    static inline cpumask_t
 cpumask_user2kernel(const user_cpumask_t *user)
 {
-	cpumask_t kernel;
+    cpumask_t kernel;
 
-	memset(&kernel, 0, sizeof(kernel));
-	memcpy(&kernel, user, min(sizeof(cpumask_t), sizeof(user_cpumask_t)));
+    memset(&kernel, 0, sizeof(kernel));
+    memcpy(&kernel, user, min(sizeof(cpumask_t), sizeof(user_cpumask_t)));
 
-	return kernel;
+    return kernel;
 }
 
 #define cpu_set(cpu, dst) __cpu_set((cpu), &(dst))
 static inline void __cpu_set(int cpu, volatile cpumask_t *dstp)
 {
-	set_bit(cpu, dstp->bits);
+    set_bit(cpu, dstp->bits);
 }
 
 #define cpu_clear(cpu, dst) __cpu_clear((cpu), &(dst))
 static inline void __cpu_clear(int cpu, volatile cpumask_t *dstp)
 {
-	clear_bit(cpu, dstp->bits);
+    clear_bit(cpu, dstp->bits);
 }
 
 #define cpus_setall(dst) __cpus_setall(&(dst), NR_CPUS)
 static inline void __cpus_setall(cpumask_t *dstp, int nbits)
 {
-	bitmap_fill(dstp->bits, nbits);
+    bitmap_fill(dstp->bits, nbits);
 }
 
 #define cpus_clear(dst) __cpus_clear(&(dst), NR_CPUS)
 static inline void __cpus_clear(cpumask_t *dstp, int nbits)
 {
-	bitmap_zero(dstp->bits, nbits);
+    bitmap_zero(dstp->bits, nbits);
 }
 
 /* No static inline type checking - see Subtlety (1) above. */
@@ -197,98 +197,98 @@ static inline void __cpus_clear(cpumask_t *dstp, int nbits)
 #define cpu_test_and_set(cpu, cpumask) __cpu_test_and_set((cpu), &(cpumask))
 static inline int __cpu_test_and_set(int cpu, cpumask_t *addr)
 {
-	return test_and_set_bit(cpu, addr->bits);
+    return test_and_set_bit(cpu, addr->bits);
 }
 
 #define cpus_and(dst, src1, src2) __cpus_and(&(dst), &(src1), &(src2), NR_CPUS)
 static inline void __cpus_and(cpumask_t *dstp, const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
+        const cpumask_t *src2p, int nbits)
 {
-	bitmap_and(dstp->bits, src1p->bits, src2p->bits, nbits);
+    bitmap_and(dstp->bits, src1p->bits, src2p->bits, nbits);
 }
 
 #define cpus_or(dst, src1, src2) __cpus_or(&(dst), &(src1), &(src2), NR_CPUS)
 static inline void __cpus_or(cpumask_t *dstp, const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
+        const cpumask_t *src2p, int nbits)
 {
-	bitmap_or(dstp->bits, src1p->bits, src2p->bits, nbits);
+    bitmap_or(dstp->bits, src1p->bits, src2p->bits, nbits);
 }
 
 #define cpus_xor(dst, src1, src2) __cpus_xor(&(dst), &(src1), &(src2), NR_CPUS)
 static inline void __cpus_xor(cpumask_t *dstp, const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
+        const cpumask_t *src2p, int nbits)
 {
-	bitmap_xor(dstp->bits, src1p->bits, src2p->bits, nbits);
+    bitmap_xor(dstp->bits, src1p->bits, src2p->bits, nbits);
 }
 
 #define cpus_andnot(dst, src1, src2) \
-				__cpus_andnot(&(dst), &(src1), &(src2), NR_CPUS)
+    __cpus_andnot(&(dst), &(src1), &(src2), NR_CPUS)
 static inline void __cpus_andnot(cpumask_t *dstp, const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
+        const cpumask_t *src2p, int nbits)
 {
-	bitmap_andnot(dstp->bits, src1p->bits, src2p->bits, nbits);
+    bitmap_andnot(dstp->bits, src1p->bits, src2p->bits, nbits);
 }
 
 #define cpus_complement(dst, src) __cpus_complement(&(dst), &(src), NR_CPUS)
 static inline void __cpus_complement(cpumask_t *dstp,
-					const cpumask_t *srcp, int nbits)
+        const cpumask_t *srcp, int nbits)
 {
-	bitmap_complement(dstp->bits, srcp->bits, nbits);
+    bitmap_complement(dstp->bits, srcp->bits, nbits);
 }
 
 #define cpus_equal(src1, src2) __cpus_equal(&(src1), &(src2), NR_CPUS)
 static inline int __cpus_equal(const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
+        const cpumask_t *src2p, int nbits)
 {
-	return bitmap_equal(src1p->bits, src2p->bits, nbits);
+    return bitmap_equal(src1p->bits, src2p->bits, nbits);
 }
 
 #define cpus_intersects(src1, src2) __cpus_intersects(&(src1), &(src2), NR_CPUS)
 static inline int __cpus_intersects(const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
+        const cpumask_t *src2p, int nbits)
 {
-	return bitmap_intersects(src1p->bits, src2p->bits, nbits);
+    return bitmap_intersects(src1p->bits, src2p->bits, nbits);
 }
 
 #define cpus_subset(src1, src2) __cpus_subset(&(src1), &(src2), NR_CPUS)
 static inline int __cpus_subset(const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
+        const cpumask_t *src2p, int nbits)
 {
-	return bitmap_subset(src1p->bits, src2p->bits, nbits);
+    return bitmap_subset(src1p->bits, src2p->bits, nbits);
 }
 
 #define cpus_empty(src) __cpus_empty(&(src), NR_CPUS)
 static inline int __cpus_empty(const cpumask_t *srcp, int nbits)
 {
-	return bitmap_empty(srcp->bits, nbits);
+    return bitmap_empty(srcp->bits, nbits);
 }
 
 #define cpus_full(cpumask) __cpus_full(&(cpumask), NR_CPUS)
 static inline int __cpus_full(const cpumask_t *srcp, int nbits)
 {
-	return bitmap_full(srcp->bits, nbits);
+    return bitmap_full(srcp->bits, nbits);
 }
 
 #define cpus_weight(cpumask) __cpus_weight(&(cpumask), NR_CPUS)
 static inline int __cpus_weight(const cpumask_t *srcp, int nbits)
 {
-	return bitmap_weight(srcp->bits, nbits);
+    return bitmap_weight(srcp->bits, nbits);
 }
 
 #define cpus_shift_right(dst, src, n) \
-			__cpus_shift_right(&(dst), &(src), (n), NR_CPUS)
+    __cpus_shift_right(&(dst), &(src), (n), NR_CPUS)
 static inline void __cpus_shift_right(cpumask_t *dstp,
-					const cpumask_t *srcp, int n, int nbits)
+        const cpumask_t *srcp, int n, int nbits)
 {
-	bitmap_shift_right(dstp->bits, srcp->bits, n, nbits);
+    bitmap_shift_right(dstp->bits, srcp->bits, n, nbits);
 }
 
 #define cpus_shift_left(dst, src, n) \
-			__cpus_shift_left(&(dst), &(src), (n), NR_CPUS)
+    __cpus_shift_left(&(dst), &(src), (n), NR_CPUS)
 static inline void __cpus_shift_left(cpumask_t *dstp,
-					const cpumask_t *srcp, int n, int nbits)
+        const cpumask_t *srcp, int n, int nbits)
 {
-	bitmap_shift_left(dstp->bits, srcp->bits, n, nbits);
+    bitmap_shift_left(dstp->bits, srcp->bits, n, nbits);
 }
 
 static inline void cpumask_copy(cpumask_t *dstp, const cpumask_t *srcp)
@@ -302,111 +302,111 @@ int __next_cpu(int n, const cpumask_t *srcp);
 #define next_cpu(n, src) __next_cpu((n), &(src))
 
 #define cpumask_of_cpu(cpu)						\
-({									\
-	typeof(_unused_cpumask_arg_) m;					\
-	if (sizeof(m) == sizeof(unsigned long)) {			\
-		m.bits[0] = 1UL<<(cpu);					\
-	} else {							\
-		cpus_clear(m);						\
-		cpu_set((cpu), m);					\
-	}								\
-	m;								\
-})
+    ({									\
+     typeof(_unused_cpumask_arg_) m;					\
+     if (sizeof(m) == sizeof(unsigned long)) {			\
+     m.bits[0] = 1UL<<(cpu);					\
+     } else {							\
+     cpus_clear(m);						\
+     cpu_set((cpu), m);					\
+     }								\
+     m;								\
+     })
 
 #define user_cpumask_of_cpu(cpu)					\
-({									\
-	user_cpumask_t m;						\
-	if (sizeof(m) == sizeof(unsigned long)) {			\
-		m.bits[0] = 1UL<<(cpu);					\
-	} else {							\
-		memset(&m, 0, sizeof(m));				\
-		set_bit(cpu, &m.bits);					\
-	}								\
-	m;								\
-})
+    ({									\
+     user_cpumask_t m;						\
+     if (sizeof(m) == sizeof(unsigned long)) {			\
+     m.bits[0] = 1UL<<(cpu);					\
+     } else {							\
+     memset(&m, 0, sizeof(m));				\
+     set_bit(cpu, &m.bits);					\
+     }								\
+     m;								\
+     })
 
 #define CPU_MASK_LAST_WORD BITMAP_LAST_WORD_MASK(NR_CPUS)
 
 #if NR_CPUS <= BITS_PER_LONG
 
 #define CPU_MASK_ALL							\
-(cpumask_t) { {								\
-	[BITS_TO_LONGS(NR_CPUS)-1] = CPU_MASK_LAST_WORD			\
-} }
+    (cpumask_t) { {								\
+        [BITS_TO_LONGS(NR_CPUS)-1] = CPU_MASK_LAST_WORD			\
+    } }
 
 #else
 
 #define CPU_MASK_ALL							\
-(cpumask_t) { {								\
-	[0 ... BITS_TO_LONGS(NR_CPUS)-2] = ~0UL,			\
-	[BITS_TO_LONGS(NR_CPUS)-1] = CPU_MASK_LAST_WORD			\
-} }
+    (cpumask_t) { {								\
+        [0 ... BITS_TO_LONGS(NR_CPUS)-2] = ~0UL,			\
+        [BITS_TO_LONGS(NR_CPUS)-1] = CPU_MASK_LAST_WORD			\
+    } }
 
 #endif
 
 #define CPU_MASK_NONE							\
-(cpumask_t) { {								\
-	[0 ... BITS_TO_LONGS(NR_CPUS)-1] =  0UL				\
-} }
+    (cpumask_t) { {								\
+        [0 ... BITS_TO_LONGS(NR_CPUS)-1] =  0UL				\
+    } }
 
 #define CPU_MASK_CPU0							\
-(cpumask_t) { {								\
-	[0] =  1UL							\
-} }
+    (cpumask_t) { {								\
+        [0] =  1UL							\
+    } }
 
 #define cpus_addr(src) ((src).bits)
 
 #define cpumask_scnprintf(buf, len, src) \
-			__cpumask_scnprintf((buf), (len), &(src), NR_CPUS)
+    __cpumask_scnprintf((buf), (len), &(src), NR_CPUS)
 static inline int __cpumask_scnprintf(char *buf, int len,
-					const cpumask_t *srcp, int nbits)
+        const cpumask_t *srcp, int nbits)
 {
-	return bitmap_scnprintf(buf, len, srcp->bits, nbits);
+    return bitmap_scnprintf(buf, len, srcp->bits, nbits);
 }
 
 #define cpumask_parse(ubuf, ulen, dst) \
-			__cpumask_parse((ubuf), (ulen), &(dst), NR_CPUS)
+    __cpumask_parse((ubuf), (ulen), &(dst), NR_CPUS)
 static inline int __cpumask_parse(const char __user *buf, int len,
-					cpumask_t *dstp, int nbits)
+        cpumask_t *dstp, int nbits)
 {
-	return bitmap_parse(buf, len, dstp->bits, nbits);
+    return bitmap_parse(buf, len, dstp->bits, nbits);
 }
 
 #define cpulist_scnprintf(buf, len, src) \
-			__cpulist_scnprintf((buf), (len), &(src), NR_CPUS)
+    __cpulist_scnprintf((buf), (len), &(src), NR_CPUS)
 static inline int __cpulist_scnprintf(char *buf, int len,
-					const cpumask_t *srcp, int nbits)
+        const cpumask_t *srcp, int nbits)
 {
-	return bitmap_scnlistprintf(buf, len, srcp->bits, nbits);
+    return bitmap_scnlistprintf(buf, len, srcp->bits, nbits);
 }
 
 #define cpulist_parse(buf, dst) __cpulist_parse((buf), &(dst), NR_CPUS)
 static inline int __cpulist_parse(const char *buf, cpumask_t *dstp, int nbits)
 {
-	return bitmap_parselist(buf, dstp->bits, nbits);
+    return bitmap_parselist(buf, dstp->bits, nbits);
 }
 
 #define cpu_remap(oldbit, old, new) \
-		__cpu_remap((oldbit), &(old), &(new), NR_CPUS)
+    __cpu_remap((oldbit), &(old), &(new), NR_CPUS)
 static inline int __cpu_remap(int oldbit,
-		const cpumask_t *oldp, const cpumask_t *newp, int nbits)
+        const cpumask_t *oldp, const cpumask_t *newp, int nbits)
 {
-	return bitmap_bitremap(oldbit, oldp->bits, newp->bits, nbits);
+    return bitmap_bitremap(oldbit, oldp->bits, newp->bits, nbits);
 }
 
 #define cpus_remap(dst, src, old, new) \
-		__cpus_remap(&(dst), &(src), &(old), &(new), NR_CPUS)
+    __cpus_remap(&(dst), &(src), &(old), &(new), NR_CPUS)
 static inline void __cpus_remap(cpumask_t *dstp, const cpumask_t *srcp,
-		const cpumask_t *oldp, const cpumask_t *newp, int nbits)
+        const cpumask_t *oldp, const cpumask_t *newp, int nbits)
 {
-	bitmap_remap(dstp->bits, srcp->bits, oldp->bits, newp->bits, nbits);
+    bitmap_remap(dstp->bits, srcp->bits, oldp->bits, newp->bits, nbits);
 }
 
 
 #define for_each_cpu_mask(cpu, mask)		\
-	for ((cpu) = first_cpu(mask);		\
-		(cpu) < NR_CPUS;		\
-		(cpu) = next_cpu((cpu), (mask)))
+    for ((cpu) = first_cpu(mask);		\
+            (cpu) < NR_CPUS;		\
+            (cpu) = next_cpu((cpu), (mask)))
 
 /*
  * The following particular system cpumasks and operations manage

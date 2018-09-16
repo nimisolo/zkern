@@ -9,10 +9,10 @@
  * we put the segment information here.
  */
 typedef struct { 
-	void *ldt;
-	rwlock_t ldtlock; 
-	int size;
-//	struct semaphore sem; 
+    void *ldt;
+    rwlock_t ldtlock; 
+    int size;
+    //	struct semaphore sem; 
 } mm_context_t;
 
 #endif

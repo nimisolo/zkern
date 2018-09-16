@@ -22,36 +22,36 @@
  *       the info argument remains valid until the cross-call function func()
  *       completes on all target CPUs.
  */
-int
+    int
 xcall_function(
-	cpumask_t	cpu_mask,
-	void		(*func)(void *info),
-	void *		info,
-	bool		wait
-)
+        cpumask_t	cpu_mask,
+        void		(*func)(void *info),
+        void *		info,
+        bool		wait
+        )
 {
-	bool contains_me;
-	int status;
+    bool contains_me;
+    int status;
 
-	BUG_ON(irqs_disabled());
-	BUG_ON(!func);
+    BUG_ON(irqs_disabled());
+    BUG_ON(!func);
 
-	/* Only target online CPUs */
-	cpus_and(cpu_mask, cpu_mask, cpu_online_map);
+    /* Only target online CPUs */
+    cpus_and(cpu_mask, cpu_mask, cpu_online_map);
 
-	/* No need to xcall ourself... we'll just call func() directly */
-	if ((contains_me = cpu_isset(this_cpu, cpu_mask)))
-		cpu_clear(this_cpu, cpu_mask);
+    /* No need to xcall ourself... we'll just call func() directly */
+    if ((contains_me = cpu_isset(this_cpu, cpu_mask)))
+        cpu_clear(this_cpu, cpu_mask);
 
-	/* Perform xcall to remote CPUs */
-	if ((status = arch_xcall_function(cpu_mask, func, info, wait)))
-		return status;
+    /* Perform xcall to remote CPUs */
+    if ((status = arch_xcall_function(cpu_mask, func, info, wait)))
+        return status;
 
-	/* Call func() on the local CPU, if it was in cpu_mask */
-	if (contains_me)
-		(*func)(info);
+    /* Call func() on the local CPU, if it was in cpu_mask */
+    if (contains_me)
+        (*func)(info);
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -64,10 +64,10 @@ xcall_function(
  *       target actually receives the reschedule interrupt. 
  *       Deadlock may occur if these conditions aren't met.
  */
-void
+    void
 xcall_reschedule(id_t cpu)
 {
-	arch_xcall_reschedule(cpu);
+    arch_xcall_reschedule(cpu);
 }
 
 /**

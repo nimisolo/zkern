@@ -24,68 +24,68 @@
 #define CLONE_STOPPED		0x02000000	/* Start in stopped state */
 
 
-long
+    long
 sys_clone(
-	unsigned long		flags,
-	unsigned long		new_stack_ptr,
-	int __user *		parent_tid_ptr,
-	int __user *		child_tid_ptr,
-	struct pt_regs *	parent_regs
-)
+        unsigned long		flags,
+        unsigned long		new_stack_ptr,
+        int __user *		parent_tid_ptr,
+        int __user *		child_tid_ptr,
+        struct pt_regs *	parent_regs
+        )
 {
-	/* Only allow creating tasks that share everything with their parent */
-	unsigned long required_flags =
-		( CLONE_VM
-		| CLONE_FS
-		| CLONE_FILES
-		| CLONE_SIGHAND
-		| CLONE_THREAD
-		| CLONE_SYSVSEM
-		);
+    /* Only allow creating tasks that share everything with their parent */
+    unsigned long required_flags =
+        ( CLONE_VM
+          | CLONE_FS
+          | CLONE_FILES
+          | CLONE_SIGHAND
+          | CLONE_THREAD
+          | CLONE_SYSVSEM
+        );
 
-	if ((flags & required_flags) != required_flags) {
-		printk(KERN_WARNING
-		       "Unsupported clone() flags 0x%lx.\n", flags);
-		return -ENOSYS;
-	}
+    if ((flags & required_flags) != required_flags) {
+        printk(KERN_WARNING
+                "Unsupported clone() flags 0x%lx.\n", flags);
+        return -ENOSYS;
+    }
 
-	start_state_t start_state = {
-		.task_id	= ANY_ID,
-		.user_id	= current->uid,
-		.group_id	= current->gid,
-		.aspace_id	= current->aspace->id,
-		.cpu_id		= ANY_ID,
-		.stack_ptr	= new_stack_ptr,
-		.entry_point	= USE_PARENT_IP,
-		.use_args	= 0,
-	};
+    start_state_t start_state = {
+        .task_id	= ANY_ID,
+        .user_id	= current->uid,
+        .group_id	= current->gid,
+        .aspace_id	= current->aspace->id,
+        .cpu_id		= ANY_ID,
+        .stack_ptr	= new_stack_ptr,
+        .entry_point	= USE_PARENT_IP,
+        .use_args	= 0,
+    };
 
-	struct task_struct *tsk = __task_create(&start_state, parent_regs);
-	if (!tsk)
-		return -EINVAL;
+    struct task_struct *tsk = __task_create(&start_state, parent_regs);
+    if (!tsk)
+        return -EINVAL;
 
-	/* Name the new task something semi-sensible */
-	snprintf(tsk->name, sizeof(tsk->name),
-		 "%s.thread_%02u",
-		 strlen(current->name) ? current->name : "noname",
-		 tsk->id - tsk->aspace->id);
+    /* Name the new task something semi-sensible */
+    snprintf(tsk->name, sizeof(tsk->name),
+            "%s.thread_%02u",
+            strlen(current->name) ? current->name : "noname",
+            tsk->id - tsk->aspace->id);
 
-	/* Optionally initialize the task's set_child_tid and clear_child_tid */
-	if ((flags & CLONE_CHILD_SETTID))
-		tsk->set_child_tid = child_tid_ptr;
-	if ((flags & CLONE_CHILD_CLEARTID))
-		tsk->clear_child_tid = child_tid_ptr;
+    /* Optionally initialize the task's set_child_tid and clear_child_tid */
+    if ((flags & CLONE_CHILD_SETTID))
+        tsk->set_child_tid = child_tid_ptr;
+    if ((flags & CLONE_CHILD_CLEARTID))
+        tsk->clear_child_tid = child_tid_ptr;
 
-	/* Optionally write the new task's ID to user-space memory.
-	 * It doesn't really matter if these fail. */
-	int tid = tsk->id;
-	if ((flags & CLONE_PARENT_SETTID))
-		put_user(tid, parent_tid_ptr);
-	if ((flags & CLONE_CHILD_SETTID))
-		put_user(tid, child_tid_ptr);
+    /* Optionally write the new task's ID to user-space memory.
+     * It doesn't really matter if these fail. */
+    int tid = tsk->id;
+    if ((flags & CLONE_PARENT_SETTID))
+        put_user(tid, parent_tid_ptr);
+    if ((flags & CLONE_CHILD_SETTID))
+        put_user(tid, child_tid_ptr);
 
-	/* Add the new task to the target CPU's run queue */
-	sched_wakeup_task(tsk, TASK_ALL);
+    /* Add the new task to the target CPU's run queue */
+    sched_wakeup_task(tsk, TASK_ALL);
 
-	return tsk->id;
+    return tsk->id;
 }

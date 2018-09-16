@@ -36,32 +36,32 @@ struct kobject;
 #define sysfs_dirent inode
 
 struct attribute {
-	const char 	*name;
-	struct module	*owner;
-	mode_t		mode;
+    const char 	*name;
+    struct module	*owner;
+    mode_t		mode;
 };
 
 struct sysfs_ops {
-	ssize_t (*show)(struct kobject *, struct attribute *, char *);
-	ssize_t (*store)(struct kobject *, struct attribute *, const char *,
-	    size_t);
+    ssize_t (*show)(struct kobject *, struct attribute *, char *);
+    ssize_t (*store)(struct kobject *, struct attribute *, const char *,
+            size_t);
 };
 
 struct attribute_group {
-	const char		*name;
-	mode_t                  (*is_visible)(struct kobject *,
-				    struct attribute *, int);
-	struct attribute	**attrs;
+    const char		*name;
+    mode_t                  (*is_visible)(struct kobject *,
+            struct attribute *, int);
+    struct attribute	**attrs;
 };
 
 #define	__ATTR(_name, _mode, _show, _store) {				\
-	.attr = { .name = __stringify(_name), .mode = _mode },		\
-        .show = _show, .store  = _store,				\
+    .attr = { .name = __stringify(_name), .mode = _mode },		\
+    .show = _show, .store  = _store,				\
 }
 
 #define	__ATTR_RO(_name) {						\
-	.attr = { .name = __stringify(_name), .mode = 0444 },		\
-	.show   = _name##_show,						\
+    .attr = { .name = __stringify(_name), .mode = 0444 },		\
+    .show   = _name##_show,						\
 }
 
 #define	__ATTR_NULL	{ .attr = { .name = NULL } }

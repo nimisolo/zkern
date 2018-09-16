@@ -1,7 +1,7 @@
 #include <lwk/types.h>
 
-long
+    long
 sys_getgroups(int n, gid_t gids[])
 {
-	return 0;
+    return 0;
 }

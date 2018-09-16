@@ -1,14 +1,14 @@
 #include <lwk/kernel.h>
 #include <arch/uaccess.h>
 
-int
+    int
 sys_getcwd(char __user *buf, unsigned long size)
 {
-	char *cwd = "/";
-	size_t len = strlen(cwd);
+    char *cwd = "/";
+    size_t len = strlen(cwd);
 
-	if (copy_to_user(buf, cwd, len))
-		return -EFAULT;
+    if (copy_to_user(buf, cwd, len))
+        return -EFAULT;
 
-	return len;
+    return len;
 }

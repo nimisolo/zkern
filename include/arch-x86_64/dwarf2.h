@@ -11,7 +11,7 @@
    See "as.info" for details on these pseudo ops. Unfortunately 
    they are only supported in very new binutils, so define them 
    away for older version. 
- */
+   */
 
 #ifdef CONFIG_UNWIND_INFO
 

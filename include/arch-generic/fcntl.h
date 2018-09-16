@@ -99,7 +99,7 @@
 #define LOCK_SH		1	/* shared lock */
 #define LOCK_EX		2	/* exclusive lock */
 #define LOCK_NB		4	/* or'd with one of the above to prevent
-				   blocking */
+                           blocking */
 #define LOCK_UN		8	/* remove lock */
 
 #define LOCK_MAND	32	/* This is a mandatory flock ... */
@@ -115,12 +115,12 @@
 #endif
 
 struct flock {
-	short	l_type;
-	short	l_whence;
-	off_t	l_start;
-	off_t	l_len;
-	pid_t	l_pid;
-	__ARCH_FLOCK_PAD
+    short	l_type;
+    short	l_whence;
+    off_t	l_start;
+    off_t	l_len;
+    pid_t	l_pid;
+    __ARCH_FLOCK_PAD
 };
 #endif
 
@@ -138,12 +138,12 @@ struct flock {
 #endif
 
 struct flock64 {
-	short  l_type;
-	short  l_whence;
-	loff_t l_start;
-	loff_t l_len;
-	pid_t  l_pid;
-	__ARCH_FLOCK64_PAD
+    short  l_type;
+    short  l_whence;
+    loff_t l_start;
+    loff_t l_len;
+    pid_t  l_pid;
+    __ARCH_FLOCK64_PAD
 };
 #endif
 #endif /* !CONFIG_64BIT */

@@ -1,18 +1,18 @@
 #include <lwk/pmem.h>
 #include <arch/uaccess.h>
 
-int
+    int
 sys_pmem_add(
-	const struct pmem_region __user *    rgn
-)
+        const struct pmem_region __user *    rgn
+        )
 {
-	struct pmem_region _rgn;
+    struct pmem_region _rgn;
 
-	if (current->uid != 0)
-		return -EPERM;
+    if (current->uid != 0)
+        return -EPERM;
 
-	if (copy_from_user(&_rgn, rgn, sizeof(_rgn)))
-		return -EINVAL;
+    if (copy_from_user(&_rgn, rgn, sizeof(_rgn)))
+        return -EINVAL;
 
-	return pmem_add(&_rgn);
+    return pmem_add(&_rgn);
 }

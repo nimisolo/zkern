@@ -26,8 +26,8 @@ static int initialized = 0;
  */
 static void vm_cons_putc(struct console *con, unsigned char c)
 {
-	// Slam the 8 bits down the 1 bit pipe... meeeooowwwy!
-	outb(c, port);
+    // Slam the 8 bits down the 1 bit pipe... meeeooowwwy!
+    outb(c, port);
 }
 
 
@@ -36,10 +36,10 @@ static void vm_cons_putc(struct console *con, unsigned char c)
  */
 static void vm_cons_write(struct console *con, const char *str)
 {
-	unsigned char c;
-	while ((c = *str++) != '\0') {
-		vm_cons_putc(con, c);
-	}
+    unsigned char c;
+    while ((c = *str++) != '\0') {
+        vm_cons_putc(con, c);
+    }
 }
 
 
@@ -48,7 +48,7 @@ static void vm_cons_write(struct console *con, const char *str)
  */
 static char vm_cons_getc(struct console *con)
 {
-	return inb_p(port);
+    return inb_p(port);
 }
 
 
@@ -56,10 +56,10 @@ static char vm_cons_getc(struct console *con)
  * Console device for use by guest virtual machines.
  */
 static struct console vm_console = {
-	.name		= "Virtual Machine Console",
-	.write		= vm_cons_write,
-	.poll_get_char	= vm_cons_getc,
-	.poll_put_char	= vm_cons_putc
+    .name		= "Virtual Machine Console",
+    .write		= vm_cons_write,
+    .poll_get_char	= vm_cons_getc,
+    .poll_put_char	= vm_cons_putc
 };
 
 
@@ -67,15 +67,15 @@ static struct console vm_console = {
  * Initializes and registers the vm console driver.
  */
 int vm_console_init(void) {
-	if (initialized) {
-		printk(KERN_ERR "VM console already initialized.\n");
-		return -1;
-	}
+    if (initialized) {
+        printk(KERN_ERR "VM console already initialized.\n");
+        return -1;
+    }
 
-	console_register(&vm_console);
-	initialized = 1;
+    console_register(&vm_console);
+    initialized = 1;
 
-	return 0;
+    return 0;
 }
 
 

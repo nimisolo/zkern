@@ -1,8 +1,8 @@
 #include <lwk/kernel.h>
 #include <lwk/task.h>
 
-long
+    long
 sys_getuid(void)
 {
-	return current->uid;
+    return current->uid;
 }

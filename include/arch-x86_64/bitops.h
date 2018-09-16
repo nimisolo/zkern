@@ -19,10 +19,10 @@
  */
 static __inline__ void set_bit(int nr, volatile void * addr)
 {
-	__asm__ __volatile__(
-		"lock ; btsl %1,%0"
-		:"+m" (ADDR)
-		:"dIr" (nr) : "memory");
+    __asm__ __volatile__(
+            "lock ; btsl %1,%0"
+            :"+m" (ADDR)
+            :"dIr" (nr) : "memory");
 }
 
 /**
@@ -36,10 +36,10 @@ static __inline__ void set_bit(int nr, volatile void * addr)
  */
 static __inline__ void __set_bit(int nr, volatile void * addr)
 {
-	__asm__ volatile(
-		"btsl %1,%0"
-		:"+m" (ADDR)
-		:"dIr" (nr) : "memory");
+    __asm__ volatile(
+            "btsl %1,%0"
+            :"+m" (ADDR)
+            :"dIr" (nr) : "memory");
 }
 
 /**
@@ -54,18 +54,18 @@ static __inline__ void __set_bit(int nr, volatile void * addr)
  */
 static __inline__ void clear_bit(int nr, volatile void * addr)
 {
-	__asm__ __volatile__(
-		"lock ; btrl %1,%0"
-		:"+m" (ADDR)
-		:"dIr" (nr));
+    __asm__ __volatile__(
+            "lock ; btrl %1,%0"
+            :"+m" (ADDR)
+            :"dIr" (nr));
 }
 
 static __inline__ void __clear_bit(int nr, volatile void * addr)
 {
-	__asm__ __volatile__(
-		"btrl %1,%0"
-		:"+m" (ADDR)
-		:"dIr" (nr));
+    __asm__ __volatile__(
+            "btrl %1,%0"
+            :"+m" (ADDR)
+            :"dIr" (nr));
 }
 
 #define smp_mb__before_clear_bit()	barrier()
@@ -82,10 +82,10 @@ static __inline__ void __clear_bit(int nr, volatile void * addr)
  */
 static __inline__ void __change_bit(int nr, volatile void * addr)
 {
-	__asm__ __volatile__(
-		"btcl %1,%0"
-		:"+m" (ADDR)
-		:"dIr" (nr));
+    __asm__ __volatile__(
+            "btcl %1,%0"
+            :"+m" (ADDR)
+            :"dIr" (nr));
 }
 
 /**
@@ -99,10 +99,10 @@ static __inline__ void __change_bit(int nr, volatile void * addr)
  */
 static __inline__ void change_bit(int nr, volatile void * addr)
 {
-	__asm__ __volatile__(
-		"lock ; btcl %1,%0"
-		:"+m" (ADDR)
-		:"dIr" (nr));
+    __asm__ __volatile__(
+            "lock ; btcl %1,%0"
+            :"+m" (ADDR)
+            :"dIr" (nr));
 }
 
 /**
@@ -115,13 +115,13 @@ static __inline__ void change_bit(int nr, volatile void * addr)
  */
 static __inline__ int test_and_set_bit(int nr, volatile void * addr)
 {
-	int oldbit;
+    int oldbit;
 
-	__asm__ __volatile__(
-		"lock ; btsl %2,%1\n\tsbbl %0,%0"
-		:"=r" (oldbit),"+m" (ADDR)
-		:"dIr" (nr) : "memory");
-	return oldbit;
+    __asm__ __volatile__(
+            "lock ; btsl %2,%1\n\tsbbl %0,%0"
+            :"=r" (oldbit),"+m" (ADDR)
+            :"dIr" (nr) : "memory");
+    return oldbit;
 }
 
 /**
@@ -135,13 +135,13 @@ static __inline__ int test_and_set_bit(int nr, volatile void * addr)
  */
 static __inline__ int __test_and_set_bit(int nr, volatile void * addr)
 {
-	int oldbit;
+    int oldbit;
 
-	__asm__(
-		"btsl %2,%1\n\tsbbl %0,%0"
-		:"=r" (oldbit),"+m" (ADDR)
-		:"dIr" (nr));
-	return oldbit;
+    __asm__(
+            "btsl %2,%1\n\tsbbl %0,%0"
+            :"=r" (oldbit),"+m" (ADDR)
+            :"dIr" (nr));
+    return oldbit;
 }
 
 /**
@@ -154,13 +154,13 @@ static __inline__ int __test_and_set_bit(int nr, volatile void * addr)
  */
 static __inline__ int test_and_clear_bit(int nr, volatile void * addr)
 {
-	int oldbit;
+    int oldbit;
 
-	__asm__ __volatile__(
-		"lock ; btrl %2,%1\n\tsbbl %0,%0"
-		:"=r" (oldbit),"+m" (ADDR)
-		:"dIr" (nr) : "memory");
-	return oldbit;
+    __asm__ __volatile__(
+            "lock ; btrl %2,%1\n\tsbbl %0,%0"
+            :"=r" (oldbit),"+m" (ADDR)
+            :"dIr" (nr) : "memory");
+    return oldbit;
 }
 
 /**
@@ -174,25 +174,25 @@ static __inline__ int test_and_clear_bit(int nr, volatile void * addr)
  */
 static __inline__ int __test_and_clear_bit(int nr, volatile void * addr)
 {
-	int oldbit;
+    int oldbit;
 
-	__asm__(
-		"btrl %2,%1\n\tsbbl %0,%0"
-		:"=r" (oldbit),"+m" (ADDR)
-		:"dIr" (nr));
-	return oldbit;
+    __asm__(
+            "btrl %2,%1\n\tsbbl %0,%0"
+            :"=r" (oldbit),"+m" (ADDR)
+            :"dIr" (nr));
+    return oldbit;
 }
 
 /* WARNING: non atomic and it can be reordered! */
 static __inline__ int __test_and_change_bit(int nr, volatile void * addr)
 {
-	int oldbit;
+    int oldbit;
 
-	__asm__ __volatile__(
-		"btcl %2,%1\n\tsbbl %0,%0"
-		:"=r" (oldbit),"+m" (ADDR)
-		:"dIr" (nr) : "memory");
-	return oldbit;
+    __asm__ __volatile__(
+            "btcl %2,%1\n\tsbbl %0,%0"
+            :"=r" (oldbit),"+m" (ADDR)
+            :"dIr" (nr) : "memory");
+    return oldbit;
 }
 
 /**
@@ -205,13 +205,13 @@ static __inline__ int __test_and_change_bit(int nr, volatile void * addr)
  */
 static __inline__ int test_and_change_bit(int nr, volatile void * addr)
 {
-	int oldbit;
+    int oldbit;
 
-	__asm__ __volatile__(
-		"lock ; btcl %2,%1\n\tsbbl %0,%0"
-		:"=r" (oldbit),"+m" (ADDR)
-		:"dIr" (nr) : "memory");
-	return oldbit;
+    __asm__ __volatile__(
+            "lock ; btcl %2,%1\n\tsbbl %0,%0"
+            :"=r" (oldbit),"+m" (ADDR)
+            :"dIr" (nr) : "memory");
+    return oldbit;
 }
 
 #if 0 /* Fool kernel-doc since it doesn't do macros yet */
@@ -225,24 +225,24 @@ static int test_bit(int nr, const volatile void * addr);
 
 static __inline__ int constant_test_bit(int nr, const volatile void * addr)
 {
-	return ((1UL << (nr & 31)) & (((const volatile unsigned int *) addr)[nr >> 5])) != 0;
+    return ((1UL << (nr & 31)) & (((const volatile unsigned int *) addr)[nr >> 5])) != 0;
 }
 
 static __inline__ int variable_test_bit(int nr, volatile const void * addr)
 {
-	int oldbit;
+    int oldbit;
 
-	__asm__ __volatile__(
-		"btl %2,%1\n\tsbbl %0,%0"
-		:"=r" (oldbit)
-		:"m" (ADDR),"dIr" (nr));
-	return oldbit;
+    __asm__ __volatile__(
+            "btl %2,%1\n\tsbbl %0,%0"
+            :"=r" (oldbit)
+            :"m" (ADDR),"dIr" (nr));
+    return oldbit;
 }
 
 #define test_bit(nr,addr) \
-(__builtin_constant_p(nr) ? \
- constant_test_bit((nr),(addr)) : \
- variable_test_bit((nr),(addr)))
+    (__builtin_constant_p(nr) ? \
+     constant_test_bit((nr),(addr)) : \
+     variable_test_bit((nr),(addr)))
 
 #undef ADDR
 
@@ -253,23 +253,23 @@ extern unsigned long
 find_next_zero_string(unsigned long *bitmap, long start, long nbits, int len);
 
 static inline void set_bit_string(unsigned long *bitmap, unsigned long i, 
-				  int len) 
+        int len) 
 { 
-	unsigned long end = i + len; 
-	while (i < end) {
-		__set_bit(i, bitmap); 
-		i++;
-	}
+    unsigned long end = i + len; 
+    while (i < end) {
+        __set_bit(i, bitmap); 
+        i++;
+    }
 } 
 
 static inline void __clear_bit_string(unsigned long *bitmap, unsigned long i, 
-				    int len) 
+        int len) 
 { 
-	unsigned long end = i + len; 
-	while (i < end) {
-		__clear_bit(i, bitmap); 
-		i++;
-	}
+    unsigned long end = i + len; 
+    while (i < end) {
+        __clear_bit(i, bitmap); 
+        i++;
+    }
 } 
 
 /**
@@ -280,10 +280,10 @@ static inline void __clear_bit_string(unsigned long *bitmap, unsigned long i,
  */
 static __inline__ unsigned long ffz(unsigned long word)
 {
-	__asm__("bsfq %1,%0"
-		:"=r" (word)
-		:"r" (~word));
-	return word;
+    __asm__("bsfq %1,%0"
+            :"=r" (word)
+            :"r" (~word));
+    return word;
 }
 
 /**
@@ -294,10 +294,10 @@ static __inline__ unsigned long ffz(unsigned long word)
  */
 static __inline__ unsigned long __ffs(unsigned long word)
 {
-	__asm__("bsfq %1,%0"
-		:"=r" (word)
-		:"rm" (word));
-	return word;
+    __asm__("bsfq %1,%0"
+            :"=r" (word)
+            :"rm" (word));
+    return word;
 }
 
 
@@ -310,10 +310,10 @@ static __inline__ unsigned long __ffs(unsigned long word)
  */
 static __inline__ unsigned long __fls(unsigned long word)
 {
-	__asm__("bsrq %1,%0"
-		:"=r" (word)
-		:"rm" (word));
-	return word;
+    __asm__("bsrq %1,%0"
+            :"=r" (word)
+            :"rm" (word));
+    return word;
 }
 
 #ifdef __KERNEL__
@@ -328,20 +328,20 @@ static __inline__ unsigned long __fls(unsigned long word)
  */
 static __inline__ int ffs(int x)
 {
-	int r;
+    int r;
 
 #ifdef CONFIG_X86_CMOV
-	asm("bsfl %1,%0\n\t"
-	    "cmovzl %2,%0"
-	    : "=r" (r) : "rm" (x), "r" (-1));
+    asm("bsfl %1,%0\n\t"
+            "cmovzl %2,%0"
+            : "=r" (r) : "rm" (x), "r" (-1));
 #else
-	asm("bsfl %1,%0\n\t"
-	    "jnz 1f\n\t"
-	    "movl $-1,%0\n"
-	    "1:" : "=r" (r) : "rm" (x));
+    asm("bsfl %1,%0\n\t"
+            "jnz 1f\n\t"
+            "movl $-1,%0\n"
+            "1:" : "=r" (r) : "rm" (x));
 #endif
 
-	return r+1;
+    return r+1;
 }
 
 
@@ -357,7 +357,7 @@ static inline unsigned long ffs64(u64 word)
 {
 #if BITS_PER_LONG == 32
     if (((u32)word) == 0UL)
-	return __ffs((u32)(word >> 32)) + 32;
+        return __ffs((u32)(word >> 32)) + 32;
 #elif BITS_PER_LONG != 64
 #error BITS_PER_LONG not 32 or 64
 #endif
@@ -372,9 +372,9 @@ static inline unsigned long ffs64(u64 word)
  */
 static __inline__ int fls64(__u64 x)
 {
-	if (x == 0)
-		return 0;
-	return __fls(x) + 1;
+    if (x == 0)
+        return 0;
+    return __fls(x) + 1;
 }
 
 /**
@@ -385,20 +385,20 @@ static __inline__ int fls64(__u64 x)
  */
 static __inline__ int fls(int x)
 {
-	int r;
+    int r;
 
 #ifdef CONFIG_X86_CMOV
-	asm("bsrl %1,%0\n\t"
-	    "cmovzl %2,%0"
-	    : "=&r" (r) : "rm" (x), "rm" (-1));
+    asm("bsrl %1,%0\n\t"
+            "cmovzl %2,%0"
+            : "=&r" (r) : "rm" (x), "rm" (-1));
 #else
-	asm("bsrl %1,%0\n\t"
-	    "jnz 1f\n\t"
-	    "movl $-1,%0\n"
-	    "1:" : "=r" (r) : "rm" (x));
+    asm("bsrl %1,%0\n\t"
+            "jnz 1f\n\t"
+            "movl $-1,%0\n"
+            "1:" : "=r" (r) : "rm" (x));
 #endif
 
-	return r+1;
+    return r+1;
 }
 
 #include <arch-generic/bitops/hweight.h>

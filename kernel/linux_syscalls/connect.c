@@ -5,8 +5,8 @@
 typedef uint32_t socklen_t;
 struct sockaddr {};
 
-int
+    int
 sys_connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 {
-	return 0;
+    return 0;
 }

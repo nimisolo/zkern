@@ -62,9 +62,9 @@ struct hlist_node;
  * \returns a 64-bit hash of the key with a value less than 2^@order.
  */
 typedef uint64_t (*ht_hash_func_t)(
-	const void *		key,
-	size_t			order
-);
+        const void *		key,
+        size_t			order
+        );
 
 /**
  * Keys comparison function type.
@@ -77,9 +77,9 @@ typedef uint64_t (*ht_hash_func_t)(
  * positive if @key_in_search > @key_in_table
  */
 typedef int (*ht_key_compare_func_t)(
-	const void *		key_in_search,
-	const void *		key_in_table
-);
+        const void *		key_in_search,
+        const void *		key_in_table
+        );
 
 
 /** Create a hash table.
@@ -88,52 +88,52 @@ typedef int (*ht_key_compare_func_t)(
  */
 extern struct htable *
 htable_create(
-	size_t			order,
-	size_t			obj_key_offset,
-	size_t			obj_hlist_node_offset,
-	ht_hash_func_t		hash,
-	ht_key_compare_func_t	key_compare
-);
+        size_t			order,
+        size_t			obj_key_offset,
+        size_t			obj_hlist_node_offset,
+        ht_hash_func_t		hash,
+        ht_key_compare_func_t	key_compare
+        );
 
 extern int
 htable_destroy(
-	struct htable *		ht
-);
+        struct htable *		ht
+        );
 
 extern int
 htable_add(
-	struct htable *		ht,
-	void *			obj
-);
+        struct htable *		ht,
+        void *			obj
+        );
 
 extern int
 htable_del(
-	struct htable *		ht,
-	void *			obj
-);
+        struct htable *		ht,
+        void *			obj
+        );
 
 extern void *
 htable_lookup(
-	struct htable *		ht,
-	const void *		key
-);
+        struct htable *		ht,
+        const void *		key
+        );
 
 extern uint64_t
 htable_id_hash(
-	const void *		key,
-	size_t			order
-);
+        const void *		key,
+        size_t			order
+        );
 
 extern int
 htable_id_key_compare(
-	const void *		key1,
-	const void *		key2
-);
+        const void *		key1,
+        const void *		key2
+        );
 
 extern int 
 htable_empty(
-    struct htable* ht
-);
+        struct htable* ht
+        );
 
 
 /** \name Hash Table Iterator.
@@ -153,17 +153,17 @@ htable_empty(
 
 struct htable_iter
 {
-	struct htable *		ht;
-	struct hlist_node *	node;
-	int			index;
+    struct htable *		ht;
+    struct hlist_node *	node;
+    int			index;
 };
 
 
 /** Initialize a hash table iterator */
 extern struct htable_iter
 htable_iter(
-	struct htable *		ht
-);
+        struct htable *		ht
+        );
 
 
 /** Return the next item from the hash table iterator.
@@ -172,8 +172,8 @@ htable_iter(
  */
 extern void *
 htable_next(
-	struct htable_iter *	iter
-);
+        struct htable_iter *	iter
+        );
 
 // @}
 

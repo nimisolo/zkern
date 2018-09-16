@@ -32,24 +32,24 @@
  */
 
 enum fixed_addresses {
-	VSYSCALL_LAST_PAGE,
-	VSYSCALL_FIRST_PAGE = VSYSCALL_LAST_PAGE + ((VSYSCALL_END-VSYSCALL_START) >> PAGE_SHIFT) - 1,
-	FIX_APIC_BASE,	/* local (CPU) APIC) */
-	FIX_IO_APIC_BASE_0,
-	FIX_IO_APIC_BASE_END = FIX_IO_APIC_BASE_0 + MAX_IO_APICS-1,
-	__end_of_fixed_addresses
+    VSYSCALL_LAST_PAGE,
+    VSYSCALL_FIRST_PAGE = VSYSCALL_LAST_PAGE + ((VSYSCALL_END-VSYSCALL_START) >> PAGE_SHIFT) - 1,
+    FIX_APIC_BASE,	/* local (CPU) APIC) */
+    FIX_IO_APIC_BASE_0,
+    FIX_IO_APIC_BASE_END = FIX_IO_APIC_BASE_0 + MAX_IO_APICS-1,
+    __end_of_fixed_addresses
 };
 
 extern void __set_fixmap(enum fixed_addresses fixmap_index,
-                         unsigned long phys_addr, pgprot_t prot);
+        unsigned long phys_addr, pgprot_t prot);
 
 #define set_fixmap(idx, phys) \
-		__set_fixmap(idx, phys, PAGE_KERNEL)
+    __set_fixmap(idx, phys, PAGE_KERNEL)
 /*
  * Some hardware wants to get fixmapped without caching.
  */
 #define set_fixmap_nocache(idx, phys) \
-		__set_fixmap(idx, phys, PAGE_KERNEL_NOCACHE)
+    __set_fixmap(idx, phys, PAGE_KERNEL_NOCACHE)
 
 #define FIXADDR_TOP	(VSYSCALL_END-PAGE_SIZE)
 #define FIXADDR_SIZE	(__end_of_fixed_addresses << PAGE_SHIFT)
@@ -70,19 +70,19 @@ extern void __this_fixmap_does_not_exist(void);
  */
 static __always_inline unsigned long fix_to_virt(const unsigned int idx)
 {
-	/*
-	 * this branch gets completely eliminated after inlining,
-	 * except when someone tries to use fixaddr indices in an
-	 * illegal way. (such as mixing up address types or using
-	 * out-of-range indices).
-	 *
-	 * If it doesn't get removed, the linker will complain
-	 * loudly with a reasonably clear error message..
-	 */
-	if (idx >= __end_of_fixed_addresses)
-		__this_fixmap_does_not_exist();
+    /*
+     * this branch gets completely eliminated after inlining,
+     * except when someone tries to use fixaddr indices in an
+     * illegal way. (such as mixing up address types or using
+     * out-of-range indices).
+     *
+     * If it doesn't get removed, the linker will complain
+     * loudly with a reasonably clear error message..
+     */
+    if (idx >= __end_of_fixed_addresses)
+        __this_fixmap_does_not_exist();
 
-	return __fix_to_virt(idx);
+    return __fix_to_virt(idx);
 }
 
 #endif

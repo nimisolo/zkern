@@ -16,10 +16,10 @@
  * nesting etc..
  */
 struct resource {
-	const char *name;
-	unsigned long start, end;
-	unsigned long flags;
-	struct resource *parent, *sibling, *child;
+    const char *name;
+    unsigned long start, end;
+    unsigned long flags;
+    struct resource *parent, *sibling, *child;
 };
 
 /**
@@ -100,35 +100,35 @@ extern struct resource * ____request_resource(struct resource *root, struct reso
 extern int release_resource(struct resource *new);
 extern int insert_resource(struct resource *parent, struct resource *new);
 extern int allocate_resource(struct resource *root, struct resource *new,
-			     unsigned long size,
-			     unsigned long min, unsigned long max,
-			     unsigned long align,
-			     void (*alignf)(void *, struct resource *,
-					    unsigned long, unsigned long),
-			     void *alignf_data);
+        unsigned long size,
+        unsigned long min, unsigned long max,
+        unsigned long align,
+        void (*alignf)(void *, struct resource *,
+            unsigned long, unsigned long),
+        void *alignf_data);
 extern int adjust_resource(struct resource *res, unsigned long start,
-		           unsigned long size);
+        unsigned long size);
 extern unsigned long resource_alignment(struct resource *res);
 static inline unsigned long resource_size(struct resource *res)
 {
-	return res->end - res->start + 1;
+    return res->end - res->start + 1;
 }
 
 /* Linux compatibility cruft */
 extern struct resource * __request_region(struct resource *parent,
-                                          unsigned long start, unsigned long n,
-                                          const char *name);
+        unsigned long start, unsigned long n,
+        const char *name);
 extern int __check_region(struct resource *parent, unsigned long start, unsigned long n);
 extern void __release_region(struct resource *parent, unsigned long start, unsigned long n);
 #define request_region(start,n,name) \
-		__request_region(&ioport_resource, (start), (n), (name))
+    __request_region(&ioport_resource, (start), (n), (name))
 #define request_mem_region(start,n,name) \
-		__request_region(&iomem_resource, (start), (n), (name))
+    __request_region(&iomem_resource, (start), (n), (name))
 #define release_region(start,n) \
-		__release_region(&ioport_resource, (start), (n))
+    __release_region(&ioport_resource, (start), (n))
 #define check_mem_region(start,n) \
-		__check_region(&iomem_resource, (start), (n))
+    __check_region(&iomem_resource, (start), (n))
 #define release_mem_region(start,n) \
-		__release_region(&iomem_resource, (start), (n))
+    __release_region(&iomem_resource, (start), (n))
 
 #endif

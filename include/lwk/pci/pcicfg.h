@@ -57,16 +57,16 @@ typedef uint32_t	pci_io_addr_t;
  * This structure stores a device's PCI power management information.
  */
 typedef struct pcicfg_pp {
-	bool		valid;			//!< Set struct contents are valid, 0 otherwise
-	uint16_t	pmc;			//!< power management capabilities register
-	uint16_t	pmcsr;			//!< power management control / status register
+    bool		valid;			//!< Set struct contents are valid, 0 otherwise
+    uint16_t	pmc;			//!< power management capabilities register
+    uint16_t	pmcsr;			//!< power management control / status register
 } pcicfg_pp_t;
 
 
 /** PCI Vital Product Data (VPD) read-only entry. */
 typedef struct vpd_ro {
-	char		keyword[2];		//!< the 2 byte "keyword"
-	char *		value;			//!< the vpd value
+    char		keyword[2];		//!< the 2 byte "keyword"
+    char *		value;			//!< the vpd value
 } vpd_ro_t;
 
 
@@ -76,10 +76,10 @@ typedef struct vpd_ro {
  * device instance specific info, e.g., an asset tag identifier.
  */
 typedef struct vpd_rw {
-	char		keyword[2];		//!< the 2 byte "keyword"
-	char *		value;			//!< the vpd value
-	int		start;			//!< vpd address of this entry
-	int		len;			//!< length of this entry in bytes
+    char		keyword[2];		//!< the 2 byte "keyword"
+    char *		value;			//!< the vpd value
+    int		start;			//!< vpd address of this entry
+    int		len;			//!< length of this entry in bytes
 } vpd_rw_t;
 
 
@@ -90,14 +90,14 @@ typedef struct vpd_rw {
  * not necessarily needed to configure the device.
  */
 typedef struct pcicfg_vpd {
-	bool		valid;			//!< Set struct contents are valid, 0 otherwise
-	uint8_t		vpd_reg;		//!< base register, + 2 for addr, + 4 data
-	char		vpd_cached;		//!< cached value
-	char *		vpd_ident;		//!< string identifier
-	int		vpd_ro_count;		//!< count of VPD read-only fields 
-	vpd_ro_t *	vpd_ro;			//!< array of VPD read-only fields
-	int		vpd_rw_count;		//!< count of VPD read/write fields 
-	vpd_rw_t *	vpd_rw;			//!< array of VPD read/write fields 
+    bool		valid;			//!< Set struct contents are valid, 0 otherwise
+    uint8_t		vpd_reg;		//!< base register, + 2 for addr, + 4 data
+    char		vpd_cached;		//!< cached value
+    char *		vpd_ident;		//!< string identifier
+    int		vpd_ro_count;		//!< count of VPD read-only fields 
+    vpd_ro_t *	vpd_ro;			//!< array of VPD read-only fields
+    int		vpd_rw_count;		//!< count of VPD read/write fields 
+    vpd_rw_t *	vpd_rw;			//!< array of VPD read/write fields 
 } pcicfg_vpd_t;
 
 
@@ -108,26 +108,26 @@ typedef struct pcicfg_vpd {
  * payload contains the source of the interrupt.
  */
 typedef struct pcicfg_msi {
-	bool		valid;			//!< Set struct contents are valid, 0 otherwise
-	uint16_t	msi_ctrl;		//!< message control
-	uint8_t		msi_location;		//!< offset of MSI capability registers
-	uint8_t		msi_msgnum;		//!< number of messages
-	int		msi_alloc;		//!< number of allocated messages
-	uint64_t	msi_addr;		//!< contents of address register
-	uint16_t	msi_data;		//!< contents of data register
+    bool		valid;			//!< Set struct contents are valid, 0 otherwise
+    uint16_t	msi_ctrl;		//!< message control
+    uint8_t		msi_location;		//!< offset of MSI capability registers
+    uint8_t		msi_msgnum;		//!< number of messages
+    int		msi_alloc;		//!< number of allocated messages
+    uint64_t	msi_addr;		//!< contents of address register
+    uint16_t	msi_data;		//!< contents of data register
 } pcicfg_msi_t;
 
 
 typedef struct msix_vector {
-	uint64_t	mv_address;		//!< contents of address register
-	uint32_t	mv_data;		//!< contents of data register
-	int		mv_irq;
+    uint64_t	mv_address;		//!< contents of address register
+    uint32_t	mv_data;		//!< contents of data register
+    int		mv_irq;
 } msix_vector_t;
 
 
 typedef struct msix_table_entry {
-	u_int		mte_vector;		//!< 1-based index into msix_vectors array
-	u_int		mte_handlers;
+    u_int		mte_vector;		//!< 1-based index into msix_vectors array
+    u_int		mte_handlers;
 } msix_table_entry_t;
 
 
@@ -138,35 +138,35 @@ typedef struct msix_table_entry {
  * at a time.
  */
 typedef struct pcicfg_msix {
-	bool		valid;			//!< Set struct contents are valid, 0 otherwise
-	uint16_t	msix_ctrl;		//!< message control
-	uint16_t	msix_msgnum;		//!< number of messages
-	uint8_t		msix_location;		//!< offset of MSI-X capability registers
-	uint8_t		msix_table_bar;		//!< BAR containing vector table
-	uint8_t		msix_pba_bar;		//!< BAR containing PBA
-	uint32_t	msix_table_offset;	//!< offset of msix table
-	uint32_t	msix_pba_offset;	//!< offset of pba
-	int		msix_alloc;		//!< number of allocated vectors
-	int		msix_table_len;		//!< length of virtual table
-	msix_table_entry_t *	msix_table;	//!< virtual table
-	msix_vector_t *	msix_vectors;		//!< array of allocated vectors
+    bool		valid;			//!< Set struct contents are valid, 0 otherwise
+    uint16_t	msix_ctrl;		//!< message control
+    uint16_t	msix_msgnum;		//!< number of messages
+    uint8_t		msix_location;		//!< offset of MSI-X capability registers
+    uint8_t		msix_table_bar;		//!< BAR containing vector table
+    uint8_t		msix_pba_bar;		//!< BAR containing PBA
+    uint32_t	msix_table_offset;	//!< offset of msix table
+    uint32_t	msix_pba_offset;	//!< offset of pba
+    int		msix_alloc;		//!< number of allocated vectors
+    int		msix_table_len;		//!< length of virtual table
+    msix_table_entry_t *	msix_table;	//!< virtual table
+    msix_vector_t *	msix_vectors;		//!< array of allocated vectors
 } pcicfg_msix_t;
 
 
 /** PCI-X info. */
 typedef struct pcicfg_pcix {
-	bool		valid;			//!< Set struct contents are valid, 0 otherwise
-	uint16_t	command;		//!< PCI-X command register
-	uint32_t	status;			//!< PCI-X status register
+    bool		valid;			//!< Set struct contents are valid, 0 otherwise
+    uint16_t	command;		//!< PCI-X command register
+    uint32_t	status;			//!< PCI-X status register
 } pcicfg_pcix_t;
 
 
 /** PCI HyperTransport info. */
 typedef struct pcicfg_ht {
-	bool		valid;			//!< Set struct contents are valid, 0 otherwise
-	uint8_t		ht_msimap;		//!< Offset of MSI mapping cap registers
-	uint16_t	ht_msictrl;		//!< MSI mapping control
-	uint64_t	ht_msiaddr;		//!< MSI mapping base address
+    bool		valid;			//!< Set struct contents are valid, 0 otherwise
+    uint8_t		ht_msimap;		//!< Offset of MSI mapping cap registers
+    uint16_t	ht_msictrl;		//!< MSI mapping control
+    uint64_t	ht_msiaddr;		//!< MSI mapping base address
 } pcicfg_ht_t;
 
 
@@ -179,45 +179,45 @@ typedef struct pcicfg_ht {
  * memory.
  */
 typedef struct pcicfg_hdr {
-	uint32_t	bar[PCI_MAXMAPS_0];	//!< base Address Registers (BARs)
-	uint32_t	bios;			//!< the BIOS mapping (??)
+    uint32_t	bar[PCI_MAXMAPS_0];	//!< base Address Registers (BARs)
+    uint32_t	bios;			//!< the BIOS mapping (??)
 
-	uint16_t	sub_vendor;		//!< card vendor ID
-	uint16_t	sub_device;		//!< card device ID, assigned by card vendor
-	uint16_t	vendor_id;		//!< chip vendor ID
-	uint16_t	device_id;		//!< chip device ID, assigned by chip vendor
+    uint16_t	sub_vendor;		//!< card vendor ID
+    uint16_t	sub_device;		//!< card device ID, assigned by card vendor
+    uint16_t	vendor_id;		//!< chip vendor ID
+    uint16_t	device_id;		//!< chip device ID, assigned by chip vendor
 
-	uint16_t	command_reg;		//!< disable/enable chip and PCI options
-	uint16_t	status_reg;		//!< supported PCI features and error state
+    uint16_t	command_reg;		//!< disable/enable chip and PCI options
+    uint16_t	status_reg;		//!< supported PCI features and error state
 
-	uint8_t		base_class;		//!< chip PCI class
-	uint8_t		sub_class;		//!< chip PCI sub-class
-	uint8_t		prog_iface;		//!< chip PCI programming interface
-	uint8_t		rev_id;			//!< chip revision ID
+    uint8_t		base_class;		//!< chip PCI class
+    uint8_t		sub_class;		//!< chip PCI sub-class
+    uint8_t		prog_iface;		//!< chip PCI programming interface
+    uint8_t		rev_id;			//!< chip revision ID
 
-	uint8_t		hdr_type;		//!< chip config header type
-	uint8_t		cache_line_sz;		//!< cache line size in 4byte units
-	uint8_t		interrupt_pin;		//!< PCI interrupt pin
-	uint8_t		interrupt_line;		//!< interrupt line (IRQ for PC arch)
+    uint8_t		hdr_type;		//!< chip config header type
+    uint8_t		cache_line_sz;		//!< cache line size in 4byte units
+    uint8_t		interrupt_pin;		//!< PCI interrupt pin
+    uint8_t		interrupt_line;		//!< interrupt line (IRQ for PC arch)
 
-	uint8_t		min_grant;		//!< min. useful bus grant time in 250ns units
-	uint8_t		max_latency;		//!< max. tolerated bus grant latency in 250ns
-	uint8_t		latency_timer;		//!< latency timer in units of 30ns bus cycles
+    uint8_t		min_grant;		//!< min. useful bus grant time in 250ns units
+    uint8_t		max_latency;		//!< max. tolerated bus grant latency in 250ns
+    uint8_t		latency_timer;		//!< latency timer in units of 30ns bus cycles
 
-	uint8_t		is_multi_func;		//!< multi-function device (from hdr_type reg)
-	uint8_t		num_maps;		//!< actual number of PCI BAR maps used
+    uint8_t		is_multi_func;		//!< multi-function device (from hdr_type reg)
+    uint8_t		num_maps;		//!< actual number of PCI BAR maps used
 
-	uint32_t	domain;			//!< PCI domain
-	uint8_t		bus;			//!< config space bus address
-	uint8_t		slot;			//!< config space slot address
-	uint8_t		func;			//!< config space function number
+    uint32_t	domain;			//!< PCI domain
+    uint8_t		bus;			//!< config space bus address
+    uint8_t		slot;			//!< config space slot address
+    uint8_t		func;			//!< config space function number
 
-	pcicfg_pp_t	pp;			//!< power management info
-	pcicfg_vpd_t	vpd;			//!< vital product Data
-	pcicfg_msi_t	msi;			//!< message signaled interrupt info
-	pcicfg_msix_t	msix;			//!< message signaled intterupt extended info
-	pcicfg_pcix_t	pcix;			//!< PCI-X info
-	pcicfg_ht_t	ht;			//!< HyperTransport info
+    pcicfg_pp_t	pp;			//!< power management info
+    pcicfg_vpd_t	vpd;			//!< vital product Data
+    pcicfg_msi_t	msi;			//!< message signaled interrupt info
+    pcicfg_msix_t	msix;			//!< message signaled intterupt extended info
+    pcicfg_pcix_t	pcix;			//!< PCI-X info
+    pcicfg_ht_t	ht;			//!< HyperTransport info
 } pcicfg_hdr_t;
 
 
@@ -227,106 +227,106 @@ typedef struct pcicfg_hdr {
  * PCI-to-PCI bridge that is not already covered by 'struct pcicfg_hdr'.
  */
 typedef struct pcicfg_hdr1 {
-	uint8_t		primary_bus_num;	//!< upstream bus number
-	uint8_t		secondary_bus_num;	//!< downstream bus number
-	uint8_t		subordinate_bus_num;	//!< highest downstream bus number
+    uint8_t		primary_bus_num;	//!< upstream bus number
+    uint8_t		secondary_bus_num;	//!< downstream bus number
+    uint8_t		subordinate_bus_num;	//!< highest downstream bus number
 
-	pci_mem_addr_t	mem_base;		//!< base address of non-prefetchable memory window
-	pci_mem_addr_t	mem_limit;		//!< topmost address of non-prefetchable memory window
-	pci_mem_addr_t	mem_pfetch_base;	//!< base addr of prefetchable memory
-	pci_mem_addr_t	mem_pfetch_limit;	//!< topmost address of prefetchable memory
-	pci_io_addr_t	io_base;		//!< base address of port window
-	pci_io_addr_t	io_limit;		//!< topmost address of port window
+    pci_mem_addr_t	mem_base;		//!< base address of non-prefetchable memory window
+    pci_mem_addr_t	mem_limit;		//!< topmost address of non-prefetchable memory window
+    pci_mem_addr_t	mem_pfetch_base;	//!< base addr of prefetchable memory
+    pci_mem_addr_t	mem_pfetch_limit;	//!< topmost address of prefetchable memory
+    pci_io_addr_t	io_base;		//!< base address of port window
+    pci_io_addr_t	io_limit;		//!< topmost address of port window
 
-	uint8_t		sec_latency_timer;	//!< secondary latency timer
-	uint16_t	sec_status_reg;		//!< secondary bus status register
-	uint16_t	bridge_ctrl_reg;	//!< bridge control register
+    uint8_t		sec_latency_timer;	//!< secondary latency timer
+    uint16_t	sec_status_reg;		//!< secondary bus status register
+    uint16_t	bridge_ctrl_reg;	//!< bridge control register
 } pcicfg_hdr1_t;
 
 
 /** PCI Base Address (BAR) register structure. */
 typedef struct pci_bar {
-	uint64_t	address;		//!< the base address of the region defined by the bar
-	uint64_t        size;                   //!< the size of the region defined by the bar
-	uint8_t		index;			//!< the index of the BAR in its parent PCI config header
-	uint8_t		mem;			//!< 0 for memory, 1 for I/O
-	uint8_t		type;			//!< 0 for 32-bit, 2 for 64-bit
-	uint8_t		prefetch;		//!< 0 = non-prefetchable, 1 = prefetchable
+    uint64_t	address;		//!< the base address of the region defined by the bar
+    uint64_t        size;                   //!< the size of the region defined by the bar
+    uint8_t		index;			//!< the index of the BAR in its parent PCI config header
+    uint8_t		mem;			//!< 0 for memory, 1 for I/O
+    uint8_t		type;			//!< 0 for 32-bit, 2 for 64-bit
+    uint8_t		prefetch;		//!< 0 = non-prefetchable, 1 = prefetchable
 } pci_bar_t;
 
 /** PCI Expansion ROM register structure. */
 typedef struct pci_exp_rom_bar {
-	uint64_t	address;
-	uint64_t	size;
-	uint8_t		enable;
+    uint64_t	address;
+    uint64_t	size;
+    uint8_t		enable;
 } pci_exp_rom_bar_t;
 
 
 /** Reads a value from PCI configuration space. */
 uint32_t pcicfg_read(
-	unsigned int	bus,
-	unsigned int	slot,
-	unsigned int	func,
-	unsigned int	reg,
-	unsigned int	width
-);
+        unsigned int	bus,
+        unsigned int	slot,
+        unsigned int	func,
+        unsigned int	reg,
+        unsigned int	width
+        );
 
 
 /** Writes a value to PCI configuration space. */
 void
 pcicfg_write(
-	unsigned int	bus,
-	unsigned int	slot,
-	unsigned int	func,
-	unsigned int	reg,
-	unsigned int	width,
-	uint32_t	value
-);
+        unsigned int	bus,
+        unsigned int	slot,
+        unsigned int	func,
+        unsigned int	reg,
+        unsigned int	width,
+        uint32_t	value
+        );
 
 
 /** Reads a base PCI config header into a pcicfg_hdr_t structure. */
 void
 pcicfg_hdr_read(
-	unsigned int	bus,
-	unsigned int	slot,
-	unsigned int	func,
-	pcicfg_hdr_t *	hdr
-);
+        unsigned int	bus,
+        unsigned int	slot,
+        unsigned int	func,
+        pcicfg_hdr_t *	hdr
+        );
 
 
 /** Reads bridge PCI config header into a pcicfg_hdr1_t structure. */
 void
 pcicfg_hdr1_read(
-	unsigned int	bus,
-	unsigned int	slot,
-	unsigned int	func,
-	pcicfg_hdr1_t *	hdr1
-);
+        unsigned int	bus,
+        unsigned int	slot,
+        unsigned int	func,
+        pcicfg_hdr1_t *	hdr1
+        );
 
 
 /** Decodes a raw BAR into a pci_bar_t structure. */
 int
 pcicfg_bar_decode(
-	pcicfg_hdr_t *	hdr,
-	unsigned int	index,
-	pci_bar_t *	bar
-);
+        pcicfg_hdr_t *	hdr,
+        unsigned int	index,
+        pci_bar_t *	bar
+        );
 
 
 int
 pcicfg_exp_rom_decode(
-	pcicfg_hdr_t * hdr,
-	pci_exp_rom_bar_t * bar
-);
+        pcicfg_hdr_t * hdr,
+        pci_exp_rom_bar_t * bar
+        );
 
 int
 pcicfg_find_cap_offset(
-	unsigned int   bus,
-	unsigned int   slot,
-	unsigned int   func,
-	pcicfg_hdr_t * hdr,
-	unsigned int   capid
-);
+        unsigned int   bus,
+        unsigned int   slot,
+        unsigned int   func,
+        pcicfg_hdr_t * hdr,
+        unsigned int   capid
+        );
 
 /** Prints a pci_bar_t structure to the console. */
 void pcicfg_bar_print(pci_bar_t *bar);

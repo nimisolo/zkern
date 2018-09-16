@@ -1,11 +1,11 @@
 #include <lwk/kernel.h>
 
-long
+    long
 sys_mprotect(
-	unsigned long		start,
-	size_t			len,
-	unsigned long		prot
-)
+        unsigned long		start,
+        size_t			len,
+        unsigned long		prot
+        )
 {
-	return 0;
+    return 0;
 }

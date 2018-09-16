@@ -19,23 +19,23 @@ typedef uint64_t cycles_t;
  *       subsequent instructions could potentially begin execution before
  *       the cycle counter is read.
  */
-static __always_inline cycles_t
+    static __always_inline cycles_t
 get_cycles(void)
 {
-	cycles_t ret = 0;
-	rdtscll(ret);
-	return ret;
+    cycles_t ret = 0;
+    rdtscll(ret);
+    return ret;
 }
 
 /**
  * This is a synchronizing version of get_cycles(). It ensures that all
  * previous instructions have completed before reading the cycle counter.
  */
-static __always_inline cycles_t
+    static __always_inline cycles_t
 get_cycles_sync(void)
 {
-	sync_core();
-	return get_cycles();
+    sync_core();
+    return get_cycles();
 }
 
 #endif

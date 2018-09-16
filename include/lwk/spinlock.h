@@ -35,14 +35,14 @@
 #define LOCK_SECTION_NAME ".text.lock."KBUILD_BASENAME
 
 #define LOCK_SECTION_START(extra)               \
-        ".subsection 1\n\t"                     \
-        extra                                   \
-        ".ifndef " LOCK_SECTION_NAME "\n\t"     \
-        LOCK_SECTION_NAME ":\n\t"               \
-        ".endif\n"
+    ".subsection 1\n\t"                     \
+extra                                   \
+".ifndef " LOCK_SECTION_NAME "\n\t"     \
+LOCK_SECTION_NAME ":\n\t"               \
+".endif\n"
 
 #define LOCK_SECTION_END                        \
-        ".previous\n\t"
+    ".previous\n\t"
 
 #define __lockfunc fastcall __attribute__((section(".spinlock.text")))
 
@@ -75,23 +75,23 @@ extern int __lockfunc generic__raw_read_trylock(raw_rwlock_t *lock);
 #include <lwk/spinlock_api_smp.h>
 
 #ifdef CONFIG_DEBUG_SPINLOCK
- extern void _raw_spin_lock(spinlock_t *lock);
+extern void _raw_spin_lock(spinlock_t *lock);
 #define _raw_spin_lock_flags(lock, flags) _raw_spin_lock(lock)
- extern int _raw_spin_trylock(spinlock_t *lock);
- extern void _raw_spin_unlock(spinlock_t *lock);
+extern int _raw_spin_trylock(spinlock_t *lock);
+extern void _raw_spin_unlock(spinlock_t *lock);
 
- extern void _raw_read_lock(rwlock_t *lock);
- extern int _raw_read_trylock(rwlock_t *lock);
- extern void _raw_read_unlock(rwlock_t *lock);
- extern void _raw_write_lock(rwlock_t *lock);
- extern int _raw_write_trylock(rwlock_t *lock);
- extern void _raw_write_unlock(rwlock_t *lock);
+extern void _raw_read_lock(rwlock_t *lock);
+extern int _raw_read_trylock(rwlock_t *lock);
+extern void _raw_read_unlock(rwlock_t *lock);
+extern void _raw_write_lock(rwlock_t *lock);
+extern int _raw_write_trylock(rwlock_t *lock);
+extern void _raw_write_unlock(rwlock_t *lock);
 #else
 # define _raw_spin_unlock(lock)		__raw_spin_unlock(&(lock)->raw_lock)
 # define _raw_spin_trylock(lock)	__raw_spin_trylock(&(lock)->raw_lock)
 # define _raw_spin_lock(lock)		__raw_spin_lock(&(lock)->raw_lock)
 # define _raw_spin_lock_flags(lock, flags) \
-		__raw_spin_lock_flags(&(lock)->raw_lock, *(flags))
+    __raw_spin_lock_flags(&(lock)->raw_lock, *(flags))
 # define _raw_read_lock(rwlock)		__raw_read_lock(&(rwlock)->raw_lock)
 # define _raw_write_lock(rwlock)	__raw_write_lock(&(rwlock)->raw_lock)
 # define _raw_read_unlock(rwlock)	__raw_read_unlock(&(rwlock)->raw_lock)
@@ -154,32 +154,32 @@ extern int __lockfunc generic__raw_read_trylock(raw_rwlock_t *lock);
 #endif
 
 #define spin_unlock_irqrestore(lock, flags) \
-					_spin_unlock_irqrestore(lock, flags)
+    _spin_unlock_irqrestore(lock, flags)
 #define spin_unlock_bh(lock)		_spin_unlock_bh(lock)
 
 #define read_unlock_irqrestore(lock, flags) \
-					_read_unlock_irqrestore(lock, flags)
+    _read_unlock_irqrestore(lock, flags)
 #define read_unlock_bh(lock)		_read_unlock_bh(lock)
 
 #define write_unlock_irqrestore(lock, flags) \
-					_write_unlock_irqrestore(lock, flags)
+    _write_unlock_irqrestore(lock, flags)
 #define write_unlock_bh(lock)		_write_unlock_bh(lock)
 
 #define spin_trylock_bh(lock)		__cond_lock(_spin_trylock_bh(lock))
 
 #define spin_trylock_irq(lock) \
-({ \
-	local_irq_disable(); \
-	_spin_trylock(lock) ? \
-	1 : ({ local_irq_enable(); 0;  }); \
-})
+    ({ \
+     local_irq_disable(); \
+     _spin_trylock(lock) ? \
+     1 : ({ local_irq_enable(); 0;  }); \
+     })
 
 #define spin_trylock_irqsave(lock, flags) \
-({ \
-	local_irq_save(flags); \
-	_spin_trylock(lock) ? \
-	1 : ({ local_irq_restore(flags); 0; }); \
-})
+    ({ \
+     local_irq_save(flags); \
+     _spin_trylock(lock) ? \
+     1 : ({ local_irq_restore(flags); 0; }); \
+     })
 
 /*
  * Pull the atomic_t declaration:
@@ -193,7 +193,7 @@ extern int __lockfunc generic__raw_read_trylock(raw_rwlock_t *lock);
  */
 extern int _atomic_dec_and_lock(atomic_t *atomic, spinlock_t *lock);
 #define atomic_dec_and_lock(atomic, lock) \
-		__cond_lock(_atomic_dec_and_lock(atomic, lock))
+    __cond_lock(_atomic_dec_and_lock(atomic, lock))
 
 /**
  * spin_can_lock - would spin_trylock() succeed?

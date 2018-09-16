@@ -52,8 +52,8 @@ int on_each_cpu(void (*func) (void *info), void *info, int wait);
 
 #define MSG_INVALIDATE_TLB	0x0001	/* Remote processor TLB invalidate */
 #define MSG_STOP_CPU		0x0002	/* Sent to shut down slave CPU's
-					 * when rebooting
-					 */
+                                     * when rebooting
+                                     */
 #define MSG_RESCHEDULE		0x0003	/* Reschedule request from master CPU*/
 #define MSG_CALL_FUNCTION       0x0004  /* Call function on all other CPUs */
 

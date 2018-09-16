@@ -22,7 +22,7 @@ extern int __init sched_init_runqueue(int cpu_id);
 extern void sched_add_task(struct task_struct *task);
 extern void sched_del_task(struct task_struct *task);
 extern int sched_wakeup_task(struct task_struct *task,
-                             taskstate_t valid_states);
+        taskstate_t valid_states);
 extern void sched_cpu_remove(void *);
 extern void schedule(void);
 
@@ -38,7 +38,7 @@ extern void sched_set_params(struct task_struct * task, ktime_t slice, ktime_t p
 
 extern void
 fire_sched_out_preempt_notifiers(struct task_struct * curr,
-				 struct task_struct * next);
+        struct task_struct * next);
 
 extern void
 fire_sched_in_preempt_notifiers(struct task_struct * curr);
@@ -48,9 +48,9 @@ fire_sched_in_preempt_notifiers(struct task_struct * curr);
  */
 extern struct task_struct *
 arch_context_switch(
-	struct task_struct *prev,
-       	struct task_struct *next
-);
+        struct task_struct *prev,
+        struct task_struct *next
+        );
 
 /** Each architecture must provide its own idle task body
  * \ingroup arch
@@ -69,17 +69,17 @@ extern void arch_idle_task_loop_body(int irqenable);
  * If the caller does not need such serialization then use __set_current_state()
  */
 #define __set_current_state(state_value) \
-	__set_task_state( current, state_value )
+    __set_task_state( current, state_value )
 #define set_current_state(state_value) \
-	set_task_state( current, state_value )
+    set_task_state( current, state_value )
 
 /**
  * These are similar to set_current_state() and __set_current_state(), except
  * they allow any task's state to be set instead of just current.
  */
 #define __set_task_state(tsk, state_value) \
-	do { (tsk)->state = (state_value); } while (0)
+    do { (tsk)->state = (state_value); } while (0)
 #define set_task_state(tsk, state_value) \
-	set_mb((tsk)->state, (state_value))
+    set_mb((tsk)->state, (state_value))
 
 #endif

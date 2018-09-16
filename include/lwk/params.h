@@ -13,95 +13,95 @@ typedef int (*param_set_fn)(const char *val, struct kernel_param *kp);
 typedef int (*param_get_fn)(char *buffer, struct kernel_param *kp);
 
 struct kernel_param {
-	const char *	name;
-	param_set_fn	set;
-	param_get_fn	get;
-	void *		arg;
+    const char *	name;
+    param_set_fn	set;
+    param_get_fn	get;
+    void *		arg;
 };
 
 /* Special one for strings we want to copy into */
 struct kparam_string {
-	unsigned int	maxlen;
-	char *		string;
+    unsigned int	maxlen;
+    char *		string;
 };
 
 /* Special one for arrays */
 struct kparam_array {
-	unsigned int	max;
-	unsigned int *	num;
-	param_set_fn	set;
-	param_get_fn	get;
-	unsigned int	elemsize;
-	void *		elem;
+    unsigned int	max;
+    unsigned int *	num;
+    param_set_fn	set;
+    param_get_fn	get;
+    unsigned int	elemsize;
+    void *		elem;
 };
 
 /* This is the fundamental function for registering kernel parameters. */
 #define __param_call(prefix, name, set, get, arg)			\
-	static char __param_str_##name[] = prefix #name;		\
-	static struct kernel_param const __param_##name			\
-	__used								\
-    __attribute__ ((unused,__section__ ("__param"),aligned(sizeof(void *)))) \
-	= { __param_str_##name, set, get, arg }
+    static char __param_str_##name[] = prefix #name;		\
+static struct kernel_param const __param_##name			\
+__used								\
+__attribute__ ((unused,__section__ ("__param"),aligned(sizeof(void *)))) \
+= { __param_str_##name, set, get, arg }
 
 /* Helper functions: type is byte, short, ushort, int, uint, long,
    ulong, charp, bool or invbool, or XXX if you define param_get_XXX,
    param_set_XXX and param_check_XXX. */
 #define __param_named(prefix, name, value, type) 			\
-	param_check_##type(name, &(value));				\
-	__param_call(prefix, name, param_set_##type, param_get_##type, &value)
+    param_check_##type(name, &(value));				\
+__param_call(prefix, name, param_set_##type, param_get_##type, &value)
 
 /* Actually copy string: maxlen param is usually sizeof(string). */
 #define __param_string(prefix, name, string, len)			\
-	static struct kparam_string __param_string_##name		\
-		= { len, string };					\
-	__param_call(prefix, name, param_set_copystring,		\
-		   param_get_string, &__param_string_##name)
+    static struct kparam_string __param_string_##name		\
+= { len, string };					\
+__param_call(prefix, name, param_set_copystring,		\
+        param_get_string, &__param_string_##name)
 
 /* Comma-separated array: *nump is set to number they actually specified. */
 #define __param_array_named(prefix, name, array, type, nump) 		\
-	static struct kparam_array __param_arr_##name			\
-	= { ARRAY_SIZE(array), nump, param_set_##type, param_get_##type,\
-	    sizeof(array[0]), array };					\
-	__param_call(prefix, name, param_array_set, param_array_get, 	\
-			  &__param_arr_##name)
+    static struct kparam_array __param_arr_##name			\
+= { ARRAY_SIZE(array), nump, param_set_##type, param_get_##type,\
+    sizeof(array[0]), array };					\
+__param_call(prefix, name, param_array_set, param_array_get, 	\
+        &__param_arr_##name)
 
 /* Call a function to parse the parameter */
 #define __param_func(prefix, name, func)				\
-	__param_call(prefix, name, func, NULL, NULL)
+    __param_call(prefix, name, func, NULL, NULL)
 
 /*
  * Basic parameter interface.  These are just raw... they have no prefix.
  */
 #define param(name, type) \
-	__param_named("", name, name, type)
+    __param_named("", name, name, type)
 
 #define param_named(name, value, type) \
-	__param_named("", name, value, type)
+    __param_named("", name, value, type)
 
 #define param_string(name, string, len) \
-	__param_string("", name, string, len)
+    __param_string("", name, string, len)
 
 #define param_array(name, type, nump) \
-	__param_array_named("", name, name, type, nump)
+    __param_array_named("", name, name, type, nump)
 
 #define param_array_named(name, array, type, nump) \
-	__param_array_named("", name, array, type, nump)
+    __param_array_named("", name, array, type, nump)
 
 #define param_func(name, func) \
-	__param_func("", name, func)
+    __param_func("", name, func)
 
 /* Called at kernel boot */
 extern int parse_args(const char *name,
-		      char *args,
-		      struct kernel_param *params,
-		      unsigned num,
-		      int (*unknown)(char *param, char *val));
+        char *args,
+        struct kernel_param *params,
+        unsigned num,
+        int (*unknown)(char *param, char *val));
 
 /* All the helper functions */
 /* The macros to do compile-time type checking stolen from Jakub
    Jelinek, who IIRC came up with this idea for the 2.4 module init code. */
 #define __param_check(name, p, type) \
-	static inline type *__check_##name(void) { return(p); }
+    static inline type *__check_##name(void) { return(p); }
 
 extern int param_set_byte(const char *val, struct kernel_param *kp);
 extern int param_get_byte(char *buffer, struct kernel_param *kp);

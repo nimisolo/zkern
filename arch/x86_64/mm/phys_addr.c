@@ -9,13 +9,13 @@ extern unsigned long phys_base;
  *       identity mapping of all of physical memory. It will not work for the
  *       fixmap, vmalloc() areas, or any other type of virtual address.
  */
-unsigned long
+    unsigned long
 __phys_addr(unsigned long virt_addr)
 {
-	/* Handle kernel symbols */
-	if (virt_addr >= __START_KERNEL_map)
-		return virt_addr - __START_KERNEL_map + phys_base;
-	/* Handle kernel data */
-	return virt_addr - PAGE_OFFSET;
+    /* Handle kernel symbols */
+    if (virt_addr >= __START_KERNEL_map)
+        return virt_addr - __START_KERNEL_map + phys_base;
+    /* Handle kernel data */
+    return virt_addr - PAGE_OFFSET;
 }
 

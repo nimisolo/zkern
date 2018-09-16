@@ -24,12 +24,12 @@
  */
 void complete(struct completion *x)
 {
-	unsigned long flags;
+    unsigned long flags;
 
-	spin_lock_irqsave(&x->wait.lock, flags);
-	x->done++;
-	waitq_wake_nr_locked( &x->wait, 1 );
-	spin_unlock_irqrestore(&x->wait.lock, flags);
+    spin_lock_irqsave(&x->wait.lock, flags);
+    x->done++;
+    waitq_wake_nr_locked( &x->wait, 1 );
+    spin_unlock_irqrestore(&x->wait.lock, flags);
 }
 
 /**
@@ -40,49 +40,49 @@ void complete(struct completion *x)
  */
 void complete_all(struct completion *x)
 {
-	unsigned long flags;
+    unsigned long flags;
 
-	spin_lock_irqsave(&x->wait.lock, flags);
-	x->done += UINT_MAX/2;
-	waitq_wakeup( &x->wait );
-	spin_unlock_irqrestore(&x->wait.lock, flags);
+    spin_lock_irqsave(&x->wait.lock, flags);
+    x->done += UINT_MAX/2;
+    waitq_wakeup( &x->wait );
+    spin_unlock_irqrestore(&x->wait.lock, flags);
 }
 
-static inline long
+    static inline long
 do_wait_for_common(struct completion *x, ktime_t timeout, int state)
 {
-	if (!x->done) {
-		DECLARE_WAITQ_ENTRY(wait,current);
+    if (!x->done) {
+        DECLARE_WAITQ_ENTRY(wait,current);
 
-		waitq_add_entry_locked(&x->wait, &wait);
-		do {
+        waitq_add_entry_locked(&x->wait, &wait);
+        do {
 #if 0
-// How to tell if we have signals pending?
-			if (signal_pending_state(state, current)) {
-				timeout = -ERESTARTSYS;
-				break;
-			}
+            // How to tell if we have signals pending?
+            if (signal_pending_state(state, current)) {
+                timeout = -ERESTARTSYS;
+                break;
+            }
 #endif
-			__set_current_state(state);
-			spin_unlock_irq(&x->wait.lock);
-			timeout = schedule_timeout(timeout);
-			spin_lock_irq(&x->wait.lock);
-		} while (!x->done && timeout);
-		waitq_remove_entry_locked(&x->wait, &wait);
-		if (!x->done)
-			return timeout;
-	}
-	x->done--;
-	return timeout ?: 1;
+            __set_current_state(state);
+            spin_unlock_irq(&x->wait.lock);
+            timeout = schedule_timeout(timeout);
+            spin_lock_irq(&x->wait.lock);
+        } while (!x->done && timeout);
+        waitq_remove_entry_locked(&x->wait, &wait);
+        if (!x->done)
+            return timeout;
+    }
+    x->done--;
+    return timeout ?: 1;
 }
 
-static long
+    static long
 wait_for_common(struct completion *x, ktime_t timeout, int state)
 {
-	spin_lock_irq(&x->wait.lock);
-	timeout = do_wait_for_common(x, timeout, state);
-	spin_unlock_irq(&x->wait.lock);
-	return timeout;
+    spin_lock_irq(&x->wait.lock);
+    timeout = do_wait_for_common(x, timeout, state);
+    spin_unlock_irq(&x->wait.lock);
+    return timeout;
 }
 
 /**
@@ -97,7 +97,7 @@ wait_for_common(struct completion *x, ktime_t timeout, int state)
  */
 void wait_for_completion(struct completion *x)
 {
-	wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_UNINTERRUPTIBLE);
+    wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_UNINTERRUPTIBLE);
 }
 
 /**
@@ -109,10 +109,10 @@ void wait_for_completion(struct completion *x)
  * specified timeout to expire. The timeout is in jiffies. It is not
  * interruptible.
  */
-unsigned long
+    unsigned long
 wait_for_completion_timeout(struct completion *x, unsigned long timeout)
 {
-	return wait_for_common(x, timeout, TASK_UNINTERRUPTIBLE);
+    return wait_for_common(x, timeout, TASK_UNINTERRUPTIBLE);
 }
 
 /**
@@ -124,10 +124,10 @@ wait_for_completion_timeout(struct completion *x, unsigned long timeout)
  */
 int wait_for_completion_interruptible(struct completion *x)
 {
-	long t = wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_INTERRUPTIBLE);
-	if (t == -ERESTARTSYS)
-		return t;
-	return 0;
+    long t = wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_INTERRUPTIBLE);
+    if (t == -ERESTARTSYS)
+        return t;
+    return 0;
 }
 
 /**
@@ -138,11 +138,11 @@ int wait_for_completion_interruptible(struct completion *x)
  * This waits for either a completion of a specific task to be signaled or for a
  * specified timeout to expire. It is interruptible. The timeout is in jiffies.
  */
-unsigned long
+    unsigned long
 wait_for_completion_interruptible_timeout(struct completion *x,
-					  unsigned long timeout)
+        unsigned long timeout)
 {
-	return wait_for_common(x, timeout, TASK_INTERRUPTIBLE);
+    return wait_for_common(x, timeout, TASK_INTERRUPTIBLE);
 }
 
 
@@ -160,15 +160,15 @@ wait_for_completion_interruptible_timeout(struct completion *x,
  */
 bool try_wait_for_completion(struct completion *x)
 {
-	int ret = 1;
+    int ret = 1;
 
-	spin_lock_irq(&x->wait.lock);
-	if (!x->done)
-		ret = 0;
-	else
-		x->done--;
-	spin_unlock_irq(&x->wait.lock);
-	return ret;
+    spin_lock_irq(&x->wait.lock);
+    if (!x->done)
+        ret = 0;
+    else
+        x->done--;
+    spin_unlock_irq(&x->wait.lock);
+    return ret;
 }
 
 /**
@@ -181,12 +181,12 @@ bool try_wait_for_completion(struct completion *x)
  */
 bool completion_done(struct completion *x)
 {
-	int ret = 1;
+    int ret = 1;
 
-	spin_lock_irq(&x->wait.lock);
-	if (!x->done)
-		ret = 0;
-	spin_unlock_irq(&x->wait.lock);
-	return ret;
+    spin_lock_irq(&x->wait.lock);
+    if (!x->done)
+        ret = 0;
+    spin_unlock_irq(&x->wait.lock);
+    return ret;
 }
 

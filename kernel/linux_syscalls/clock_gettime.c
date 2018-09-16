@@ -6,23 +6,23 @@
 #define CLOCK_REALTIME                  0
 #define CLOCK_MONOTONIC                 1
 
-int
+    int
 sys_clock_gettime(
-	clockid_t which_clock,
-	struct timespec* tp
-)
+        clockid_t which_clock,
+        struct timespec* tp
+        )
 {
-	uint64_t when = get_time();
+    uint64_t when = get_time();
 
-        struct timespec _rem = {
-                .tv_sec  = when / NSEC_PER_SEC,
-                .tv_nsec = when % NSEC_PER_SEC,
-        };
-	if ( (which_clock != CLOCK_REALTIME) && (which_clock != CLOCK_MONOTONIC) ) 
-		return -EINVAL;	
+    struct timespec _rem = {
+        .tv_sec  = when / NSEC_PER_SEC,
+        .tv_nsec = when % NSEC_PER_SEC,
+    };
+    if ( (which_clock != CLOCK_REALTIME) && (which_clock != CLOCK_MONOTONIC) ) 
+        return -EINVAL;	
 
-        if (copy_to_user(tp, &_rem, sizeof(_rem)))
-                return -EFAULT;
+    if (copy_to_user(tp, &_rem, sizeof(_rem)))
+        return -EFAULT;
 
-	return 0;
+    return 0;
 }

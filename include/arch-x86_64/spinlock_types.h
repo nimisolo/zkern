@@ -6,13 +6,13 @@
 #endif
 
 typedef struct {
-	volatile unsigned int slock;
+    volatile unsigned int slock;
 } raw_spinlock_t;
 
 #define __RAW_SPIN_LOCK_UNLOCKED	{ 1 }
 
 typedef struct {
-	volatile unsigned int lock;
+    volatile unsigned int lock;
 } raw_rwlock_t;
 
 #define __RAW_RW_LOCK_UNLOCKED		{ RW_LOCK_BIAS }

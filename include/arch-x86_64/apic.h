@@ -27,9 +27,9 @@ extern unsigned long lapic_phys_addr;
  * apic_verbosity is defined in apic.c
  */
 #define apic_printk(v, s, a...) do {       \
-		if ((v) <= apic_verbosity) \
-			printk(s, ##a);    \
-	} while (0)
+    if ((v) <= apic_verbosity) \
+    printk(s, ##a);    \
+} while (0)
 
 struct pt_regs;
 
@@ -39,47 +39,47 @@ struct pt_regs;
 
 static __inline void apic_write(unsigned long reg, uint32_t val)
 {
-	if (cpu_has_x2apic) {
-		wrmsrl(0x800+(reg>>4), val);
-	} else {
-		*((volatile uint32_t *)(APIC_BASE+reg)) = val;
-	}
+    if (cpu_has_x2apic) {
+        wrmsrl(0x800+(reg>>4), val);
+    } else {
+        *((volatile uint32_t *)(APIC_BASE+reg)) = val;
+    }
 }
 
 static __inline uint32_t apic_read(unsigned long reg)
 {
-	uint32_t val;
+    uint32_t val;
 
-	if (cpu_has_x2apic) {
-		rdmsrl(0x800+(reg>>4), val);
-	} else {
-		val = *((volatile uint32_t *)(APIC_BASE+reg));
-	}
+    if (cpu_has_x2apic) {
+        rdmsrl(0x800+(reg>>4), val);
+    } else {
+        val = *((volatile uint32_t *)(APIC_BASE+reg));
+    }
 
-	return val;
+    return val;
 }
 
 static __inline void apic_write_icr(uint64_t val)
 {
-	if (cpu_has_x2apic) {
-		wrmsrl(0x800 + (APIC_ICR >> 4), val);
-	} else {
-		uint32_t apic_id = (val >> 32) & 0xFFFFFFFFul;
-		*((volatile uint32_t *)(APIC_BASE + APIC_ICR2)) = SET_APIC_DEST_FIELD(apic_id);
-		*((volatile uint32_t *)(APIC_BASE + APIC_ICR))  = val & 0xFFFFFFFFul;
-	}
+    if (cpu_has_x2apic) {
+        wrmsrl(0x800 + (APIC_ICR >> 4), val);
+    } else {
+        uint32_t apic_id = (val >> 32) & 0xFFFFFFFFul;
+        *((volatile uint32_t *)(APIC_BASE + APIC_ICR2)) = SET_APIC_DEST_FIELD(apic_id);
+        *((volatile uint32_t *)(APIC_BASE + APIC_ICR))  = val & 0xFFFFFFFFul;
+    }
 }
 
 
 static inline void lapic_ack_interrupt(void)
 {
-	/*
-	 * This gets compiled to a single instruction:
-	 * 	movl   $0x0,0xffffffffffdfe0b0
-	 *
-	 * Docs say use 0 for future compatibility.
-	 */
-	apic_write(APIC_EOI, 0);
+    /*
+     * This gets compiled to a single instruction:
+     * 	movl   $0x0,0xffffffffffdfe0b0
+     *
+     * Docs say use 0 for future compatibility.
+     */
+    apic_write(APIC_EOI, 0);
 }
 
 extern void clear_local_APIC (void);

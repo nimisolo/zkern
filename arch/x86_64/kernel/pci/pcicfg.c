@@ -24,116 +24,116 @@ static DEFINE_SPINLOCK(pcicfg_lock);
  */
 
 #define PCI_CONF1_ADDRESS(bus, devfn, reg) \
-	(0x80000000 | ((reg & 0xF00) << 16) | (bus << 16) \
-	| (devfn << 8) | (reg & 0xFC))
+    (0x80000000 | ((reg & 0xF00) << 16) | (bus << 16) \
+     | (devfn << 8) | (reg & 0xFC))
 
 
 #if 0
 
 static int __init pci_check_type1(void)
 {
-	unsigned long flags;
-	unsigned int tmp;
-	int works = 0;
+    unsigned long flags;
+    unsigned int tmp;
+    int works = 0;
 
-	local_irq_save(flags);
+    local_irq_save(flags);
 
-	outb(0x01, 0xCFB);
-	tmp = inl(0xCF8);
-	outl(0x80000000, 0xCF8);
-	if (inl(0xCF8) == 0x80000000) {
-		works = 1;
-	}
-	outl(tmp, 0xCF8);
-	local_irq_restore(flags);
+    outb(0x01, 0xCFB);
+    tmp = inl(0xCF8);
+    outl(0x80000000, 0xCF8);
+    if (inl(0xCF8) == 0x80000000) {
+        works = 1;
+    }
+    outl(tmp, 0xCF8);
+    local_irq_restore(flags);
 
-	return works;
+    return works;
 }
 
 #endif
 
-int 
+    int 
 raw_pci_read(unsigned int   seg, 
-		unsigned int   bus,
- 		unsigned int   devfn, 
-		int            reg,
-		int            len,
-  		u32          * value)
+        unsigned int   bus,
+        unsigned int   devfn, 
+        int            reg,
+        int            len,
+        u32          * value)
 {
-	unsigned long flags;
+    unsigned long flags;
 
-	if ((bus > 255) || (devfn > 255) || (reg > 4095)) {
-		*value = -1;
-		return -EINVAL;
-	}
+    if ((bus > 255) || (devfn > 255) || (reg > 4095)) {
+        *value = -1;
+        return -EINVAL;
+    }
 
-	spin_lock_irqsave(&pcicfg_lock, flags);
+    spin_lock_irqsave(&pcicfg_lock, flags);
 
-	outl(PCI_CONF1_ADDRESS(bus, devfn, reg), 0xCF8);
+    outl(PCI_CONF1_ADDRESS(bus, devfn, reg), 0xCF8);
 
-	switch (len) {
-	case 1:
-		*value = inb(0xCFC + (reg & 3));
-		break;
-	case 2:
-		*value = inw(0xCFC + (reg & 2));
-		break;
-	case 4:
-		*value = inl(0xCFC);
-		break;
-	}
+    switch (len) {
+    case 1:
+        *value = inb(0xCFC + (reg & 3));
+        break;
+    case 2:
+        *value = inw(0xCFC + (reg & 2));
+        break;
+    case 4:
+        *value = inl(0xCFC);
+        break;
+    }
 
-	spin_unlock_irqrestore(&pcicfg_lock, flags);
+    spin_unlock_irqrestore(&pcicfg_lock, flags);
 
-	return 0;
+    return 0;
 }
 
-int 
+    int 
 raw_pci_write(unsigned int   seg, 
-		 unsigned int   bus,
-		 unsigned int   devfn,
-		 int            reg, 
-		 int            len, 
-		 u32            value)
+        unsigned int   bus,
+        unsigned int   devfn,
+        int            reg, 
+        int            len, 
+        u32            value)
 {
-	unsigned long flags;
+    unsigned long flags;
 
-	if ((bus > 255) || (devfn > 255) || (reg > 4095))
-		return -EINVAL;
+    if ((bus > 255) || (devfn > 255) || (reg > 4095))
+        return -EINVAL;
 
-	spin_lock_irqsave(&pcicfg_lock, flags);
+    spin_lock_irqsave(&pcicfg_lock, flags);
 
-	outl(PCI_CONF1_ADDRESS(bus, devfn, reg), 0xCF8);
+    outl(PCI_CONF1_ADDRESS(bus, devfn, reg), 0xCF8);
 
-	switch (len) {
-	case 1:
-		outb((u8)value, 0xCFC + (reg & 3));
-		break;
-	case 2:
-		outw((u16)value, 0xCFC + (reg & 2));
-		break;
-	case 4:
-		outl((u32)value, 0xCFC);
-		break;
-	}
+    switch (len) {
+    case 1:
+        outb((u8)value, 0xCFC + (reg & 3));
+        break;
+    case 2:
+        outw((u16)value, 0xCFC + (reg & 2));
+        break;
+    case 4:
+        outl((u32)value, 0xCFC);
+        break;
+    }
 
-	spin_unlock_irqrestore(&pcicfg_lock, flags);
+    spin_unlock_irqrestore(&pcicfg_lock, flags);
 
-	return 0;
+    return 0;
 }
 
 #undef PCI_CONF1_ADDRESS
 
 
 
-uint32_t
+    uint32_t
 arch_pcicfg_read(
-	unsigned int	bus,
-	unsigned int	slot,
-	unsigned int	func,
-	unsigned int	reg,
-	unsigned int	width
-)
+        unsigned int	bus,
+        unsigned int	slot,
+        unsigned int	func,
+        unsigned int	reg,
+        unsigned int	width
+        )
 {
     u32 val = 0;
 
@@ -143,15 +143,15 @@ arch_pcicfg_read(
 }
 
 
-void
+    void
 arch_pcicfg_write(
-	unsigned int	bus,
-	unsigned int	slot,
-	unsigned int	func,
-	unsigned int	reg,
-	unsigned int	width,
-	uint32_t	value
-)
+        unsigned int	bus,
+        unsigned int	slot,
+        unsigned int	func,
+        unsigned int	reg,
+        unsigned int	width,
+        uint32_t	value
+        )
 {
     raw_pci_write(0, bus, PCI_DEVFN(slot, func), reg, width, value);
 }

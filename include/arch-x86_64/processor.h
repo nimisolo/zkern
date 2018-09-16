@@ -33,10 +33,10 @@
 #define ID_MASK		0x00200000
 
 #define desc_empty(desc) \
-               (!((desc)->a | (desc)->b))
+    (!((desc)->a | (desc)->b))
 
 #define desc_equal(desc1, desc2) \
-               (((desc1)->a == (desc2)->a) && ((desc1)->b == (desc2)->b))
+    (((desc1)->a == (desc2)->a) && ((desc1)->b == (desc2)->b))
 
 /*
  * Default implementation of macro that returns current
@@ -113,22 +113,22 @@ extern unsigned long mmu_cr4_features;
 
 static inline void set_in_cr4 (unsigned long mask)
 {
-	mmu_cr4_features |= mask;
-	__asm__("movq %%cr4,%%rax\n\t"
-		"orq %0,%%rax\n\t"
-		"movq %%rax,%%cr4\n"
-		: : "irg" (mask)
-		:"ax");
+    mmu_cr4_features |= mask;
+    __asm__("movq %%cr4,%%rax\n\t"
+            "orq %0,%%rax\n\t"
+            "movq %%rax,%%cr4\n"
+            : : "irg" (mask)
+            :"ax");
 }
 
 static inline void clear_in_cr4 (unsigned long mask)
 {
-	mmu_cr4_features &= ~mask;
-	__asm__("movq %%cr4,%%rax\n\t"
-		"andq %0,%%rax\n\t"
-		"movq %%rax,%%cr4\n"
-		: : "irg" (~mask)
-		:"ax");
+    mmu_cr4_features &= ~mask;
+    __asm__("movq %%cr4,%%rax\n\t"
+            "andq %0,%%rax\n\t"
+            "movq %%rax,%%cr4\n"
+            : : "irg" (~mask)
+            :"ax");
 }
 
 
@@ -142,44 +142,44 @@ static inline void clear_in_cr4 (unsigned long mask)
 #define INVALID_IO_BITMAP_OFFSET 0x8000
 
 struct i387_fxsave_struct {
-	u16	cwd;
-	u16	swd;
-	u16	twd;
-	u16	fop;
-	u64	rip;
-	u64	rdp; 
-	u32	mxcsr;
-	u32	mxcsr_mask;
-	u32	st_space[32];	/* 8*16 bytes for each FP-reg = 128 bytes */
-	u32	xmm_space[64];	/* 16*16 bytes for each XMM-reg = 256 bytes */
-	u32	padding[24];
+    u16	cwd;
+    u16	swd;
+    u16	twd;
+    u16	fop;
+    u64	rip;
+    u64	rdp; 
+    u32	mxcsr;
+    u32	mxcsr_mask;
+    u32	st_space[32];	/* 8*16 bytes for each FP-reg = 128 bytes */
+    u32	xmm_space[64];	/* 16*16 bytes for each XMM-reg = 256 bytes */
+    u32	padding[24];
 } __attribute__ ((aligned (16)));
 
 union i387_union {
-	struct i387_fxsave_struct	fxsave;
+    struct i387_fxsave_struct	fxsave;
 };
 
 struct tss_struct {
-	u32 reserved1;
-	u64 rsp0;	
-	u64 rsp1;
-	u64 rsp2;
-	u64 reserved2;
-	u64 ist[7];
-	u32 reserved3;
-	u32 reserved4;
-	u16 reserved5;
-	u16 io_bitmap_base;
-	/*
-	 * The extra 1 is there because the CPU will access an
-	 * additional byte beyond the end of the IO permission
-	 * bitmap. The extra byte must be all 1 bits, and must
-	 * be within the limit. Thus we have:
-	 *
-	 * 128 bytes, the bitmap itself, for ports 0..0x3ff
-	 * 8 bytes, for an extra "long" of ~0UL
-	 */
-	unsigned long io_bitmap[IO_BITMAP_LONGS + 1];
+    u32 reserved1;
+    u64 rsp0;	
+    u64 rsp1;
+    u64 rsp2;
+    u64 reserved2;
+    u64 ist[7];
+    u32 reserved3;
+    u32 reserved4;
+    u16 reserved5;
+    u16 io_bitmap_base;
+    /*
+     * The extra 1 is there because the CPU will access an
+     * additional byte beyond the end of the IO permission
+     * bitmap. The extra byte must be all 1 bits, and must
+     * be within the limit. Thus we have:
+     *
+     * 128 bytes, the bitmap itself, for ports 0..0x3ff
+     * 8 bytes, for an extra "long" of ~0UL
+     */
+    unsigned long io_bitmap[IO_BITMAP_LONGS + 1];
 } __attribute__((packed)) ____cacheline_aligned;
 
 DECLARE_PER_CPU(struct tss_struct,tss);
@@ -193,50 +193,50 @@ DECLARE_PER_CPU(struct tss_struct,tss);
 #endif
 
 struct thread_struct {
-	unsigned long	rsp0;
-	unsigned long	rsp;
-	unsigned long 	userrsp;	/* Copy from PDA */ 
-	unsigned long	fs;
-	unsigned long	gs;
-	unsigned short	es, ds, fsindex, gsindex;	
-/* Hardware debugging registers */
-	unsigned long	debugreg0;  
-	unsigned long	debugreg1;  
-	unsigned long	debugreg2;  
-	unsigned long	debugreg3;  
-	unsigned long	debugreg6;  
-	unsigned long	debugreg7;  
-/* fault info */
-	unsigned long	cr2, trap_no, error_code;
-/* floating point info */
-	union i387_union	i387  __attribute__((aligned(16)));
-/* IO permissions. the bitmap could be moved into the GDT, that would make
-   switch faster for a limited number of ioperm using tasks. -AK */
-	int		ioperm;
-	unsigned long	*io_bitmap_ptr;
-	unsigned io_bitmap_max;
-/* cached TLS descriptors. */
-	u64 tls_array[GDT_ENTRY_TLS_ENTRIES];
+    unsigned long	rsp0;
+    unsigned long	rsp;
+    unsigned long 	userrsp;	/* Copy from PDA */ 
+    unsigned long	fs;
+    unsigned long	gs;
+    unsigned short	es, ds, fsindex, gsindex;	
+    /* Hardware debugging registers */
+    unsigned long	debugreg0;  
+    unsigned long	debugreg1;  
+    unsigned long	debugreg2;  
+    unsigned long	debugreg3;  
+    unsigned long	debugreg6;  
+    unsigned long	debugreg7;  
+    /* fault info */
+    unsigned long	cr2, trap_no, error_code;
+    /* floating point info */
+    union i387_union	i387  __attribute__((aligned(16)));
+    /* IO permissions. the bitmap could be moved into the GDT, that would make
+       switch faster for a limited number of ioperm using tasks. -AK */
+    int		ioperm;
+    unsigned long	*io_bitmap_ptr;
+    unsigned io_bitmap_max;
+    /* cached TLS descriptors. */
+    u64 tls_array[GDT_ENTRY_TLS_ENTRIES];
 } __attribute__((aligned(16)));
 
 #define BOOTSTRAP_THREAD  { \
-	.rsp0 = (unsigned long)&bootstrap_stack + sizeof(bootstrap_stack) \
+    .rsp0 = (unsigned long)&bootstrap_stack + sizeof(bootstrap_stack) \
 }
 
 #define BOOTSTRAP_TSS  { \
-	.rsp0 = (unsigned long)&bootstrap_stack + sizeof(bootstrap_stack) \
+    .rsp0 = (unsigned long)&bootstrap_stack + sizeof(bootstrap_stack) \
 }
 
 #define INIT_MMAP \
 { &init_mm, 0, 0, NULL, PAGE_SHARED, VM_READ | VM_WRITE | VM_EXEC, 1, NULL, NULL }
 
 #define get_debugreg(var, register)				\
-		__asm__("movq %%db" #register ", %0"		\
-			:"=r" (var))
+    __asm__("movq %%db" #register ", %0"		\
+            :"=r" (var))
 #define set_debugreg(value, register)			\
-		__asm__("movq %0,%%db" #register		\
-			: /* no output */			\
-			:"r" (value))
+    __asm__("movq %0,%%db" #register		\
+            : /* no output */			\
+            :"r" (value))
 
 struct mm_struct;
 
@@ -264,21 +264,21 @@ extern unsigned long get_wchan(struct task_struct *p);
 
 
 struct microcode_header {
-	unsigned int hdrver;
-	unsigned int rev;
-	unsigned int date;
-	unsigned int sig;
-	unsigned int cksum;
-	unsigned int ldrver;
-	unsigned int pf;
-	unsigned int datasize;
-	unsigned int totalsize;
-	unsigned int reserved[3];
+    unsigned int hdrver;
+    unsigned int rev;
+    unsigned int date;
+    unsigned int sig;
+    unsigned int cksum;
+    unsigned int ldrver;
+    unsigned int pf;
+    unsigned int datasize;
+    unsigned int totalsize;
+    unsigned int reserved[3];
 };
 
 struct microcode {
-	struct microcode_header hdr;
-	unsigned int bits[0];
+    struct microcode_header hdr;
+    unsigned int bits[0];
 };
 
 typedef struct microcode microcode_t;
@@ -286,16 +286,16 @@ typedef struct microcode_header microcode_header_t;
 
 /* microcode format is extended from prescott processors */
 struct extended_signature {
-	unsigned int sig;
-	unsigned int pf;
-	unsigned int cksum;
+    unsigned int sig;
+    unsigned int pf;
+    unsigned int cksum;
 };
 
 struct extended_sigtable {
-	unsigned int count;
-	unsigned int cksum;
-	unsigned int reserved[3];
-	struct extended_signature sigs[0];
+    unsigned int count;
+    unsigned int cksum;
+    unsigned int reserved[3];
+    struct extended_signature sigs[0];
 };
 
 
@@ -324,18 +324,18 @@ struct extended_sigtable {
 static inline void rep_nop(void)
 {
 #ifdef CONFIG_X86_EARLYMIC
-	/* On KNC, PAUSE instruction is not supported; approximate using 'delay' */
-	asm volatile("delay %0" :: "r" (1000) : "memory");
+    /* On KNC, PAUSE instruction is not supported; approximate using 'delay' */
+    asm volatile("delay %0" :: "r" (1000) : "memory");
 #else
-	asm volatile("rep; nop" ::: "memory");
+    asm volatile("rep; nop" ::: "memory");
 #endif
 }
 
 /* Stop speculative execution */
 static inline void sync_core(void)
 { 
-	int tmp;
-	asm volatile("cpuid" : "=a" (tmp) : "0" (1) : "ebx","ecx","edx","memory");
+    int tmp;
+    asm volatile("cpuid" : "=a" (tmp) : "0" (1) : "ebx","ecx","edx","memory");
 } 
 
 #define cpu_has_fpu 1
@@ -344,7 +344,7 @@ static inline void sync_core(void)
 static inline void prefetch(void *x) 
 { 
 #ifndef CONFIG_X86_EARLYMIC
-	asm volatile("prefetcht0 %0" :: "m" (*(unsigned long *)x));
+    asm volatile("prefetcht0 %0" :: "m" (*(unsigned long *)x));
 #endif
 } 
 
@@ -352,7 +352,7 @@ static inline void prefetch(void *x)
 static inline void prefetchw(void *x) 
 { 
 #ifndef CONFIG_X86_EARLYMIC
-	asm volatile("prefetchtw %0" :: "m" (*(unsigned long *)x));
+    asm volatile("prefetchtw %0" :: "m" (*(unsigned long *)x));
 #endif
 } 
 
@@ -364,39 +364,39 @@ static inline void prefetchw(void *x)
 
 static inline void serialize_cpu(void)
 {
-	__asm__ __volatile__ ("cpuid" : : : "ax", "bx", "cx", "dx");
+    __asm__ __volatile__ ("cpuid" : : : "ax", "bx", "cx", "dx");
 }
 
 static inline void __monitor(const void *eax, unsigned long ecx,
-		unsigned long edx)
+        unsigned long edx)
 {
-	/* "monitor %eax,%ecx,%edx;" */
-	asm volatile(
-		".byte 0x0f,0x01,0xc8;"
-		: :"a" (eax), "c" (ecx), "d"(edx));
+    /* "monitor %eax,%ecx,%edx;" */
+    asm volatile(
+            ".byte 0x0f,0x01,0xc8;"
+            : :"a" (eax), "c" (ecx), "d"(edx));
 }
 
 static inline void __mwait(unsigned long eax, unsigned long ecx)
 {
-	/* "mwait %eax,%ecx;" */
-	asm volatile(
-		".byte 0x0f,0x01,0xc9;"
-		: :"a" (eax), "c" (ecx));
+    /* "mwait %eax,%ecx;" */
+    asm volatile(
+            ".byte 0x0f,0x01,0xc9;"
+            : :"a" (eax), "c" (ecx));
 }
 
 static inline void __sti_mwait(unsigned long eax, unsigned long ecx)
 {
-	/* "mwait %eax,%ecx;" */
-	asm volatile("sti; .byte 0x0f,0x01,0xc9;"
-	             :: "a" (eax), "c" (ecx));
+    /* "mwait %eax,%ecx;" */
+    asm volatile("sti; .byte 0x0f,0x01,0xc9;"
+            :: "a" (eax), "c" (ecx));
 }
 
 #define stack_current() \
-({								\
-	struct thread_info *ti;					\
-	asm("andq %%rsp,%0; ":"=r" (ti) : "0" (CURRENT_MASK));	\
-	ti->task;					\
-})
+    ({								\
+     struct thread_info *ti;					\
+     asm("andq %%rsp,%0; ":"=r" (ti) : "0" (CURRENT_MASK));	\
+     ti->task;					\
+     })
 
 #define cache_line_size() (boot_cpu_data.arch.x86_cache_alignment)
 

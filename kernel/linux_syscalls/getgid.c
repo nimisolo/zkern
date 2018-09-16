@@ -1,8 +1,8 @@
 #include <lwk/kernel.h>
 #include <lwk/task.h>
 
-long
+    long
 sys_getgid(void)
 {
-	return current->gid;
+    return current->gid;
 }

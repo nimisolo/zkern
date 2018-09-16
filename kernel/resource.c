@@ -14,17 +14,17 @@
 #include <arch/io.h>
 
 struct resource ioport_resource = {
-	.name	= "PCI IO",
-	.start	= 0x0000,
-	.end	= IO_SPACE_LIMIT,
-	.flags	= IORESOURCE_IO,
+    .name	= "PCI IO",
+    .start	= 0x0000,
+    .end	= IO_SPACE_LIMIT,
+    .flags	= IORESOURCE_IO,
 };
 
 struct resource iomem_resource = {
-	.name	= "PCI mem",
-	.start	= 0UL,
-	.end	= ~0UL,
-	.flags	= IORESOURCE_MEM,
+    .name	= "PCI mem",
+    .start	= 0UL,
+    .end	= ~0UL,
+    .flags	= IORESOURCE_MEM,
 };
 
 static DEFINE_RWLOCK(resource_lock);
@@ -32,148 +32,148 @@ static DEFINE_RWLOCK(resource_lock);
 /* Return the conflict entry if you can't request it */
 static struct resource * __request_resource(struct resource *root, struct resource *new)
 {
-	unsigned long start = new->start;
-	unsigned long end = new->end;
-	struct resource *tmp, **p;
+    unsigned long start = new->start;
+    unsigned long end = new->end;
+    struct resource *tmp, **p;
 
-	if (end < start)
-		return root;
-	if (start < root->start)
-		return root;
-	if (end > root->end)
-		return root;
-	p = &root->child;
-	for (;;) {
-		tmp = *p;
-		if (!tmp || tmp->start > end) {
-			new->sibling = tmp;
-			*p = new;
-			new->parent = root;
-			return NULL;
-		}
-		p = &tmp->sibling;
-		if (tmp->end < start)
-			continue;
-		return tmp;
-	}
+    if (end < start)
+        return root;
+    if (start < root->start)
+        return root;
+    if (end > root->end)
+        return root;
+    p = &root->child;
+    for (;;) {
+        tmp = *p;
+        if (!tmp || tmp->start > end) {
+            new->sibling = tmp;
+            *p = new;
+            new->parent = root;
+            return NULL;
+        }
+        p = &tmp->sibling;
+        if (tmp->end < start)
+            continue;
+        return tmp;
+    }
 }
 
 static int __release_resource(struct resource *old)
 {
-	struct resource *tmp, **p;
+    struct resource *tmp, **p;
 
-	BUG_ON(old->child);
+    BUG_ON(old->child);
 
-	p = &old->parent->child;
-	for (;;) {
-		tmp = *p;
-		if (!tmp)
-			break;
-		if (tmp == old) {
-			*p = tmp->sibling;
-			old->parent = NULL;
-			return 0;
-		}
-		p = &tmp->sibling;
-	}
-	return -EINVAL;
+    p = &old->parent->child;
+    for (;;) {
+        tmp = *p;
+        if (!tmp)
+            break;
+        if (tmp == old) {
+            *p = tmp->sibling;
+            old->parent = NULL;
+            return 0;
+        }
+        p = &tmp->sibling;
+    }
+    return -EINVAL;
 }
 
 int request_resource(struct resource *root, struct resource *new)
 {
-	struct resource *conflict;
+    struct resource *conflict;
 
-	write_lock(&resource_lock);
-	conflict = __request_resource(root, new);
-	write_unlock(&resource_lock);
-	return conflict ? -EBUSY : 0;
+    write_lock(&resource_lock);
+    conflict = __request_resource(root, new);
+    write_unlock(&resource_lock);
+    return conflict ? -EBUSY : 0;
 }
 
 struct resource *____request_resource(struct resource *root, struct resource *new)
 {
-	struct resource *conflict;
+    struct resource *conflict;
 
-	write_lock(&resource_lock);
-	conflict = __request_resource(root, new);
-	write_unlock(&resource_lock);
-	return conflict;
+    write_lock(&resource_lock);
+    conflict = __request_resource(root, new);
+    write_unlock(&resource_lock);
+    return conflict;
 }
 
 int release_resource(struct resource *old)
 {
-	int retval;
+    int retval;
 
-	write_lock(&resource_lock);
-	retval = __release_resource(old);
-	write_unlock(&resource_lock);
-	return retval;
+    write_lock(&resource_lock);
+    retval = __release_resource(old);
+    write_unlock(&resource_lock);
+    return retval;
 }
 
 /*
  * Find empty slot in the resource tree given range and alignment.
  */
 static int find_resource(struct resource *root, struct resource *new,
-			 unsigned long size,
-			 unsigned long min, unsigned long max,
-			 unsigned long align,
-			 void (*alignf)(void *, struct resource *,
-					unsigned long, unsigned long),
-			 void *alignf_data)
+        unsigned long size,
+        unsigned long min, unsigned long max,
+        unsigned long align,
+        void (*alignf)(void *, struct resource *,
+            unsigned long, unsigned long),
+        void *alignf_data)
 {
-	struct resource *this = root->child;
+    struct resource *this = root->child;
 
-	new->start = root->start;
-	/*
-	 * Skip past an allocated resource that starts at 0, since the assignment
-	 * of this->start - 1 to new->end below would cause an underflow.
-	 */
-	if (this && this->start == 0) {
-		new->start = this->end + 1;
-		this = this->sibling;
-	}
-	for(;;) {
-		if (this)
-			new->end = this->start - 1;
-		else
-			new->end = root->end;
-		if (new->start < min)
-			new->start = min;
-		if (new->end > max)
-			new->end = max;
-		new->start = ALIGN(new->start, align);
-		if (alignf)
-			alignf(alignf_data, new, size, align);
-		if (new->start < new->end && new->end - new->start >= size - 1) {
-			new->end = new->start + size - 1;
-			return 0;
-		}
-		if (!this)
-			break;
-		new->start = this->end + 1;
-		this = this->sibling;
-	}
-	return -EBUSY;
+    new->start = root->start;
+    /*
+     * Skip past an allocated resource that starts at 0, since the assignment
+     * of this->start - 1 to new->end below would cause an underflow.
+     */
+    if (this && this->start == 0) {
+        new->start = this->end + 1;
+        this = this->sibling;
+    }
+    for(;;) {
+        if (this)
+            new->end = this->start - 1;
+        else
+            new->end = root->end;
+        if (new->start < min)
+            new->start = min;
+        if (new->end > max)
+            new->end = max;
+        new->start = ALIGN(new->start, align);
+        if (alignf)
+            alignf(alignf_data, new, size, align);
+        if (new->start < new->end && new->end - new->start >= size - 1) {
+            new->end = new->start + size - 1;
+            return 0;
+        }
+        if (!this)
+            break;
+        new->start = this->end + 1;
+        this = this->sibling;
+    }
+    return -EBUSY;
 }
 
 /*
  * Allocate empty slot in the resource tree given range and alignment.
  */
 int allocate_resource(struct resource *root, struct resource *new,
-		      unsigned long size,
-		      unsigned long min, unsigned long max,
-		      unsigned long align,
-		      void (*alignf)(void *, struct resource *,
-				     unsigned long, unsigned long),
-		      void *alignf_data)
+        unsigned long size,
+        unsigned long min, unsigned long max,
+        unsigned long align,
+        void (*alignf)(void *, struct resource *,
+            unsigned long, unsigned long),
+        void *alignf_data)
 {
-	int err;
+    int err;
 
-	write_lock(&resource_lock);
-	err = find_resource(root, new, size, min, max, align, alignf, alignf_data);
-	if (err >= 0 && __request_resource(root, new))
-		err = -EBUSY;
-	write_unlock(&resource_lock);
-	return err;
+    write_lock(&resource_lock);
+    err = find_resource(root, new, size, min, max, align, alignf, alignf_data);
+    if (err >= 0 && __request_resource(root, new))
+        err = -EBUSY;
+    write_unlock(&resource_lock);
+    return err;
 }
 
 /**
@@ -191,59 +191,59 @@ int allocate_resource(struct resource *root, struct resource *new,
  */
 int insert_resource(struct resource *parent, struct resource *new)
 {
-	int result;
-	struct resource *first, *next;
+    int result;
+    struct resource *first, *next;
 
-	write_lock(&resource_lock);
+    write_lock(&resource_lock);
 
-	for (;; parent = first) {
-	 	result = 0;
-		first = __request_resource(parent, new);
-		if (!first)
-			goto out;
+    for (;; parent = first) {
+        result = 0;
+        first = __request_resource(parent, new);
+        if (!first)
+            goto out;
 
-		result = -EBUSY;
-		if (first == parent)
-			goto out;
+        result = -EBUSY;
+        if (first == parent)
+            goto out;
 
-		if ((first->start > new->start) || (first->end < new->end))
-			break;
-		if ((first->start == new->start) && (first->end == new->end))
-			break;
-	}
+        if ((first->start > new->start) || (first->end < new->end))
+            break;
+        if ((first->start == new->start) && (first->end == new->end))
+            break;
+    }
 
-	for (next = first; ; next = next->sibling) {
-		/* Partial overlap? Bad, and unfixable */
-		if (next->start < new->start || next->end > new->end)
-			goto out;
-		if (!next->sibling)
-			break;
-		if (next->sibling->start > new->end)
-			break;
-	}
+    for (next = first; ; next = next->sibling) {
+        /* Partial overlap? Bad, and unfixable */
+        if (next->start < new->start || next->end > new->end)
+            goto out;
+        if (!next->sibling)
+            break;
+        if (next->sibling->start > new->end)
+            break;
+    }
 
-	result = 0;
+    result = 0;
 
-	new->parent = parent;
-	new->sibling = next->sibling;
-	new->child = first;
+    new->parent = parent;
+    new->sibling = next->sibling;
+    new->child = first;
 
-	next->sibling = NULL;
-	for (next = first; next; next = next->sibling)
-		next->parent = new;
+    next->sibling = NULL;
+    for (next = first; next; next = next->sibling)
+        next->parent = new;
 
-	if (parent->child == first) {
-		parent->child = new;
-	} else {
-		next = parent->child;
-		while (next->sibling != first)
-			next = next->sibling;
-		next->sibling = new;
-	}
+    if (parent->child == first) {
+        parent->child = new;
+    } else {
+        next = parent->child;
+        while (next->sibling != first)
+            next = next->sibling;
+        next->sibling = new;
+    }
 
- out:
-	write_unlock(&resource_lock);
-	return result;
+out:
+    write_unlock(&resource_lock);
+    return result;
 }
 
 /*
@@ -253,38 +253,38 @@ int insert_resource(struct resource *parent, struct resource *new)
  */
 int adjust_resource(struct resource *res, unsigned long start, unsigned long size)
 {
-	struct resource *tmp, *parent = res->parent;
-	unsigned long end = start + size - 1;
-	int result = -EBUSY;
+    struct resource *tmp, *parent = res->parent;
+    unsigned long end = start + size - 1;
+    int result = -EBUSY;
 
-	write_lock(&resource_lock);
+    write_lock(&resource_lock);
 
-	if ((start < parent->start) || (end > parent->end))
-		goto out;
+    if ((start < parent->start) || (end > parent->end))
+        goto out;
 
-	for (tmp = res->child; tmp; tmp = tmp->sibling) {
-		if ((tmp->start < start) || (tmp->end > end))
-			goto out;
-	}
+    for (tmp = res->child; tmp; tmp = tmp->sibling) {
+        if ((tmp->start < start) || (tmp->end > end))
+            goto out;
+    }
 
-	if (res->sibling && (res->sibling->start <= end))
-		goto out;
+    if (res->sibling && (res->sibling->start <= end))
+        goto out;
 
-	tmp = parent->child;
-	if (tmp != res) {
-		while (tmp->sibling != res)
-			tmp = tmp->sibling;
-		if (start <= tmp->end)
-			goto out;
-	}
+    tmp = parent->child;
+    if (tmp != res) {
+        while (tmp->sibling != res)
+            tmp = tmp->sibling;
+        if (start <= tmp->end)
+            goto out;
+    }
 
-	res->start = start;
-	res->end = end;
-	result = 0;
+    res->start = start;
+    res->end = end;
+    result = 0;
 
- out:
-	write_unlock(&resource_lock);
-	return result;
+out:
+    write_unlock(&resource_lock);
+    return result;
 }
 
 /**
@@ -295,14 +295,14 @@ int adjust_resource(struct resource *res, unsigned long start, unsigned long siz
  */
 unsigned long resource_alignment(struct resource *res)
 {
-	switch (res->flags & (IORESOURCE_SIZEALIGN | IORESOURCE_STARTALIGN)) {
-	case IORESOURCE_SIZEALIGN:
-		return resource_size(res);
-	case IORESOURCE_STARTALIGN:
-		return res->start;
-	default:
-		return 0;
-	}
+    switch (res->flags & (IORESOURCE_SIZEALIGN | IORESOURCE_STARTALIGN)) {
+    case IORESOURCE_SIZEALIGN:
+        return resource_size(res);
+    case IORESOURCE_STARTALIGN:
+        return res->start;
+    default:
+        return 0;
+    }
 }
 
 /**
@@ -313,39 +313,39 @@ unsigned long resource_alignment(struct resource *res)
  * @name: reserving caller's ID string
  */
 struct resource * __request_region(struct resource *parent,
-				   unsigned long start, unsigned long n,
-				   const char *name)
+        unsigned long start, unsigned long n,
+        const char *name)
 {
-	struct resource *res = kmem_alloc(sizeof(*res));
+    struct resource *res = kmem_alloc(sizeof(*res));
 
-	if (res) {
-		res->name = name;
-		res->start = start;
-		res->end = start + n - 1;
-		res->flags = IORESOURCE_BUSY;
+    if (res) {
+        res->name = name;
+        res->start = start;
+        res->end = start + n - 1;
+        res->flags = IORESOURCE_BUSY;
 
-		write_lock(&resource_lock);
+        write_lock(&resource_lock);
 
-		for (;;) {
-			struct resource *conflict;
+        for (;;) {
+            struct resource *conflict;
 
-			conflict = __request_resource(parent, res);
-			if (!conflict)
-				break;
-			if (conflict != parent) {
-				parent = conflict;
-				if (!(conflict->flags & IORESOURCE_BUSY))
-					continue;
-			}
+            conflict = __request_resource(parent, res);
+            if (!conflict)
+                break;
+            if (conflict != parent) {
+                parent = conflict;
+                if (!(conflict->flags & IORESOURCE_BUSY))
+                    continue;
+            }
 
-			/* Uhhuh, that didn't work out.. */
-			kmem_free(res);
-			res = NULL;
-			break;
-		}
-		write_unlock(&resource_lock);
-	}
-	return res;
+            /* Uhhuh, that didn't work out.. */
+            kmem_free(res);
+            res = NULL;
+            break;
+        }
+        write_unlock(&resource_lock);
+    }
+    return res;
 }
 
 /**
@@ -364,17 +364,17 @@ struct resource * __request_region(struct resource *parent,
  * Do NOT use it.  It will be removed from the kernel.
  */
 int __check_region(struct resource *parent, unsigned long start,
-			unsigned long n)
+        unsigned long n)
 {
-	struct resource * res;
+    struct resource * res;
 
-	res = __request_region(parent, start, n, "check-region");
-	if (!res)
-		return -EBUSY;
+    res = __request_region(parent, start, n, "check-region");
+    if (!res)
+        return -EBUSY;
 
-	release_resource(res);
-	kmem_free(res);
-	return 0;
+    release_resource(res);
+    kmem_free(res);
+    return 0;
 }
 
 /**
@@ -386,39 +386,39 @@ int __check_region(struct resource *parent, unsigned long start,
  * The described resource region must match a currently busy region.
  */
 void __release_region(struct resource *parent, unsigned long start,
-			unsigned long n)
+        unsigned long n)
 {
-	struct resource **p;
-	unsigned long end;
+    struct resource **p;
+    unsigned long end;
 
-	p = &parent->child;
-	end = start + n - 1;
+    p = &parent->child;
+    end = start + n - 1;
 
-	write_lock(&resource_lock);
+    write_lock(&resource_lock);
 
-	for (;;) {
-		struct resource *res = *p;
+    for (;;) {
+        struct resource *res = *p;
 
-		if (!res)
-			break;
-		if (res->start <= start && res->end >= end) {
-			if (!(res->flags & IORESOURCE_BUSY)) {
-				p = &res->child;
-				continue;
-			}
-			if (res->start != start || res->end != end)
-				break;
-			*p = res->sibling;
-			write_unlock(&resource_lock);
-			kmem_free(res);
-			return;
-		}
-		p = &res->sibling;
-	}
+        if (!res)
+            break;
+        if (res->start <= start && res->end >= end) {
+            if (!(res->flags & IORESOURCE_BUSY)) {
+                p = &res->child;
+                continue;
+            }
+            if (res->start != start || res->end != end)
+                break;
+            *p = res->sibling;
+            write_unlock(&resource_lock);
+            kmem_free(res);
+            return;
+        }
+        p = &res->sibling;
+    }
 
-	write_unlock(&resource_lock);
+    write_unlock(&resource_lock);
 
-	printk(KERN_WARNING "Trying to free nonexistent resource "
-		"<%016llx-%016llx>\n", (unsigned long long)start,
-		(unsigned long long)end);
+    printk(KERN_WARNING "Trying to free nonexistent resource "
+            "<%016llx-%016llx>\n", (unsigned long long)start,
+            (unsigned long long)end);
 }

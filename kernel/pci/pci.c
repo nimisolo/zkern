@@ -78,150 +78,150 @@ extern struct device  dev_root;
 
 
 
-static pci_dev_t *
+    static pci_dev_t *
 alloc_pci_dev(void)
 {
-	pci_dev_t *new_dev = kmem_alloc(sizeof(pci_dev_t));
-	if (!new_dev)
-		panic("Out of memory allocating new pci_dev.");
-	return new_dev;
+    pci_dev_t *new_dev = kmem_alloc(sizeof(pci_dev_t));
+    if (!new_dev)
+        panic("Out of memory allocating new pci_dev.");
+    return new_dev;
 }
 
 
-static pci_bus_t *
+    static pci_bus_t *
 alloc_pci_bus(void)
 {
-	pci_bus_t *new_bus = kmem_alloc(sizeof(pci_bus_t));
-	if (!new_bus)
-		panic("Out of memory allocating new pci_bus.");
+    pci_bus_t *new_bus = kmem_alloc(sizeof(pci_bus_t));
+    if (!new_bus)
+        panic("Out of memory allocating new pci_bus.");
 
-	list_head_init(&new_bus->child_buses);
-	list_head_init(&new_bus->devices);
+    list_head_init(&new_bus->child_buses);
+    list_head_init(&new_bus->devices);
 
-	return new_bus;
+    return new_bus;
 }
 
 
-static void
+    static void
 pci_scan_bus(pci_bus_t * bus)
 {
-	printk(KERN_INFO
-		"Scanning PCI Bus %u (parent=%u, subordinate=%u)\n",
-		bus->bus,
-		bus->bridge_info.primary_bus_num,
-		bus->bridge_info.subordinate_bus_num
-	);
+    printk(KERN_INFO
+            "Scanning PCI Bus %u (parent=%u, subordinate=%u)\n",
+            bus->bus,
+            bus->bridge_info.primary_bus_num,
+            bus->bridge_info.subordinate_bus_num
+          );
 
-	/* Scan all slots on the bus */
-	for (int slot = 0; slot <= PCI_SLOTMAX; slot++) {
+    /* Scan all slots on the bus */
+    for (int slot = 0; slot <= PCI_SLOTMAX; slot++) {
 
-		/* Read device's config header type */
-		uint8_t hdr_type = pcicfg_read(bus->bus, slot, 0, PCIR_HDRTYPE, 1);
+        /* Read device's config header type */
+        uint8_t hdr_type = pcicfg_read(bus->bus, slot, 0, PCIR_HDRTYPE, 1);
 
-		/* Bail if no device in the slot */
-		if ((hdr_type & PCIM_HDRTYPE) > PCI_MAXHDRTYPE) {
-			continue;
-		}
+        /* Bail if no device in the slot */
+        if ((hdr_type & PCIM_HDRTYPE) > PCI_MAXHDRTYPE) {
+            continue;
+        }
 
-		/* Determine the device's maximum function index */
-		int max_func = (hdr_type & PCIM_MFDEV) ? PCI_FUNCMAX : 0;
+        /* Determine the device's maximum function index */
+        int max_func = (hdr_type & PCIM_MFDEV) ? PCI_FUNCMAX : 0;
 
-		/* Scan all of the device's functions */
-		for (int func = 0; func <= max_func; func++) {
+        /* Scan all of the device's functions */
+        for (int func = 0; func <= max_func; func++) {
 
-			/* Read the device ID and vendor ID all at once */
-			uint32_t dev_vendor = pcicfg_read(bus->bus, slot, func,
-			                                  PCIR_DEVVENDOR, 4);
+            /* Read the device ID and vendor ID all at once */
+            uint32_t dev_vendor = pcicfg_read(bus->bus, slot, func,
+                    PCIR_DEVVENDOR, 4);
 
-			/* Bail if device doesn't implement the function */
-			if (dev_vendor == 0xFFFFFFFF) {
-				continue;
-			}
+            /* Bail if device doesn't implement the function */
+            if (dev_vendor == 0xFFFFFFFF) {
+                continue;
+            }
 
-			/* Each funcion is represented by a separate pci_dev */
-			pci_dev_t * new_dev = alloc_pci_dev();
+            /* Each funcion is represented by a separate pci_dev */
+            pci_dev_t * new_dev = alloc_pci_dev();
 
-			pcicfg_hdr_read(bus->bus, slot, func, &new_dev->cfg);
-			new_dev->parent_bus = bus;
-			new_dev->slot       = slot;
-			new_dev->func       = func;
+            pcicfg_hdr_read(bus->bus, slot, func, &new_dev->cfg);
+            new_dev->parent_bus = bus;
+            new_dev->slot       = slot;
+            new_dev->func       = func;
 
-			/* Redundant fields. Needed for Linux compatibility */
-			new_dev->devfn      = PCI_DEVFN(slot, func); 
-			new_dev->device     = new_dev->cfg.device_id;
-			new_dev->vendor     = new_dev->cfg.vendor_id;
-			new_dev->revision   = new_dev->cfg.rev_id;
+            /* Redundant fields. Needed for Linux compatibility */
+            new_dev->devfn      = PCI_DEVFN(slot, func); 
+            new_dev->device     = new_dev->cfg.device_id;
+            new_dev->vendor     = new_dev->cfg.vendor_id;
+            new_dev->revision   = new_dev->cfg.rev_id;
 
-			new_dev->driver	    = NULL;			
+            new_dev->driver	    = NULL;			
 
-			/* For now we are going to disable all legacy IRQs in Kitten */
-			/* This will cause request_irq to fail when called with this as an argument */
-			new_dev->irq        = (uint32_t)(-1);
+            /* For now we are going to disable all legacy IRQs in Kitten */
+            /* This will cause request_irq to fail when called with this as an argument */
+            new_dev->irq        = (uint32_t)(-1);
 
-			/* Add new device onto parent bus's list of devices */
-			list_add_tail(&new_dev->siblings, &bus->devices);
+            /* Add new device onto parent bus's list of devices */
+            list_add_tail(&new_dev->siblings, &bus->devices);
 
-			/* Add new device onto global list of devices */
-			list_add_tail(&new_dev->next, &pci_devices);
+            /* Add new device onto global list of devices */
+            list_add_tail(&new_dev->next, &pci_devices);
 
-			/* Create human-readable string describing the device */
-			pci_describe_device(new_dev, sizeof(new_dev->name), new_dev->name);
+            /* Create human-readable string describing the device */
+            pci_describe_device(new_dev, sizeof(new_dev->name), new_dev->name);
 
-			/* Initialize the device layer */
-			device_init(&(new_dev->dev), NULL, &dev_root, 0, NULL, new_dev->name);
+            /* Initialize the device layer */
+            device_init(&(new_dev->dev), NULL, &dev_root, 0, NULL, new_dev->name);
 
-			printk(KERN_INFO
-				"    Found PCI Device: %u:%u.%u %4x:%-4x %s\n",
-				bus->bus,
-				slot,
-				func,
-				(unsigned int) new_dev->cfg.vendor_id,
-				(unsigned int) new_dev->cfg.device_id,
-				new_dev->name
-			);
-		}
-	}
+            printk(KERN_INFO
+                    "    Found PCI Device: %u:%u.%u %4x:%-4x %s\n",
+                    bus->bus,
+                    slot,
+                    func,
+                    (unsigned int) new_dev->cfg.vendor_id,
+                    (unsigned int) new_dev->cfg.device_id,
+                    new_dev->name
+                  );
+        }
+    }
 
-	/* Traverse each PCI-to-PCI bridge */
-	pci_dev_t * dev = NULL;
-	list_for_each_entry(dev, &bus->devices, siblings) {
+    /* Traverse each PCI-to-PCI bridge */
+    pci_dev_t * dev = NULL;
+    list_for_each_entry(dev, &bus->devices, siblings) {
 
-		/* If it isn't a PCI-to-PCI bridge, move onto the next device */
-		if (dev->cfg.hdr_type != PCIM_HDRTYPE_BRIDGE) {
-			continue;
-		}
+        /* If it isn't a PCI-to-PCI bridge, move onto the next device */
+        if (dev->cfg.hdr_type != PCIM_HDRTYPE_BRIDGE) {
+            continue;
+        }
 
-		/* Allocate a bus structure for the bridge's downstream bus */
-		pci_bus_t * new_bus = alloc_pci_bus();
+        /* Allocate a bus structure for the bridge's downstream bus */
+        pci_bus_t * new_bus = alloc_pci_bus();
 
-		pcicfg_hdr1_read(bus->bus, dev->slot, dev->func, &new_bus->bridge_info);
-		new_bus->bus        = new_bus->bridge_info.secondary_bus_num;
-		new_bus->parent_bus = bus;
-		new_bus->self       = dev;
+        pcicfg_hdr1_read(bus->bus, dev->slot, dev->func, &new_bus->bridge_info);
+        new_bus->bus        = new_bus->bridge_info.secondary_bus_num;
+        new_bus->parent_bus = bus;
+        new_bus->self       = dev;
 
-		/* Add new bus onto parent bus's list of child busses */
-		list_add_tail(&new_bus->next_bus, &bus->child_buses);
+        /* Add new bus onto parent bus's list of child busses */
+        list_add_tail(&new_bus->next_bus, &bus->child_buses);
 
-		/* Recursively scan the new bus */
-		pci_scan_bus(new_bus);
-	}
+        /* Recursively scan the new bus */
+        pci_scan_bus(new_bus);
+    }
 }
 
 
-pci_dev_t *
+    pci_dev_t *
 pci_lookup_device(uint16_t vendor_id, uint16_t device_id)
 {
-	pci_dev_t *dev;
+    pci_dev_t *dev;
 
-	list_for_each_entry(dev, &pci_devices, next) {
-		if ((dev->cfg.vendor_id == vendor_id) && ((dev->cfg.device_id == device_id)))
-			return dev;
-	}
+    list_for_each_entry(dev, &pci_devices, next) {
+        if ((dev->cfg.vendor_id == vendor_id) && ((dev->cfg.device_id == device_id)))
+            return dev;
+    }
 
-	return NULL;
+    return NULL;
 }
 
-pci_dev_t *
+    pci_dev_t *
 pci_get_dev_bus_and_slot(uint32_t bus, uint32_t devfn)
 {
     pci_dev_t * dev;
@@ -235,99 +235,99 @@ pci_get_dev_bus_and_slot(uint32_t bus, uint32_t devfn)
 }
 
 
-int 
+    int 
 pci_find_capability(pci_dev_t * dev, int capid)
 {
     return pcicfg_find_cap_offset(dev->parent_bus->bus, dev->slot, dev->func, &(dev->cfg), capid);
 }
 
 
-const char *
+    const char *
 pci_name(pci_dev_t * dev)
 {
     return dev->name;
 }
 
 /** Reads a value from a PCI device's config space header. */
-uint32_t
+    uint32_t
 pci_read(pci_dev_t *dev, unsigned int reg, unsigned int width)
 {
-	return pcicfg_read(dev->parent_bus->bus, dev->slot, dev->func, reg, width);
+    return pcicfg_read(dev->parent_bus->bus, dev->slot, dev->func, reg, width);
 }
 
 
 /** Writes a value to a PCI device's config space header. */
-void
+    void
 pci_write(pci_dev_t *dev, unsigned int reg, unsigned int width, uint32_t value)
 {
-	pcicfg_write(dev->parent_bus->bus, dev->slot, dev->func, reg, width, value);
+    pcicfg_write(dev->parent_bus->bus, dev->slot, dev->func, reg, width, value);
 }
 
-void 
+    void 
 pci_dma_enable(pci_dev_t * dev) 
 {
-	u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
-	pci_write(dev, PCIR_COMMAND, 2, (cmd | PCIM_CMD_BUSMASTEREN));
+    u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
+    pci_write(dev, PCIR_COMMAND, 2, (cmd | PCIM_CMD_BUSMASTEREN));
 }
 
 
-void 
+    void 
 pci_dma_disable(pci_dev_t * dev) 
 {
-	u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
-	pci_write(dev, PCIR_COMMAND, 2, (cmd & ~PCIM_CMD_BUSMASTEREN));
+    u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
+    pci_write(dev, PCIR_COMMAND, 2, (cmd & ~PCIM_CMD_BUSMASTEREN));
 }
 
 
-void 
+    void 
 pci_mmio_enable(pci_dev_t * dev) 
 {
-	u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
-	pci_write(dev, PCIR_COMMAND, 2, (cmd | PCIM_CMD_MEMEN));
+    u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
+    pci_write(dev, PCIR_COMMAND, 2, (cmd | PCIM_CMD_MEMEN));
 }
 
 
-void 
+    void 
 pci_mmio_disable(pci_dev_t * dev) 
 {
-	u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
-	pci_write(dev, PCIR_COMMAND, 2, (cmd & ~PCIM_CMD_MEMEN));
+    u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
+    pci_write(dev, PCIR_COMMAND, 2, (cmd & ~PCIM_CMD_MEMEN));
 }
 
-void 
+    void 
 pci_ioport_enable(pci_dev_t * dev) 
 {
-	u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
-	pci_write(dev, PCIR_COMMAND, 2, (cmd | PCIM_CMD_PORTEN));
+    u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
+    pci_write(dev, PCIR_COMMAND, 2, (cmd | PCIM_CMD_PORTEN));
 }
 
 
-void 
+    void 
 pci_ioport_disable(pci_dev_t * dev) 
 {
-	u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
-	pci_write(dev, PCIR_COMMAND, 2, (cmd & ~PCIM_CMD_PORTEN));
+    u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
+    pci_write(dev, PCIR_COMMAND, 2, (cmd & ~PCIM_CMD_PORTEN));
 }
 
 
-void 
+    void 
 pci_intx_enable(pci_dev_t * dev)
 {
-	u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
-	pci_write(dev, PCIR_COMMAND, 2, (cmd & ~PCIM_CMD_INTxDIS));
+    u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
+    pci_write(dev, PCIR_COMMAND, 2, (cmd & ~PCIM_CMD_INTxDIS));
 }
 
-void 
+    void 
 pci_intx_disable(pci_dev_t * dev)
 {
-	u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
-	pci_write(dev, PCIR_COMMAND, 2, (cmd | PCIM_CMD_INTxDIS));
+    u16 cmd =  pci_read(dev, PCIR_COMMAND, 2);
+    pci_write(dev, PCIR_COMMAND, 2, (cmd | PCIM_CMD_INTxDIS));
 }
 
-void 
+    void 
 compose_msi_msg(struct msi_msg  *msg,
-		unsigned int     dest,
-		u8               vector)
+        unsigned int     dest,
+        u8               vector)
 {
 
     msg->address_hi = MSI_ADDR_BASE_HI;
@@ -349,9 +349,9 @@ compose_msi_msg(struct msi_msg  *msg,
         MSI_DATA_VECTOR(vector);
 }
 
-void 
+    void 
 read_msi_msg(pci_dev_t      * dev,
-	     struct msi_msg * msg)
+        struct msi_msg * msg)
 {
     pcicfg_hdr_t  * hdr   = &dev->cfg;
     unsigned long   pos   = hdr->msi.msi_location;
@@ -368,9 +368,9 @@ read_msi_msg(pci_dev_t      * dev,
 }
 
 
-void 
+    void 
 write_msi_msg(pci_dev_t      * dev,
-	      struct msi_msg * msg)
+        struct msi_msg * msg)
 {
     pcicfg_hdr_t   * hdr   = &dev->cfg;
     unsigned long    pos   = hdr->msi.msi_location;
@@ -386,9 +386,9 @@ write_msi_msg(pci_dev_t      * dev,
     }
 }
 
-void 
+    void 
 set_msi_msg_nr(pci_dev_t    * dev, 
-	       unsigned int   n)
+        unsigned int   n)
 {
     pcicfg_hdr_t  * hdr = &dev->cfg;
     unsigned long   pos = hdr->msi.msi_location;
@@ -404,9 +404,9 @@ set_msi_msg_nr(pci_dev_t    * dev,
     pci_write(dev, pos + PCIR_MSI_CTRL, 2, msgctl);
 }
 
-static void 
+    static void 
 pci_set_msi(pci_dev_t * dev, 
-	    int         enable)
+        int         enable)
 {
     pcicfg_hdr_t   * hdr = &dev->cfg;
     unsigned long    pos = hdr->msi.msi_location;
@@ -430,9 +430,9 @@ pci_set_msi(pci_dev_t * dev,
 }
 
 /* Currently only support ONE vector  */
-int 
+    int 
 pci_msi_setup(pci_dev_t * dev,
-	      u8          vector)
+        u8          vector)
 {
     extern struct cpuinfo cpu_info[NR_CPUS];
     struct msi_msg msg;
@@ -450,21 +450,21 @@ pci_msi_setup(pci_dev_t * dev,
     return 0;
 }
 
-void 
+    void 
 pci_msi_enable(pci_dev_t * dev)
 {
     pci_set_msi(dev, 1);
 }
 
-void 
+    void 
 pci_msi_disable(pci_dev_t * dev)
 {
     pci_set_msi(dev, 0);
 }
 
-static void 
+    static void 
 pci_set_msix(pci_dev_t * dev, 
-	     int         enable) 
+        int         enable) 
 {
     int pos     = dev->cfg.msix.msix_location;
     u16 control = 0;
@@ -486,22 +486,22 @@ pci_set_msix(pci_dev_t * dev,
     }
 }
 
-void 
+    void 
 pci_msix_enable(pci_dev_t * dev)
 {
     pci_set_msix(dev, 1);
 }
 
-void 
+    void 
 pci_msix_disable(pci_dev_t * dev)
 {
     pci_set_msix(dev, 0);
 }
 
-int 
+    int 
 pci_msix_setup(pci_dev_t         * dev, 
-	       struct msix_entry * entries, 
-	       u32                 num_entries)
+        struct msix_entry * entries, 
+        u32                 num_entries)
 {
     struct resource * msix_table_resource = NULL;
     pcicfg_hdr_t    * hdr                 = &dev->cfg;
@@ -604,18 +604,18 @@ pci_msix_setup(pci_dev_t         * dev,
         msix_table_base = ioremap(table_addr, table_size);
 
         printk("MSI-X table address: va %p, pa %p,  [size %p]\n"	\
-	       "  bar[%u]: %x; bar[%u+1]: %x\n"				\
-	       "  table offset: %u\n"					\
-	       "  number of entries: %d\n",
-	       (void *)msix_table_base, 
-	       (void *)table_addr, 
-	       (void *)table_size,
-	       table_bir,
-	       (unsigned int)hdr->bar[table_bir], 
-	       table_bir,
-	       (unsigned int)hdr->bar[table_bir + 1],
-	       (unsigned int)hdr->msix.msix_table_offset, 
-	       num_entries);
+                "  bar[%u]: %x; bar[%u+1]: %x\n"				\
+                "  table offset: %u\n"					\
+                "  number of entries: %d\n",
+                (void *)msix_table_base, 
+                (void *)table_addr, 
+                (void *)table_size,
+                table_bir,
+                (unsigned int)hdr->bar[table_bir], 
+                table_bir,
+                (unsigned int)hdr->bar[table_bir + 1],
+                (unsigned int)hdr->msix.msix_table_offset, 
+                num_entries);
     }
 
     /* update hardware table entries */
@@ -653,85 +653,85 @@ pci_msix_setup(pci_dev_t         * dev,
 
 
 /** Registers a PCI device driver with the LWK. */
-int
+    int
 pci_register_driver(pci_driver_t * driver)
 {
-	pci_dev_t          * dev = NULL;
-	pci_dev_id_t const * id  = NULL;
+    pci_dev_t          * dev = NULL;
+    pci_dev_id_t const * id  = NULL;
 
-	// Register the driver
-	spin_lock(&pci_lock);
-	{
-	    list_add(&driver->next, &pci_drivers);
-	}
-	spin_unlock(&pci_lock);	
+    // Register the driver
+    spin_lock(&pci_lock);
+    {
+        list_add(&driver->next, &pci_drivers);
+    }
+    spin_unlock(&pci_lock);	
 
-	// Look for devices that the driver can handle
-	list_for_each_entry(dev, &pci_devices, next) {
+    // Look for devices that the driver can handle
+    list_for_each_entry(dev, &pci_devices, next) {
 
-		if ((driver = pci_find_driver(dev, &id)) != NULL) {
-			// Found a match. Call the drivers probe() function.
-			printk(KERN_DEBUG "pci_register_driver found match, calling probe.\n");
-			dev->driver = driver;
-			driver->probe(dev, id);
-			return 0;
-		}
-	}
-	
-	return 0;
+        if ((driver = pci_find_driver(dev, &id)) != NULL) {
+            // Found a match. Call the drivers probe() function.
+            printk(KERN_DEBUG "pci_register_driver found match, calling probe.\n");
+            dev->driver = driver;
+            driver->probe(dev, id);
+            return 0;
+        }
+    }
+
+    return 0;
 }
 
-void
+    void
 pci_unregister_driver(pci_driver_t * driver) 
 {
-	printk(KERN_ERR "Well this is awkward...\n");
-	printk("pci_unregister_driver not implemented\n");
+    printk(KERN_ERR "Well this is awkward...\n");
+    printk("pci_unregister_driver not implemented\n");
 }
 
 /** Finds a PCI driver suitable for the PCI device passed in. */
-pci_driver_t *
+    pci_driver_t *
 pci_find_driver(const pci_dev_t     * dev, 
-		const pci_dev_id_t ** idp)
+        const pci_dev_id_t ** idp)
 {
-	pci_dev_id_t const * id     = NULL;
-	pci_driver_t       * driver = NULL;
+    pci_dev_id_t const * id     = NULL;
+    pci_driver_t       * driver = NULL;
 
-        uint16_t vendor_id = dev->cfg.vendor_id;
-        uint64_t device_id = dev->cfg.device_id;
+    uint16_t vendor_id = dev->cfg.vendor_id;
+    uint64_t device_id = dev->cfg.device_id;
 
-	spin_lock(&pci_lock);
-	{
-		list_for_each_entry(driver, &pci_drivers, next) {
-			
-			for (id = driver->id_table ; id->vendor_id != 0 ; id++) {
-				
-				if ((vendor_id == id->vendor_id) && 
-				    (device_id == id->device_id)) {
-					*idp = id;
-					spin_unlock(&pci_lock);
-					return driver;
-				}
-			}
-		}
-	}
-	spin_unlock(&pci_lock);	
+    spin_lock(&pci_lock);
+    {
+        list_for_each_entry(driver, &pci_drivers, next) {
 
-	return NULL;
+            for (id = driver->id_table ; id->vendor_id != 0 ; id++) {
+
+                if ((vendor_id == id->vendor_id) && 
+                        (device_id == id->device_id)) {
+                    *idp = id;
+                    spin_unlock(&pci_lock);
+                    return driver;
+                }
+            }
+        }
+    }
+    spin_unlock(&pci_lock);	
+
+    return NULL;
 }
 
 
-void
+    void
 init_pci(void)
 {
-	pci_root = alloc_pci_bus();
+    pci_root = alloc_pci_bus();
 
-	pci_root->bus        = 0;
-	pci_root->parent_bus = NULL;
-	pci_root->self       = NULL;
+    pci_root->bus        = 0;
+    pci_root->parent_bus = NULL;
+    pci_root->self       = NULL;
 
-	pci_root->bridge_info.primary_bus_num     = 0;
-	pci_root->bridge_info.secondary_bus_num   = 0;
-	pci_root->bridge_info.subordinate_bus_num = 0xFF;
+    pci_root->bridge_info.primary_bus_num     = 0;
+    pci_root->bridge_info.secondary_bus_num   = 0;
+    pci_root->bridge_info.subordinate_bus_num = 0xFF;
 
-	pci_scan_bus(pci_root);
+    pci_scan_bus(pci_root);
 }

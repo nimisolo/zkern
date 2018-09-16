@@ -11,56 +11,56 @@
  */
 
 #define rdmsr(msr,val1,val2) \
-       __asm__ __volatile__("rdmsr" \
-			    : "=a" (val1), "=d" (val2) \
-			    : "c" (msr))
+    __asm__ __volatile__("rdmsr" \
+            : "=a" (val1), "=d" (val2) \
+            : "c" (msr))
 
 
 #define rdmsrl(msr,val) do { unsigned long a__,b__; \
-       __asm__ __volatile__("rdmsr" \
-			    : "=a" (a__), "=d" (b__) \
-			    : "c" (msr)); \
-       val = a__ | (b__<<32); \
+    __asm__ __volatile__("rdmsr" \
+            : "=a" (a__), "=d" (b__) \
+            : "c" (msr)); \
+    val = a__ | (b__<<32); \
 } while(0)
 
 #define wrmsr(msr,val1,val2) \
-     __asm__ __volatile__("wrmsr" \
-			  : /* no outputs */ \
-			  : "c" (msr), "a" (val1), "d" (val2))
+    __asm__ __volatile__("wrmsr" \
+            : /* no outputs */ \
+            : "c" (msr), "a" (val1), "d" (val2))
 
 #define wrmsrl(msr,val) wrmsr(msr,(__u32)((__u64)(val)),((__u64)(val))>>32) 
 
 /* wrmsr with exception handling */
 #define wrmsr_safe(msr,a,b) ({ int ret__;			\
-	asm volatile("2: wrmsr ; xorl %0,%0\n"			\
-		     "1:\n\t"					\
-		     ".section .fixup,\"ax\"\n\t"		\
-		     "3:  movl %4,%0 ; jmp 1b\n\t"		\
-		     ".previous\n\t"				\
- 		     ".section __ex_table,\"a\"\n"		\
-		     "   .align 8\n\t"				\
-		     "   .quad 	2b,3b\n\t"			\
-		     ".previous"				\
-		     : "=a" (ret__)				\
-		     : "c" (msr), "0" (a), "d" (b), "i" (-EFAULT)); \
-	ret__; })
+        asm volatile("2: wrmsr ; xorl %0,%0\n"			\
+            "1:\n\t"					\
+            ".section .fixup,\"ax\"\n\t"		\
+            "3:  movl %4,%0 ; jmp 1b\n\t"		\
+            ".previous\n\t"				\
+            ".section __ex_table,\"a\"\n"		\
+            "   .align 8\n\t"				\
+            "   .quad 	2b,3b\n\t"			\
+            ".previous"				\
+            : "=a" (ret__)				\
+            : "c" (msr), "0" (a), "d" (b), "i" (-EFAULT)); \
+        ret__; })
 
 #define checking_wrmsrl(msr,val) wrmsr_safe(msr,(u32)(val),(u32)((val)>>32))
 
 #define rdmsr_safe(msr,a,b) \
-	({ int ret__;						\
-	  asm volatile ("1:       rdmsr\n"			\
-                      "2:\n"					\
-                      ".section .fixup,\"ax\"\n"		\
-                      "3:       movl %4,%0\n"			\
-                      " jmp 2b\n"				\
-                      ".previous\n"				\
-                      ".section __ex_table,\"a\"\n"		\
-                      " .align 8\n"				\
-                      " .quad 1b,3b\n"				\
-                      ".previous":"=&bDS" (ret__), "=a"(*(a)), "=d"(*(b))\
-                      :"c"(msr), "i"(-EIO), "0"(0));		\
-	  ret__; })		
+    ({ int ret__;						\
+     asm volatile ("1:       rdmsr\n"			\
+         "2:\n"					\
+         ".section .fixup,\"ax\"\n"		\
+         "3:       movl %4,%0\n"			\
+         " jmp 2b\n"				\
+         ".previous\n"				\
+         ".section __ex_table,\"a\"\n"		\
+         " .align 8\n"				\
+         " .quad 1b,3b\n"				\
+         ".previous":"=&bDS" (ret__), "=a"(*(a)), "=d"(*(b))\
+         :"c"(msr), "i"(-EIO), "0"(0));		\
+     ret__; })		
 
 static inline int 
 rdmsrl_safe(uint32_t msr, uint64_t *v) {
@@ -70,52 +70,52 @@ rdmsrl_safe(uint32_t msr, uint64_t *v) {
     return ret;
 }
 
-static inline uint64_t
+    static inline uint64_t
 rdtsc( void )
 {
-	uint32_t low, high;
-	__asm__ __volatile__("rdtsc" : "=a" (low), "=d" (high));
-	return ((uint64_t) high << 32) | low;
+    uint32_t low, high;
+    __asm__ __volatile__("rdtsc" : "=a" (low), "=d" (high));
+    return ((uint64_t) high << 32) | low;
 }
 
 
 #define rdtscl(low) \
-     __asm__ __volatile__ ("rdtsc" : "=a" (low) : : "edx")
+    __asm__ __volatile__ ("rdtsc" : "=a" (low) : : "edx")
 
 #define rdtscll(val) do { \
-     unsigned int __a,__d; \
-     asm volatile("rdtsc" : "=a" (__a), "=d" (__d)); \
-     (val) = ((unsigned long)__a) | (((unsigned long)__d)<<32); \
+    unsigned int __a,__d; \
+    asm volatile("rdtsc" : "=a" (__a), "=d" (__d)); \
+    (val) = ((unsigned long)__a) | (((unsigned long)__d)<<32); \
 } while(0)
 
 #define write_tsc(val1,val2) wrmsr(0x10, val1, val2)
 
 #define rdpmc(counter,low,high) \
-     __asm__ __volatile__("rdpmc" \
-			  : "=a" (low), "=d" (high) \
-			  : "c" (counter))
+            __asm__ __volatile__("rdpmc" \
+                    : "=a" (low), "=d" (high) \
+                    : "c" (counter))
 
-static inline void cpuid(int op, unsigned int *eax, unsigned int *ebx,
-			 unsigned int *ecx, unsigned int *edx)
+        static inline void cpuid(int op, unsigned int *eax, unsigned int *ebx,
+                unsigned int *ecx, unsigned int *edx)
 {
-	__asm__("cpuid"
-		: "=a" (*eax),
-		  "=b" (*ebx),
-		  "=c" (*ecx),
-		  "=d" (*edx)
-		: "0" (op));
+    __asm__("cpuid"
+            : "=a" (*eax),
+            "=b" (*ebx),
+            "=c" (*ecx),
+            "=d" (*edx)
+            : "0" (op));
 }
 
 /* Some CPUID calls want 'count' to be placed in ecx */
 static inline void cpuid_count(int op, int count, int *eax, int *ebx, int *ecx,
-	       	int *edx)
+        int *edx)
 {
-	__asm__("cpuid"
-		: "=a" (*eax),
-		  "=b" (*ebx),
-		  "=c" (*ecx),
-		  "=d" (*edx)
-		: "0" (op), "c" (count));
+    __asm__("cpuid"
+            : "=a" (*eax),
+            "=b" (*ebx),
+            "=c" (*ecx),
+            "=d" (*edx)
+            : "0" (op), "c" (count));
 }
 
 /*
@@ -123,43 +123,43 @@ static inline void cpuid_count(int op, int count, int *eax, int *ebx, int *ecx,
  */
 static inline unsigned int cpuid_eax(unsigned int op)
 {
-	unsigned int eax;
+    unsigned int eax;
 
-	__asm__("cpuid"
-		: "=a" (eax)
-		: "0" (op)
-		: "bx", "cx", "dx");
-	return eax;
+    __asm__("cpuid"
+            : "=a" (eax)
+            : "0" (op)
+            : "bx", "cx", "dx");
+    return eax;
 }
 static inline unsigned int cpuid_ebx(unsigned int op)
 {
-	unsigned int eax, ebx;
+    unsigned int eax, ebx;
 
-	__asm__("cpuid"
-		: "=a" (eax), "=b" (ebx)
-		: "0" (op)
-		: "cx", "dx" );
-	return ebx;
+    __asm__("cpuid"
+            : "=a" (eax), "=b" (ebx)
+            : "0" (op)
+            : "cx", "dx" );
+    return ebx;
 }
 static inline unsigned int cpuid_ecx(unsigned int op)
 {
-	unsigned int eax, ecx;
+    unsigned int eax, ecx;
 
-	__asm__("cpuid"
-		: "=a" (eax), "=c" (ecx)
-		: "0" (op)
-		: "bx", "dx" );
-	return ecx;
+    __asm__("cpuid"
+            : "=a" (eax), "=c" (ecx)
+            : "0" (op)
+            : "bx", "dx" );
+    return ecx;
 }
 static inline unsigned int cpuid_edx(unsigned int op)
 {
-	unsigned int eax, edx;
+    unsigned int eax, edx;
 
-	__asm__("cpuid"
-		: "=a" (eax), "=d" (edx)
-		: "0" (op)
-		: "bx", "cx");
-	return edx;
+    __asm__("cpuid"
+            : "=a" (eax), "=d" (edx)
+            : "0" (op)
+            : "bx", "cx");
+    return edx;
 }
 
 #define MSR_IA32_UCODE_WRITE		0x79

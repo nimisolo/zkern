@@ -343,7 +343,7 @@ ACPI_EXTERN union acpi_operand_object *acpi_gbl_module_code_list;
 
 extern const u8 acpi_gbl_ns_properties[ACPI_NUM_NS_TYPES];
 extern const struct acpi_predefined_names
-    acpi_gbl_pre_defined_names[NUM_PREDEFINED_NAMES];
+acpi_gbl_pre_defined_names[NUM_PREDEFINED_NAMES];
 
 #ifdef ACPI_DEBUG_OUTPUT
 ACPI_EXTERN u32 acpi_gbl_current_node_count;
@@ -373,7 +373,7 @@ ACPI_EXTERN u8 acpi_gbl_cm_single_step;
  ****************************************************************************/
 
 extern struct acpi_bit_register_info
-    acpi_gbl_bit_register_info[ACPI_NUM_BITREG];
+acpi_gbl_bit_register_info[ACPI_NUM_BITREG];
 ACPI_EXTERN u8 acpi_gbl_sleep_type_a;
 ACPI_EXTERN u8 acpi_gbl_sleep_type_b;
 
@@ -384,9 +384,9 @@ ACPI_EXTERN u8 acpi_gbl_sleep_type_b;
  ****************************************************************************/
 
 extern struct acpi_fixed_event_info
-    acpi_gbl_fixed_event_info[ACPI_NUM_FIXED_EVENTS];
+acpi_gbl_fixed_event_info[ACPI_NUM_FIXED_EVENTS];
 ACPI_EXTERN struct acpi_fixed_event_handler
-    acpi_gbl_fixed_event_handlers[ACPI_NUM_FIXED_EVENTS];
+acpi_gbl_fixed_event_handlers[ACPI_NUM_FIXED_EVENTS];
 ACPI_EXTERN struct acpi_gpe_xrupt_info *acpi_gbl_gpe_xrupt_list_head;
 ACPI_EXTERN struct acpi_gpe_block_info
 *acpi_gbl_gpe_fadt_blocks[ACPI_MAX_GPE_BLOCKS];

@@ -2,18 +2,18 @@
 #include <lwk/task.h>
 #include <lwk/fdTable.h>
 
-int
+    int
 sys_dup(
-	unsigned int 		filedes
-)
+        unsigned int 		filedes
+       )
 {
-	int ret = -EBADF;
-	unsigned int newfd;
-	struct file *file = fdTableFile( current->fdTable, filedes );
+    int ret = -EBADF;
+    unsigned int newfd;
+    struct file *file = fdTableFile( current->fdTable, filedes );
 
-	newfd = fdTableGetUnused( current->fdTable );
-	fdTableInstallFd( current->fdTable, newfd, file );
+    newfd = fdTableGetUnused( current->fdTable );
+    fdTableInstallFd( current->fdTable, newfd, file );
 
-	ret = newfd;
-	return ret;
+    ret = newfd;
+    return ret;
 }

@@ -62,9 +62,9 @@ extern void __chk_io_ptr(void __iomem *);
 
 #ifndef RELOC_HIDE
 # define RELOC_HIDE(ptr, off)					\
-  ({ unsigned long __ptr;					\
+    ({ unsigned long __ptr;					\
      __ptr = (unsigned long) (ptr);				\
-    (typeof(ptr)) (__ptr + (off)); })
+     (typeof(ptr)) (__ptr + (off)); })
 #endif
 
 #endif /* __KERNEL__ */

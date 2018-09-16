@@ -4,9 +4,9 @@
 #ifdef	__KERNEL__
 
 #define BITS_TO_LONGS(bits) \
-	(((bits)+BITS_PER_LONG-1)/BITS_PER_LONG)
+    (((bits)+BITS_PER_LONG-1)/BITS_PER_LONG)
 #define DECLARE_BITMAP(name,bits) \
-	unsigned long name[BITS_TO_LONGS(bits)]
+    unsigned long name[BITS_TO_LONGS(bits)]
 
 #define BITS_PER_BYTE 8
 #endif
@@ -171,10 +171,10 @@ typedef __u64 __bitwise __be64;
 typedef unsigned __bitwise__ gfp_t;
 
 struct ustat {
-	__kernel_daddr_t	f_tfree;
-	__kernel_ino_t		f_tinode;
-	char			f_fname[6];
-	char			f_fpack[6];
+    __kernel_daddr_t	f_tfree;
+    __kernel_ino_t		f_tinode;
+    char			f_fname[6];
+    char			f_fpack[6];
 };
 #endif
 

@@ -794,56 +794,56 @@ typedef u8 acpi_adr_space_type;
  * or an unresolved named reference.
  */
 union acpi_object {
-	acpi_object_type type;	/* See definition of acpi_ns_type for values */
-	struct {
-		acpi_object_type type;	/* ACPI_TYPE_INTEGER */
-		u64 value;	/* The actual number */
-	} integer;
+    acpi_object_type type;	/* See definition of acpi_ns_type for values */
+    struct {
+        acpi_object_type type;	/* ACPI_TYPE_INTEGER */
+        u64 value;	/* The actual number */
+    } integer;
 
-	struct {
-		acpi_object_type type;	/* ACPI_TYPE_STRING */
-		u32 length;	/* # of bytes in string, excluding trailing null */
-		char *pointer;	/* points to the string value */
-	} string;
+    struct {
+        acpi_object_type type;	/* ACPI_TYPE_STRING */
+        u32 length;	/* # of bytes in string, excluding trailing null */
+        char *pointer;	/* points to the string value */
+    } string;
 
-	struct {
-		acpi_object_type type;	/* ACPI_TYPE_BUFFER */
-		u32 length;	/* # of bytes in buffer */
-		u8 *pointer;	/* points to the buffer */
-	} buffer;
+    struct {
+        acpi_object_type type;	/* ACPI_TYPE_BUFFER */
+        u32 length;	/* # of bytes in buffer */
+        u8 *pointer;	/* points to the buffer */
+    } buffer;
 
-	struct {
-		acpi_object_type type;	/* ACPI_TYPE_PACKAGE */
-		u32 count;	/* # of elements in package */
-		union acpi_object *elements;	/* Pointer to an array of ACPI_OBJECTs */
-	} package;
+    struct {
+        acpi_object_type type;	/* ACPI_TYPE_PACKAGE */
+        u32 count;	/* # of elements in package */
+        union acpi_object *elements;	/* Pointer to an array of ACPI_OBJECTs */
+    } package;
 
-	struct {
-		acpi_object_type type;	/* ACPI_TYPE_LOCAL_REFERENCE */
-		acpi_object_type actual_type;	/* Type associated with the Handle */
-		acpi_handle handle;	/* object reference */
-	} reference;
+    struct {
+        acpi_object_type type;	/* ACPI_TYPE_LOCAL_REFERENCE */
+        acpi_object_type actual_type;	/* Type associated with the Handle */
+        acpi_handle handle;	/* object reference */
+    } reference;
 
-	struct {
-		acpi_object_type type;	/* ACPI_TYPE_PROCESSOR */
-		u32 proc_id;
-		acpi_io_address pblk_address;
-		u32 pblk_length;
-	} processor;
+    struct {
+        acpi_object_type type;	/* ACPI_TYPE_PROCESSOR */
+        u32 proc_id;
+        acpi_io_address pblk_address;
+        u32 pblk_length;
+    } processor;
 
-	struct {
-		acpi_object_type type;	/* ACPI_TYPE_POWER */
-		u32 system_level;
-		u32 resource_order;
-	} power_resource;
+    struct {
+        acpi_object_type type;	/* ACPI_TYPE_POWER */
+        u32 system_level;
+        u32 resource_order;
+    } power_resource;
 };
 
 /*
  * List of objects, used as a parameter list for control method evaluation
  */
 struct acpi_object_list {
-	u32 count;
-	union acpi_object *pointer;
+    u32 count;
+    union acpi_object *pointer;
 };
 
 /*
@@ -854,8 +854,8 @@ struct acpi_object_list {
 #define ACPI_ALLOCATE_LOCAL_BUFFER  (acpi_size) (-2)
 
 struct acpi_buffer {
-	acpi_size length;	/* Length in bytes of the buffer */
-	void *pointer;		/* pointer to buffer */
+    acpi_size length;	/* Length in bytes of the buffer */
+    void *pointer;		/* pointer to buffer */
 };
 
 /*
@@ -869,9 +869,9 @@ struct acpi_buffer {
  * Predefined Namespace items
  */
 struct acpi_predefined_names {
-	char *name;
-	u8 type;
-	char *val;
+    char *name;
+    u8 type;
+    char *val;
 };
 
 /*
@@ -886,13 +886,13 @@ struct acpi_predefined_names {
  * System info returned by acpi_get_system_info()
  */
 struct acpi_system_info {
-	u32 acpi_ca_version;
-	u32 flags;
-	u32 timer_resolution;
-	u32 reserved1;
-	u32 reserved2;
-	u32 debug_level;
-	u32 debug_layer;
+    u32 acpi_ca_version;
+    u32 flags;
+    u32 timer_resolution;
+    u32 reserved1;
+    u32 reserved2;
+    u32 debug_level;
+    u32 debug_layer;
 };
 
 /* Table Event Types */
@@ -907,15 +907,15 @@ struct acpi_system_info {
 typedef u32(ACPI_SYSTEM_XFACE * acpi_osd_handler) (void *context);
 
 typedef void
- (ACPI_SYSTEM_XFACE * acpi_osd_exec_callback) (void *context);
+(ACPI_SYSTEM_XFACE * acpi_osd_exec_callback) (void *context);
 
 /*
  * Various handlers and callback procedures
  */
 typedef
 void (*ACPI_GBL_EVENT_HANDLER) (u32 event_type,
-			       acpi_handle device,
-			       u32 event_number, void *context);
+        acpi_handle device,
+        u32 event_number, void *context);
 
 #define ACPI_EVENT_TYPE_GPE         0
 #define ACPI_EVENT_TYPE_FIXED       1
@@ -937,9 +937,9 @@ typedef acpi_status(*acpi_init_handler) (acpi_handle object, u32 function);
 
 typedef
 acpi_status(*acpi_exception_handler) (acpi_status aml_status,
-				      acpi_name name,
-				      u16 opcode,
-				      u32 aml_offset, void *context);
+        acpi_name name,
+        u16 opcode,
+        u32 aml_offset, void *context);
 
 /* Table Event handler (Load, load_table, etc.) and types */
 
@@ -950,27 +950,27 @@ acpi_status(*acpi_tbl_handler) (u32 event, void *table, void *context);
 
 typedef
 acpi_status(*acpi_adr_space_handler) (u32 function,
-				      acpi_physical_address address,
-				      u32 bit_width,
-				      u64 *value,
-				      void *handler_context,
-				      void *region_context);
+        acpi_physical_address address,
+        u32 bit_width,
+        u64 *value,
+        void *handler_context,
+        void *region_context);
 
 #define ACPI_DEFAULT_HANDLER            NULL
 
 typedef
 acpi_status(*acpi_adr_space_setup) (acpi_handle region_handle,
-				    u32 function,
-				    void *handler_context,
-				    void **region_context);
+        u32 function,
+        void *handler_context,
+        void **region_context);
 
 #define ACPI_REGION_ACTIVATE    0
 #define ACPI_REGION_DEACTIVATE  1
 
 typedef
 acpi_status(*acpi_walk_callback) (acpi_handle object,
-				  u32 nesting_level,
-				  void *context, void **return_value);
+        u32 nesting_level,
+        void *context, void **return_value);
 
 typedef
 u32 (*acpi_interface_handler) (acpi_string interface_name, u32 supported);
@@ -995,14 +995,14 @@ u32 (*acpi_interface_handler) (acpi_string interface_name, u32 supported);
 /* Structures used for device/processor HID, UID, CID */
 
 struct acpica_device_id {
-	u32 length;		/* Length of string + null */
-	char *string;
+    u32 length;		/* Length of string + null */
+    char *string;
 };
 
 struct acpica_device_id_list {
-	u32 count;		/* Number of IDs in Ids array */
-	u32 list_size;		/* Size of list, including ID strings */
-	struct acpica_device_id ids[1];	/* ID array */
+    u32 count;		/* Number of IDs in Ids array */
+    u32 list_size;		/* Size of list, including ID strings */
+    struct acpica_device_id ids[1];	/* ID array */
 };
 
 /*
@@ -1010,19 +1010,19 @@ struct acpica_device_id_list {
  * Optimized for both 32- and 64-bit builds
  */
 struct acpi_device_info {
-	u32 info_size;		/* Size of info, including ID strings */
-	u32 name;		/* ACPI object Name */
-	acpi_object_type type;	/* ACPI object Type */
-	u8 param_count;		/* If a method, required parameter count */
-	u8 valid;		/* Indicates which optional fields are valid */
-	u8 flags;		/* Miscellaneous info */
-	u8 highest_dstates[4];	/* _sx_d values: 0xFF indicates not valid */
-	u8 lowest_dstates[5];	/* _sx_w values: 0xFF indicates not valid */
-	u32 current_status;	/* _STA value */
-	u64 address;	/* _ADR value */
-	struct acpica_device_id hardware_id;	/* _HID value */
-	struct acpica_device_id unique_id;	/* _UID value */
-	struct acpica_device_id_list compatible_id_list;	/* _CID list <must be last> */
+    u32 info_size;		/* Size of info, including ID strings */
+    u32 name;		/* ACPI object Name */
+    acpi_object_type type;	/* ACPI object Type */
+    u8 param_count;		/* If a method, required parameter count */
+    u8 valid;		/* Indicates which optional fields are valid */
+    u8 flags;		/* Miscellaneous info */
+    u8 highest_dstates[4];	/* _sx_d values: 0xFF indicates not valid */
+    u8 lowest_dstates[5];	/* _sx_w values: 0xFF indicates not valid */
+    u32 current_status;	/* _STA value */
+    u64 address;	/* _ADR value */
+    struct acpica_device_id hardware_id;	/* _HID value */
+    struct acpica_device_id unique_id;	/* _UID value */
+    struct acpica_device_id_list compatible_id_list;	/* _CID list <must be last> */
 };
 
 /* Values for Flags field above (acpi_get_object_info) */
@@ -1051,42 +1051,42 @@ struct acpi_device_info {
 /* Context structs for address space handlers */
 
 struct acpi_pci_id {
-	u16 segment;
-	u16 bus;
-	u16 device;
-	u16 function;
+    u16 segment;
+    u16 bus;
+    u16 device;
+    u16 function;
 };
 
 struct acpi_mem_space_context {
-	u32 length;
-	acpi_physical_address address;
-	acpi_physical_address mapped_physical_address;
-	u8 *mapped_logical_address;
-	acpi_size mapped_length;
+    u32 length;
+    acpi_physical_address address;
+    acpi_physical_address mapped_physical_address;
+    u8 *mapped_logical_address;
+    acpi_size mapped_length;
 };
 
 /*
  * struct acpi_memory_list is used only if the ACPICA local cache is enabled
  */
 struct acpi_memory_list {
-	char *list_name;
-	void *list_head;
-	u16 object_size;
-	u16 max_depth;
-	u16 current_depth;
-	u16 link_offset;
+    char *list_name;
+    void *list_head;
+    u16 object_size;
+    u16 max_depth;
+    u16 current_depth;
+    u16 link_offset;
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 
-	/* Statistics for debug memory tracking only */
+    /* Statistics for debug memory tracking only */
 
-	u32 total_allocated;
-	u32 total_freed;
-	u32 max_occupied;
-	u32 total_size;
-	u32 current_total_size;
-	u32 requests;
-	u32 hits;
+    u32 total_allocated;
+    u32 total_freed;
+    u32 max_occupied;
+    u32 total_size;
+    u32 current_total_size;
+    u32 requests;
+    u32 hits;
 #endif
 };
 

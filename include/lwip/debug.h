@@ -64,7 +64,7 @@
 
 #ifndef LWIP_NOASSERT
 #define LWIP_ASSERT(message, assertion) do { if(!(assertion)) \
-  LWIP_PLATFORM_ASSERT(message); } while(0)
+    LWIP_PLATFORM_ASSERT(message); } while(0)
 #else  /* LWIP_NOASSERT */
 #define LWIP_ASSERT(message, assertion) 
 #endif /* LWIP_NOASSERT */
@@ -72,7 +72,7 @@
 /** if "expression" isn't true, then print "message" and execute "handler" expression */
 #ifndef LWIP_ERROR
 #define LWIP_ERROR(message, expression, handler) do { if (!(expression)) { \
-  LWIP_PLATFORM_ASSERT(message); handler;}} while(0)
+    LWIP_PLATFORM_ASSERT(message); handler;}} while(0)
 #endif /* LWIP_ERROR */
 
 #ifdef LWIP_DEBUG
@@ -80,16 +80,16 @@
  *  AND is of correct type AND is at least LWIP_DBG_LEVEL
  */
 #define LWIP_DEBUGF(debug, message) do { \
-                               if ( \
-                                   ((debug) & LWIP_DBG_ON) && \
-                                   ((debug) & LWIP_DBG_TYPES_ON) && \
-                                   ((s16_t)((debug) & LWIP_DBG_MASK_LEVEL) >= LWIP_DBG_MIN_LEVEL)) { \
-                                 LWIP_PLATFORM_DIAG(message); \
-                                 if ((debug) & LWIP_DBG_HALT) { \
-                                   while(1); \
-                                 } \
-                               } \
-                             } while(0)
+    if ( \
+            ((debug) & LWIP_DBG_ON) && \
+            ((debug) & LWIP_DBG_TYPES_ON) && \
+            ((s16_t)((debug) & LWIP_DBG_MASK_LEVEL) >= LWIP_DBG_MIN_LEVEL)) { \
+        LWIP_PLATFORM_DIAG(message); \
+        if ((debug) & LWIP_DBG_HALT) { \
+            while(1); \
+        } \
+    } \
+} while(0)
 
 #else  /* LWIP_DEBUG */
 #define LWIP_DEBUGF(debug, message) 

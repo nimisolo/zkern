@@ -1,11 +1,11 @@
 #include <lwk/aspace.h>
 #include <arch/uaccess.h>
-	
-int
+
+    int
 sys_aspace_update_user_cpumask(
-		  id_t                      id,
-		  user_cpumask_t  __user  * user_cpumask
-		  )
+        id_t                      id,
+        user_cpumask_t  __user  * user_cpumask
+        )
 {
     user_cpumask_t _user_cpumask;
     cpumask_t      cpumask;
@@ -13,15 +13,15 @@ sys_aspace_update_user_cpumask(
 
 
     if (current->uid != 0) {
-	return -EPERM;
+        return -EPERM;
     }
-	
+
     ret = copy_from_user(&_user_cpumask, user_cpumask, sizeof(_user_cpumask));
 
     if (ret) {
-	return -EFAULT;
+        return -EFAULT;
     }
- 
+
     cpumask = cpumask_user2kernel(&_user_cpumask);
 
     return aspace_update_cpumask(id, &cpumask);

@@ -25,7 +25,7 @@ cpumask_t cpu_online_map;
  */
 void print_cpuinfo(struct cpuinfo *c)
 {
-	printk("logical cpu id\t: %u\n", c->logical_id);
-	print_arch_cpuinfo(c);
+    printk("logical cpu id\t: %u\n", c->logical_id);
+    print_arch_cpuinfo(c);
 }
 

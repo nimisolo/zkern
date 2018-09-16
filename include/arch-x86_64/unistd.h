@@ -231,7 +231,7 @@ __SYSCALL(__NR_getuid, sys_getuid)
 #define __NR_syslog                            103
 __SYSCALL(__NR_syslog, syscall_not_implemented)
 
-/* at the very end the stuff that never runs during the benchmarks */
+    /* at the very end the stuff that never runs during the benchmarks */
 #define __NR_getgid                            104
 __SYSCALL(__NR_getgid, sys_getgid)
 #define __NR_setuid                            105
@@ -296,7 +296,7 @@ __SYSCALL(__NR_utime, syscall_not_implemented)
 #define __NR_mknod                             133
 __SYSCALL(__NR_mknod, sys_mknod)
 
-/* Only needed for a.out */
+    /* Only needed for a.out */
 #define __NR_uselib                            134
 __SYSCALL(__NR_uselib, syscall_not_implemented)
 #define __NR_personality                       135
@@ -649,14 +649,14 @@ __SYSCALL(__NR_pipe2, syscall_not_implemented)
 #define __NR_inotify_init1 294
 __SYSCALL(__NR_inotify_init1, syscall_not_implemented)
 
-/**
- * LWK specific system calls.
- * 
- * The LWK-specific system call numbers start at a base of 500 to leave some
- * room for the number of Linux system calls to grow. If the number of Linux
- * syscalls becomes >= 500, the LWK syscall number base will need to be
- * increased to avoid overlap.
- */
+    /**
+     * LWK specific system calls.
+     * 
+     * The LWK-specific system call numbers start at a base of 500 to leave some
+     * room for the number of Linux system calls to grow. If the number of Linux
+     * syscalls becomes >= 500, the LWK syscall number base will need to be
+     * increased to avoid overlap.
+     */
 #define __NR_pmem_add		500
 __SYSCALL(__NR_pmem_add, sys_pmem_add)
 #define __NR_pmem_del		501

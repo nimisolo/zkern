@@ -26,7 +26,7 @@ static int initialized = 0;
  */
 static inline int cursor(int r, int c)
 {
-	return (r * ncols * 2) + c * 2;
+    return (r * ncols * 2) + c * 2;
 }
 
 /**
@@ -34,13 +34,13 @@ static inline int cursor(int r, int c)
  */
 static inline void update_blinky_cursor(int r, int c)
 {
-	unsigned short pos = (r * ncols) + c;
+    unsigned short pos = (r * ncols) + c;
 
-	// Update the VGA cursor data register (this is slow!)
-	outb(0x0F, 0x3D4); // LO
-	outb(pos & 0xFF, 0x3D5);
-	outb(0x0E, 0x3D4); // HI
-	outb(pos >> 8, 0x3D5);
+    // Update the VGA cursor data register (this is slow!)
+    outb(0x0F, 0x3D4); // LO
+    outb(pos & 0xFF, 0x3D5);
+    outb(0x0E, 0x3D4); // HI
+    outb(pos >> 8, 0x3D5);
 }
 
 /**
@@ -48,18 +48,18 @@ static inline void update_blinky_cursor(int r, int c)
  */ 
 static void vga_scroll(void)
 {
-	int i;
+    int i;
 
-	// Move all existing lines up by one
-	memmove(
-		(void *) vga_fb,
-		(void *) (vga_fb + cursor(1, 0)),
-		(nrows - 1) * ncols * sizeof(uint16_t)
-	);
+    // Move all existing lines up by one
+    memmove(
+            (void *) vga_fb,
+            (void *) (vga_fb + cursor(1, 0)),
+            (nrows - 1) * ncols * sizeof(uint16_t)
+           );
 
-	// Blank the new line at the bottom of the screen
-	for (i = 0; i < ncols; i++)
-		vga_fb[cursor(nrows-1, i)] = ' ';
+    // Blank the new line at the bottom of the screen
+    for (i = 0; i < ncols; i++)
+        vga_fb[cursor(nrows-1, i)] = ' ';
 }
 
 /**
@@ -67,15 +67,15 @@ static void vga_scroll(void)
  */ 
 static void vga_newline(void)
 {
-	row = row + 1;
-	col = 0;
+    row = row + 1;
+    col = 0;
 
-	if (row == nrows) {
-		row = nrows - 1;
-		vga_scroll();
-	}
+    if (row == nrows) {
+        row = nrows - 1;
+        vga_scroll();
+    }
 
-	update_blinky_cursor(row, col);
+    update_blinky_cursor(row, col);
 }
 
 /**
@@ -83,10 +83,10 @@ static void vga_newline(void)
  */
 static void vga_set_font_color(uint8_t color)
 {
-	int i, j;
-	for (i = 0; i < nrows; i++)
-		for (j = 0; j < ncols; j++)
-			vga_fb[cursor(i, j) + 1] = color;
+    int i, j;
+    for (i = 0; i < nrows; i++)
+        for (j = 0; j < ncols; j++)
+            vga_fb[cursor(i, j) + 1] = color;
 }
 
 /**
@@ -94,12 +94,12 @@ static void vga_set_font_color(uint8_t color)
  */
 static void vga_putc(unsigned char c)
 {
-	// Print the character
-	vga_fb[cursor(row, col)] = c;
+    // Print the character
+    vga_fb[cursor(row, col)] = c;
 
-	// Move cursor
-	if (++col == ncols)
-		vga_newline();
+    // Move cursor
+    if (++col == ncols)
+        vga_newline();
 }
 
 /**
@@ -107,33 +107,33 @@ static void vga_putc(unsigned char c)
  */
 static void vga_write(struct console *con, const char *str)
 {
-	unsigned char c;
+    unsigned char c;
 
-	while ((c = *str++) != '\0') {
-		switch (c) {
-			case '\n':
-				vga_newline();
-				break;
+    while ((c = *str++) != '\0') {
+        switch (c) {
+        case '\n':
+            vga_newline();
+            break;
 
-			case '\t':
-				/* Emulate a TAB */
-				vga_putc(' ');
-				while ((col % 8) != 0)
-					vga_putc(' ');
-				break;
+        case '\t':
+            /* Emulate a TAB */
+            vga_putc(' ');
+            while ((col % 8) != 0)
+                vga_putc(' ');
+            break;
 
-			default: 
-				vga_putc(c);
-		}
-	}
+        default: 
+            vga_putc(c);
+        }
+    }
 }
 
 /**
  * VGA console device.
  */
 static struct console vga_console = {
-	.name  = "VGA Console",
-	.write = vga_write
+    .name  = "VGA Console",
+    .write = vga_write
 };
 
 /**
@@ -141,16 +141,16 @@ static struct console vga_console = {
  */
 int vga_console_init(void)
 {
-	if (initialized) {
-		printk(KERN_ERR "VGA console already initialized.\n");
-		return -1;
-	}
+    if (initialized) {
+        printk(KERN_ERR "VGA console already initialized.\n");
+        return -1;
+    }
 
-	vga_set_font_color(0x0F /* White */);
-	console_register(&vga_console);
-	initialized = 1;
+    vga_set_font_color(0x0F /* White */);
+    console_register(&vga_console);
+    initialized = 1;
 
-	return 0;
+    return 0;
 }
 
 DRIVER_INIT("console", vga_console_init);

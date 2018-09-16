@@ -16,20 +16,20 @@ struct work_struct;
 typedef void (*work_func_t)(struct work_struct *work);
 
 enum {
-	WORK_STRUCT_PENDING = 0,        /* T if work item pending execution */
-	WORK_STRUCT_FLAG_MASK = (3UL),
-	WORK_STRUCT_WQ_DATA_MASK = (~WORK_STRUCT_FLAG_MASK)
+    WORK_STRUCT_PENDING = 0,        /* T if work item pending execution */
+    WORK_STRUCT_FLAG_MASK = (3UL),
+    WORK_STRUCT_WQ_DATA_MASK = (~WORK_STRUCT_FLAG_MASK)
 };
 
 struct work_struct {
-	atomic_long_t data;
-	struct list_head entry;
-	work_func_t func;
+    atomic_long_t data;
+    struct list_head entry;
+    work_func_t func;
 };
 
 struct delayed_work {
-	struct work_struct work;
-	struct timer timer;
+    struct work_struct work;
+    struct timer timer;
 };
 
 /*
@@ -41,33 +41,33 @@ struct delayed_work {
 #define WORK_DATA_INIT()    ATOMIC_LONG_INIT(0)
 
 #define __WORK_INITIALIZER(n, f)  				\
-	{											\
-		.data = WORK_DATA_INIT(),				\
-		.entry  = { &(n).entry, &(n).entry },	\
-		.func = (f),							\
-    }
+{											\
+    .data = WORK_DATA_INIT(),				\
+    .entry  = { &(n).entry, &(n).entry },	\
+    .func = (f),							\
+}
 
 #define __DELAYED_WORK_INITIALIZER(n, f) {          \
     .work = __WORK_INITIALIZER((n).work, (f)),      \
     .timer = TIMER_INITIALIZER((n).timer, NULL, 0, 0),  \
-    }
+}
 #define DECLARE_WORK(n, function)	\
-	struct work_struct n = __WORK_INITIALIZER(n, function)
+    struct work_struct n = __WORK_INITIALIZER(n, function)
 
 #define DECLARE_DELAYED_WORK(n, f)	\
-	struct delayed_work n = __DELAYED_WORK_INITIALIZER(n, f)
+    struct delayed_work n = __DELAYED_WORK_INITIALIZER(n, f)
 
 #define PREPARE_WORK(_work, _func)	\
-	do {							\
-		(_work)->func = (_func);	\
-	} while (0)
+    do {							\
+        (_work)->func = (_func);	\
+    } while (0)
 
 #define INIT_WORK(_work, _func)								\
-	do {													\
-		(_work)->data = (atomic_long_t) WORK_DATA_INIT();	\
-		INIT_LIST_HEAD(&(_work)->entry);					\
-		PREPARE_WORK((_work), (_func));						\
-	} while (0)
+    do {													\
+        (_work)->data = (atomic_long_t) WORK_DATA_INIT();	\
+        INIT_LIST_HEAD(&(_work)->entry);					\
+        PREPARE_WORK((_work), (_func));						\
+    } while (0)
 
 #define INIT_DELAYED_WORK(_work, _func)             \
     do {                            \
@@ -76,10 +76,10 @@ struct delayed_work {
     } while (0)
 
 #define INIT_DELAYED_WORK_DEFERRABLE(_work, _func)			\
-	do {							\
-		INIT_WORK(&(_work)->work, (_func));		\
-		init_timer(&(_work)->timer);		\
-	} while (0)
+    do {							\
+        INIT_WORK(&(_work)->work, (_func));		\
+        init_timer(&(_work)->timer);		\
+    } while (0)
 
 /**
  * work_pending - Find out whether a work item is currently pending
@@ -98,8 +98,8 @@ struct delayed_work {
 struct lock_class_key;
 extern struct workqueue_struct *
 __create_workqueue_key(const char *name, int singlethread,
-               int freezeable, struct lock_class_key *key,
-               const char *lock_name);
+        int freezeable, struct lock_class_key *key,
+        const char *lock_name);
 
 /* Create a worker thread */
 struct workqueue_struct *create_workqueue(const char *name);
@@ -121,9 +121,9 @@ void flush_scheduled_work(void);
 extern int
 queue_work_on(int cpu, struct workqueue_struct *wq, struct work_struct *work);
 extern int queue_delayed_work(struct workqueue_struct *wq,
-            struct delayed_work *work, unsigned long delay);
+        struct delayed_work *work, unsigned long delay);
 extern int queue_delayed_work_on(int cpu, struct workqueue_struct *wq,
-            struct delayed_work *work, unsigned long delay);
+        struct delayed_work *work, unsigned long delay);
 
 extern int flush_work(struct work_struct *work);
 
@@ -146,7 +146,7 @@ extern int cancel_work_sync(struct work_struct *work);
 
 static inline struct delayed_work *to_delayed_work(struct work_struct *work)
 {
-        return container_of(work, struct delayed_work, work);
+    return container_of(work, struct delayed_work, work);
 }
 
 #endif

@@ -22,15 +22,15 @@
 
 
 struct arch_mm {
-	xpte_t	*page_table_root;
+    xpte_t	*page_table_root;
 };
 
 
 // Architecture-specific task information
 struct arch_task {
-	uint32_t		flags;		// arch-dependent task flags
-	unsigned long		addr_limit;	// task's virtual memory space is from [0,addr_limit)
-	struct thread_struct 	thread;
+    uint32_t		flags;		// arch-dependent task flags
+    unsigned long		addr_limit;	// task's virtual memory space is from [0,addr_limit)
+    struct thread_struct 	thread;
 };
 
 

@@ -2,8 +2,8 @@
 #define _ASM_GENERIC_MMAN_H
 
 /*
- Author: Michael S. Tsirkin <mst@mellanox.co.il>, Mellanox Technologies Ltd.
- Based on: asm-xxx/mman.h
+Author: Michael S. Tsirkin <mst@mellanox.co.il>, Mellanox Technologies Ltd.
+Based on: asm-xxx/mman.h
 */
 
 #define PROT_READ	0x1		/* page can be read */

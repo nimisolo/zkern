@@ -58,34 +58,34 @@
 #include <stdarg.h>
 #include <lwk/types.h>
 extern int sprintf(char * buf, const char * fmt, ...)
-	__attribute__ ((format (printf, 2, 3)));
+    __attribute__ ((format (printf, 2, 3)));
 extern int vsprintf(char *buf, const char *, va_list)
-	__attribute__ ((format (printf, 2, 0)));
+    __attribute__ ((format (printf, 2, 0)));
 extern int snprintf(char * buf, size_t size, const char * fmt, ...)
-	__attribute__ ((format (printf, 3, 4)));
+    __attribute__ ((format (printf, 3, 4)));
 extern int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
-	__attribute__ ((format (printf, 3, 0)));
+    __attribute__ ((format (printf, 3, 0)));
 extern int scnprintf(char * buf, size_t size, const char * fmt, ...)
-	__attribute__ ((format (printf, 3, 4)));
+    __attribute__ ((format (printf, 3, 4)));
 extern int vscnprintf(char *buf, size_t size, const char *fmt, va_list args)
-	__attribute__ ((format (printf, 3, 0)));
+    __attribute__ ((format (printf, 3, 0)));
 extern int vprintk(const char *fmt, va_list args)
-        __attribute__ ((format (printf, 1, 0)));
+    __attribute__ ((format (printf, 1, 0)));
 extern int printk(const char * fmt, ...)
-        __attribute__ ((format (printf, 1, 2)));
+    __attribute__ ((format (printf, 1, 2)));
 extern char * kasprintf( int, const char * fmt, ... )
-        __attribute__ ((format (printf, 2, 3)));
+    __attribute__ ((format (printf, 2, 3)));
 extern char * kvasprintf( int, const char * fmt, va_list args )
-        __attribute__ ((format (printf, 2, 0)));
+    __attribute__ ((format (printf, 2, 0)));
 
 #define pr_emerg(fmt, ...) \
-    printk(KERN_EMERG fmt, ##__VA_ARGS__)
+        printk(KERN_EMERG fmt, ##__VA_ARGS__)
 #define pr_err(fmt, ...) \
-    printk(KERN_ERR fmt, ##__VA_ARGS__)
+        printk(KERN_ERR fmt, ##__VA_ARGS__)
 #define pr_cont(fmt, ...) \
-    printk(KERN_CONT fmt, ##__VA_ARGS__)
+        printk(KERN_CONT fmt, ##__VA_ARGS__)
 #define pr_info(fmt, ...) \
-    printk(KERN_INFO fmt, ##__VA_ARGS__)
+        printk(KERN_INFO fmt, ##__VA_ARGS__)
 
 
 #define print(fmt, args...) printk(fmt, ##args)
@@ -95,10 +95,10 @@ extern char * kvasprintf( int, const char * fmt, va_list args )
 #define print(fmt, args...) printf(fmt, ##args)
 #endif
 
-extern const char *
-hexdump(
-	const void *		data,
-	size_t			len
-);
+    extern const char *
+    hexdump(
+            const void *		data,
+            size_t			len
+           );
 
 #endif

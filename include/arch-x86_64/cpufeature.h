@@ -25,7 +25,7 @@
 #define X86_FEATURE_PGE		( 0*32+13) /* Page Global Enable */
 #define X86_FEATURE_MCA		( 0*32+14) /* Machine Check Architecture */
 #define X86_FEATURE_CMOV	( 0*32+15) /* CMOV instructions */
-					  /* (plus FCMOVcc, FCOMI with FPU) */
+/* (plus FCMOVcc, FCOMI with FPU) */
 #define X86_FEATURE_PAT		( 0*32+16) /* Page Attribute Table */
 #define X86_FEATURE_PSE36	( 0*32+17) /* 36-bit PSEs */
 #define X86_FEATURE_PN		( 0*32+18) /* Processor serial number */

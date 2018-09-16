@@ -19,7 +19,7 @@
 #include <asm/atomic.h>
 
 struct kref {
-	atomic_t refcount;
+    atomic_t refcount;
 };
 
 void kref_set(struct kref *kref, int num);

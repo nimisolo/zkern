@@ -28,20 +28,20 @@
 
 #ifndef __ASSEMBLY__
 struct e820entry {
-	u64 addr;	/* start of memory segment */
-	u64 size;	/* size of memory segment */
-	u32 type;	/* type of memory segment */
+    u64 addr;	/* start of memory segment */
+    u64 size;	/* size of memory segment */
+    u32 type;	/* type of memory segment */
 } __attribute__((packed));
 
 struct e820map {
-	int nr_map;
-	struct e820entry map[E820MAX];
+    int nr_map;
+    struct e820entry map[E820MAX];
 };
 
 extern unsigned long find_e820_area(unsigned long start, unsigned long end, 
-				    unsigned long size, unsigned long align);
+        unsigned long size, unsigned long align);
 extern void add_memory_region(unsigned long start, unsigned long size, 
-			      int type);
+        int type);
 extern void setup_memory_region(void);
 extern void contig_e820_setup(void); 
 extern unsigned long e820_end_of_ram(void);
@@ -53,7 +53,7 @@ extern int e820_all_mapped(unsigned long start, unsigned long end, unsigned type
 extern void e820_bootmem_free(unsigned long start,unsigned long end);
 extern void e820_setup_gap(void);
 extern unsigned long e820_hole_size(unsigned long start_pfn,
-				    unsigned long end_pfn);
+        unsigned long end_pfn);
 
 extern struct e820map e820;
 

@@ -5,8 +5,8 @@
 
 extern int
 v3_start_guest(
-	paddr_t		iso_start,
-	size_t		iso_size
-);
+        paddr_t		iso_start,
+        size_t		iso_size
+        );
 
 #endif

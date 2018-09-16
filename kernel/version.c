@@ -12,9 +12,9 @@
 #include <lwk/utsname.h>
 
 const char lwk_banner[] =
-	"LWK version " UTS_RELEASE " (" LWK_COMPILE_BY "@"
-	LWK_COMPILE_HOST ") (" LWK_COMPILER ") " UTS_VERSION
-	"\n";
+"LWK version " UTS_RELEASE " (" LWK_COMPILE_BY "@"
+LWK_COMPILE_HOST ") (" LWK_COMPILER ") " UTS_VERSION
+"\n";
 
 /**
  * User-level apps call the uname() system call to figure out basic
@@ -24,11 +24,11 @@ const char lwk_banner[] =
  * UTS_LINUX_RELEASE).
  */
 struct utsname linux_utsname = {
-	.sysname	=	UTS_LINUX_SYSNAME,
-	.nodename	=	UTS_NODENAME,
-	.release	=	UTS_LINUX_RELEASE,
-	.version	=	UTS_VERSION,
-	.machine	=	UTS_MACHINE,
-	.domainname	=	UTS_DOMAINNAME
+    .sysname	=	UTS_LINUX_SYSNAME,
+    .nodename	=	UTS_NODENAME,
+    .release	=	UTS_LINUX_RELEASE,
+    .version	=	UTS_VERSION,
+    .machine	=	UTS_MACHINE,
+    .domainname	=	UTS_DOMAINNAME
 };
 

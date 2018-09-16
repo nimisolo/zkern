@@ -8,8 +8,8 @@
  * address).
  */
 struct aux_ent {
-	unsigned long id;
-	unsigned long val;
+    unsigned long id;
+    unsigned long val;
 };
 
 #include <arch/auxvec.h>

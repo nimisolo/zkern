@@ -26,14 +26,14 @@
  *		Linus
  */
 
- /*
-  *  Bit simplified and optimized by Jan Hubicka
-  *  Support of BIGMEM added by Gerhard Wichert, Siemens AG, July 1999.
-  *
-  *  isa_memset_io, isa_memcpy_fromio, isa_memcpy_toio added,
-  *  isa_read[wl] and isa_write[wl] fixed
-  *  - Arnaldo Carvalho de Melo <acme@conectiva.com.br>
-  */
+/*
+ *  Bit simplified and optimized by Jan Hubicka
+ *  Support of BIGMEM added by Gerhard Wichert, Siemens AG, July 1999.
+ *
+ *  isa_memset_io, isa_memcpy_fromio, isa_memcpy_toio added,
+ *  isa_read[wl] and isa_write[wl] fixed
+ *  - Arnaldo Carvalho de Melo <acme@conectiva.com.br>
+ */
 
 #define __SLOW_DOWN_IO "\noutb %%al,$0x80"
 
@@ -47,34 +47,34 @@
  * Talk about misusing macros..
  */
 #define __OUT1(s,x) \
-static inline void out##s(unsigned x value, unsigned short port) {
+    static inline void out##s(unsigned x value, unsigned short port) {
 
 #define __OUT2(s,s1,s2) \
-__asm__ __volatile__ ("out" #s " %" s1 "0,%" s2 "1"
+        __asm__ __volatile__ ("out" #s " %" s1 "0,%" s2 "1"
 
 #define __OUT(s,s1,x) \
-__OUT1(s,x) __OUT2(s,s1,"w") : : "a" (value), "Nd" (port)); } \
+                __OUT1(s,x) __OUT2(s,s1,"w") : : "a" (value), "Nd" (port)); } \
 __OUT1(s##_p,x) __OUT2(s,s1,"w") __FULL_SLOW_DOWN_IO : : "a" (value), "Nd" (port));} \
 
 #define __IN1(s) \
-static inline RETURN_TYPE in##s(unsigned short port) { RETURN_TYPE _v;
+    static inline RETURN_TYPE in##s(unsigned short port) { RETURN_TYPE _v;
 
 #define __IN2(s,s1,s2) \
-__asm__ __volatile__ ("in" #s " %" s2 "1,%" s1 "0"
+        __asm__ __volatile__ ("in" #s " %" s2 "1,%" s1 "0"
 
 #define __IN(s,s1,i...) \
-__IN1(s) __IN2(s,s1,"w") : "=a" (_v) : "Nd" (port) ,##i ); return _v; } \
+                __IN1(s) __IN2(s,s1,"w") : "=a" (_v) : "Nd" (port) ,##i ); return _v; } \
 __IN1(s##_p) __IN2(s,s1,"w") __FULL_SLOW_DOWN_IO : "=a" (_v) : "Nd" (port) ,##i ); return _v; } \
 
 #define __INS(s) \
-static inline void ins##s(unsigned short port, void * addr, unsigned long count) \
+    static inline void ins##s(unsigned short port, void * addr, unsigned long count) \
 { __asm__ __volatile__ ("rep ; ins" #s \
-: "=D" (addr), "=c" (count) : "d" (port),"0" (addr),"1" (count)); }
+        : "=D" (addr), "=c" (count) : "d" (port),"0" (addr),"1" (count)); }
 
 #define __OUTS(s) \
-static inline void outs##s(unsigned short port, const void * addr, unsigned long count) \
+    static inline void outs##s(unsigned short port, const void * addr, unsigned long count) \
 { __asm__ __volatile__ ("rep ; outs" #s \
-: "=S" (addr), "=c" (count) : "d" (port),"0" (addr),"1" (count)); }
+        : "=S" (addr), "=c" (count) : "d" (port),"0" (addr),"1" (count)); }
 
 #define RETURN_TYPE unsigned char
 __IN(b,"")
@@ -87,36 +87,36 @@ __IN(l,"")
 #undef RETURN_TYPE
 
 __OUT(b,"b",char)
-__OUT(w,"w",short)
+    __OUT(w,"w",short)
 __OUT(l,,int)
 
-__INS(b)
-__INS(w)
+    __INS(b)
+    __INS(w)
 __INS(l)
 
-__OUTS(b)
-__OUTS(w)
+    __OUTS(b)
+    __OUTS(w)
 __OUTS(l)
 
 #define IO_SPACE_LIMIT 0xffff
 
 #if defined(__KERNEL__) && __x86_64__
 
-// #include <linux/vmalloc.h>
+    // #include <linux/vmalloc.h>
 
 #ifndef __i386__
-/*
- * Change virtual addresses to physical addresses and vv.
- * These are pretty trivial
- */
+    /*
+     * Change virtual addresses to physical addresses and vv.
+     * These are pretty trivial
+     */
 static inline unsigned long virt_to_phys(volatile void * address)
 {
-	return __pa(address);
+    return __pa(address);
 }
 
 static inline void * phys_to_virt(unsigned long address)
 {
-	return __va(address);
+    return __va(address);
 }
 #endif
 
@@ -143,7 +143,7 @@ extern void iounmap(volatile void __iomem *addr);
 extern void __iomem * ioremap_nocache(unsigned long offset, unsigned long size);
 
 extern int ioremap_change_attr(unsigned long vaddr, unsigned long size,
-                               unsigned long prot_val);
+        unsigned long prot_val);
 
 /*
  * ISA I/O bus memory addresses are 1:1 with the physical address.
@@ -170,19 +170,19 @@ extern int ioremap_change_attr(unsigned long vaddr, unsigned long size,
 
 static inline __u8 __readb(const volatile void __iomem *addr)
 {
-	return *(__force volatile __u8 *)addr;
+    return *(__force volatile __u8 *)addr;
 }
 static inline __u16 __readw(const volatile void __iomem *addr)
 {
-	return *(__force volatile __u16 *)addr;
+    return *(__force volatile __u16 *)addr;
 }
 static __always_inline __u32 __readl(const volatile void __iomem *addr)
 {
-	return *(__force volatile __u32 *)addr;
+    return *(__force volatile __u32 *)addr;
 }
 static inline __u64 __readq(const volatile void __iomem *addr)
 {
-	return *(__force volatile __u64 *)addr;
+    return *(__force volatile __u64 *)addr;
 }
 #define readb(x) __readb(x)
 #define readw(x) __readw(x)
@@ -201,19 +201,19 @@ static inline __u64 __readq(const volatile void __iomem *addr)
 
 static inline void __writel(__u32 b, volatile void __iomem *addr)
 {
-	*(__force volatile __u32 *)addr = b;
+    *(__force volatile __u32 *)addr = b;
 }
 static inline void __writeq(__u64 b, volatile void __iomem *addr)
 {
-	*(__force volatile __u64 *)addr = b;
+    *(__force volatile __u64 *)addr = b;
 }
 static inline void __writeb(__u8 b, volatile void __iomem *addr)
 {
-	*(__force volatile __u8 *)addr = b;
+    *(__force volatile __u8 *)addr = b;
 }
 static inline void __writew(__u16 b, volatile void __iomem *addr)
 {
-	*(__force volatile __u16 *)addr = b;
+    *(__force volatile __u16 *)addr = b;
 }
 #define writeq(val,addr) __writeq((val),(addr))
 #define writel(val,addr) __writel((val),(addr))
@@ -229,11 +229,11 @@ void __memcpy_toio(unsigned long,const void*,unsigned);
 
 static inline void memcpy_fromio(void *to, const volatile void __iomem *from, unsigned len)
 {
-	__memcpy_fromio(to,(unsigned long)from,len);
+    __memcpy_fromio(to,(unsigned long)from,len);
 }
 static inline void memcpy_toio(volatile void __iomem *to, const void *from, unsigned len)
 {
-	__memcpy_toio((unsigned long)to,from,len);
+    __memcpy_toio((unsigned long)to,from,len);
 }
 
 void memset_io(volatile void __iomem *a, int b, size_t c);
@@ -264,21 +264,21 @@ void memset_io(volatile void __iomem *a, int b, size_t c);
  *	address should have been obtained by ioremap.
  *	Returns 1 on a match.
  */
- 
+
 static inline int check_signature(const volatile void __iomem *io_addr,
-	const unsigned char *signature, int length)
+        const unsigned char *signature, int length)
 {
-	int retval = 0;
-	do {
-		if (readb(io_addr) != *signature)
-			goto out;
-		io_addr++;
-		signature++;
-		length--;
-	} while (length);
-	retval = 1;
+    int retval = 0;
+    do {
+        if (readb(io_addr) != *signature)
+            goto out;
+        io_addr++;
+        signature++;
+        length--;
+    } while (length);
+    retval = 1;
 out:
-	return retval;
+    return retval;
 }
 
 /* Nothing to do */

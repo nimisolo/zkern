@@ -22,8 +22,8 @@ struct preempt_notifier;
  */
 
 struct preempt_ops {
-	void (*sched_in)(struct preempt_notifier * pn, int cpu);
-	void (*sched_out)(struct preempt_notifier * pn, struct task_struct * next);
+    void (*sched_in)(struct preempt_notifier * pn, int cpu);
+    void (*sched_out)(struct preempt_notifier * pn, struct task_struct * next);
 };
 
 
@@ -34,8 +34,8 @@ struct preempt_ops {
  * @ops: defines the notifier functions to be called
  */
 struct preempt_notifier {
-	struct hlist_node link;
-	struct preempt_ops * ops;
+    struct hlist_node link;
+    struct preempt_ops * ops;
 };
 
 
@@ -43,10 +43,10 @@ void preempt_notifier_register(struct preempt_notifier * notifier);
 void preempt_notifier_unregister(struct preempt_notifier * notifier);
 
 static inline void preempt_notifier_init(struct preempt_notifier * notifier, 
-					 struct preempt_ops * ops) 
+        struct preempt_ops * ops) 
 {
-	INIT_HLIST_NODE(&notifier->link);
-	notifier->ops = ops;
+    INIT_HLIST_NODE(&notifier->link);
+    notifier->ops = ops;
 }
 
 

@@ -14,11 +14,11 @@ struct task_struct;
  * the slower get_current_via_RSP() must be used instead.  This is
  * sometimes necessary during the bootstrap process.
  */
-static inline struct task_struct *
+    static inline struct task_struct *
 get_current(void) 
 { 
-	struct task_struct *t = read_pda(pcurrent); 
-	return t;
+    struct task_struct *t = read_pda(pcurrent); 
+    return t;
 } 
 #define current get_current()
 
@@ -29,12 +29,12 @@ get_current(void)
  * WARNING: Do not call this from interrupt context.  It won't work.
  *          It is only safe to call this from task context.
  */
-static inline struct task_struct *
+    static inline struct task_struct *
 get_current_via_RSP(void)
 {
-	struct task_struct *tsk;
-	__asm__("andq %%rsp,%0; " : "=r" (tsk) : "0" (~(TASK_SIZE - 1)));
-	return tsk;
+    struct task_struct *tsk;
+    __asm__("andq %%rsp,%0; " : "=r" (tsk) : "0" (~(TASK_SIZE - 1)));
+    return tsk;
 }
 
 #else

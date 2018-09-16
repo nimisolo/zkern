@@ -2,12 +2,12 @@
 #include <lwk/smp.h>
 #include <arch/uaccess.h>
 
-int
+    int
 sys_getcpu(unsigned *cpu)
 {
-	BUG_ON(current->cpu_id != this_cpu);
-	if (cpu && copy_to_user(cpu, &current->cpu_id, sizeof(current->cpu_id)))
-		return -EFAULT;
+    BUG_ON(current->cpu_id != this_cpu);
+    if (cpu && copy_to_user(cpu, &current->cpu_id, sizeof(current->cpu_id)))
+        return -EFAULT;
 
-	return 0;
+    return 0;
 }

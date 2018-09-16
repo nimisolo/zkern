@@ -37,16 +37,16 @@ extern paddr_t initrd_start, initrd_end;
 
 /** Low-level interrupt handler type */
 typedef void (*idtvec_handler_t)(
-	struct pt_regs *	regs,
-	unsigned int		vector
-);
+        struct pt_regs *	regs,
+        unsigned int		vector
+        );
 
 
 /** Set the handler for the specified vector number */
 extern void
 set_idtvec_handler(
-	unsigned int		vector,	//!< Interrupt vector number
-	idtvec_handler_t	handler //!< Callback function
-);
+        unsigned int		vector,	//!< Interrupt vector number
+        idtvec_handler_t	handler //!< Callback function
+        );
 
 #endif

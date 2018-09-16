@@ -46,7 +46,7 @@ extern int kgdb_skipexception(int exception, struct pt_regs *regs);
  *	to a know spin state and the primary CPU has control over KGDB.
  */
 extern void kgdb_post_primary_code(struct pt_regs *regs, int e_vector,
-				  int err_code);
+        int err_code);
 
 /*
  *	kgdb_disable_hw_debug - Disable hardware debugging while we in kgdb.
@@ -75,25 +75,25 @@ extern struct task_struct	*kgdb_usethread;
 extern struct task_struct	*kgdb_contthread;
 
 enum kgdb_bptype {
-	BP_BREAKPOINT = 0,
-	BP_HARDWARE_BREAKPOINT,
-	BP_WRITE_WATCHPOINT,
-	BP_READ_WATCHPOINT,
-	BP_ACCESS_WATCHPOINT
+    BP_BREAKPOINT = 0,
+    BP_HARDWARE_BREAKPOINT,
+    BP_WRITE_WATCHPOINT,
+    BP_READ_WATCHPOINT,
+    BP_ACCESS_WATCHPOINT
 };
 
 enum kgdb_bpstate {
-	BP_UNDEFINED = 0,
-	BP_REMOVED,
-	BP_SET,
-	BP_ACTIVE
+    BP_UNDEFINED = 0,
+    BP_REMOVED,
+    BP_SET,
+    BP_ACTIVE
 };
 
 struct kgdb_bkpt {
-	unsigned long		bpt_addr;
-	unsigned char		saved_instr[BREAK_INSTR_SIZE];
-	enum kgdb_bptype	type;
-	enum kgdb_bpstate	state;
+    unsigned long		bpt_addr;
+    unsigned char		saved_instr[BREAK_INSTR_SIZE];
+    enum kgdb_bptype	type;
+    enum kgdb_bpstate	state;
 };
 
 #ifndef KGDB_MAX_BREAKPOINTS
@@ -175,9 +175,9 @@ extern void gdb_regs_to_pt_regs(unsigned long *gdb_regs, struct pt_regs *regs);
  */
 extern int
 kgdb_arch_handle_exception(int vector, int signo, int err_code,
-			   char *remcom_in_buffer,
-			   char *remcom_out_buffer,
-			   struct pt_regs *regs);
+        char *remcom_in_buffer,
+        char *remcom_out_buffer,
+        struct pt_regs *regs);
 
 /*
  *	kgdb_roundup_cpus - Get other CPUs into a holding pattern
@@ -220,15 +220,15 @@ extern int kgdb_arch_remove_breakpoint(unsigned long addr, char *bundle);
  * hardware debug registers.
  */
 struct kgdb_arch {
-	unsigned char		gdb_bpt_instr[BREAK_INSTR_SIZE];
-	unsigned long		flags;
+    unsigned char		gdb_bpt_instr[BREAK_INSTR_SIZE];
+    unsigned long		flags;
 
-	int	(*set_breakpoint)(unsigned long, char *);
-	int	(*remove_breakpoint)(unsigned long, char *);
-	int	(*set_hw_breakpoint)(unsigned long, int, enum kgdb_bptype);
-	int	(*remove_hw_breakpoint)(unsigned long, int, enum kgdb_bptype);
-	void	(*remove_all_hw_break)(void);
-	void	(*correct_hw_break)(void);
+    int	(*set_breakpoint)(unsigned long, char *);
+    int	(*remove_breakpoint)(unsigned long, char *);
+    int	(*set_hw_breakpoint)(unsigned long, int, enum kgdb_bptype);
+    int	(*remove_hw_breakpoint)(unsigned long, int, enum kgdb_bptype);
+    void	(*remove_all_hw_break)(void);
+    void	(*correct_hw_break)(void);
 };
 
 /*
@@ -244,13 +244,13 @@ struct kgdb_arch {
  * for the I/O driver.
  */
 struct kgdb_io {
-	const char		*name;
-	int			(*read_char) (void);
-	void			(*write_char) (u8);
-	void			(*flush) (void);
-	int			(*init) (void);
-	void			(*pre_exception) (void);
-	void			(*post_exception) (void);
+    const char		*name;
+    int			(*read_char) (void);
+    void			(*write_char) (u8);
+    void			(*flush) (void);
+    int			(*init) (void);
+    void			(*pre_exception) (void);
+    void			(*post_exception) (void);
 };
 
 extern struct kgdb_arch		arch_kgdb_ops;
@@ -269,7 +269,7 @@ extern int kgdb_isremovedbreak(unsigned long addr);
 
 extern int
 kgdb_handle_exception(int ex_vector, int signo, int err_code,
-		      struct pt_regs *regs);
+        struct pt_regs *regs);
 extern int kgdb_nmicallback(int cpu, void *regs);
 
 extern int			kgdb_single_step;

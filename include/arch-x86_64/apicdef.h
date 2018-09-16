@@ -10,7 +10,7 @@
 
 #define		APIC_DEFAULT_PHYS_BASE		0xfee00000
 #define		IOAPIC_DEFAULT_PHYS_BASE	0xfec00000
- 
+
 #define		APIC_ID		0x20
 #define			APIC_ID_MASK		(0xFFu<<24)
 #define			GET_APIC_ID(x)		(((x)>>24)&0xFFu)

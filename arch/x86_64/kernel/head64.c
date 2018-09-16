@@ -56,30 +56,30 @@ struct x8664_pda boot_cpu_pda[NR_CPUS] __cacheline_aligned;
  * PGD/PML4T. After this executes, accesses to virtual addresses [0,512GB) will
  * cause a page fault.
  */
-static void __init
+    static void __init
 zap_identity_mappings(void)
 {
-	pgd_t *pgd = pgd_offset_k(0UL);
-	pgd_clear(pgd);
-	__flush_tlb();
+    pgd_t *pgd = pgd_offset_k(0UL);
+    pgd_clear(pgd);
+    __flush_tlb();
 }
 
 /**
  * Determines the address of the kernel boot command line.
  */
-static char * __init
+    static char * __init
 find_command_line(void)
 {
-	unsigned long new_data;
+    unsigned long new_data;
 
-	new_data = *(u32 *) (x86_boot_params + NEW_CL_POINTER);
-	if (!new_data) {
-		if (OLD_CL_MAGIC != * (u16 *) OLD_CL_MAGIC_ADDR) {
-			return NULL;
-		}
-		new_data = OLD_CL_BASE_ADDR + * (u16 *) OLD_CL_OFFSET;
-	}
-	return __va(new_data);
+    new_data = *(u32 *) (x86_boot_params + NEW_CL_POINTER);
+    if (!new_data) {
+        if (OLD_CL_MAGIC != * (u16 *) OLD_CL_MAGIC_ADDR) {
+            return NULL;
+        }
+        new_data = OLD_CL_BASE_ADDR + * (u16 *) OLD_CL_OFFSET;
+    }
+    return __va(new_data);
 }
 
 /**
@@ -91,68 +91,68 @@ find_command_line(void)
  *
  * \note The order of operations is usually important.  Be careful!
  */
-void __init
+    void __init
 x86_64_start_kernel(char * real_mode_data)
 {
-	int i;
+    int i;
 
-	/*
- 	 * Zero the "Block Started by Symbol" section...
-	 * you know, the one that holds uninitialized data.
-	 */
-	memset(__bss_start, 0,
-	       (unsigned long) __bss_stop - (unsigned long) __bss_start);
+    /*
+     * Zero the "Block Started by Symbol" section...
+     * you know, the one that holds uninitialized data.
+     */
+    memset(__bss_start, 0,
+            (unsigned long) __bss_stop - (unsigned long) __bss_start);
 
-	/*
-	 * Make NULL pointer dereferences segfault.
-	 */
-	zap_identity_mappings();
+    /*
+     * Make NULL pointer dereferences segfault.
+     */
+    zap_identity_mappings();
 
-	/*
-	 * Setup the initial interrupt descriptor table (IDT).
-	 * This will be eventually be populated with the real handlers.
-	 */
-	for (i = 0; i < 256; i++)
-		set_intr_gate(i, early_idt_handler);
-	asm volatile("lidt %0" :: "m" (idt_descr));
+    /*
+     * Setup the initial interrupt descriptor table (IDT).
+     * This will be eventually be populated with the real handlers.
+     */
+    for (i = 0; i < 256; i++)
+        set_intr_gate(i, early_idt_handler);
+    asm volatile("lidt %0" :: "m" (idt_descr));
 
-	/*
- 	 * Early per-processor data area (PDA) initialization.
- 	 */
-	for (i = 0; i < NR_CPUS; i++)
-		cpu_pda(i) = &boot_cpu_pda[i];
-	pda_init(0, &bootstrap_task_union.task_info);
+    /*
+     * Early per-processor data area (PDA) initialization.
+     */
+    for (i = 0; i < NR_CPUS; i++)
+        cpu_pda(i) = &boot_cpu_pda[i];
+    pda_init(0, &bootstrap_task_union.task_info);
 
 #ifdef CONFIG_PISCES
-	/* 
-	 * If we are booting as a pisces instance, we have a separate setup path
-	 */
-	pisces_init(real_mode_data);
-        while(1);
-	/* This does not return */
+    /* 
+     * If we are booting as a pisces instance, we have a separate setup path
+     */
+    pisces_init(real_mode_data);
+    while(1);
+    /* This does not return */
 
 #endif
 
-	/*
-	 * Make a copy data passed by the bootloader.
-	 * real_mode_data will get clobbered eventually when the memory
-	 * subsystem is initialized.
-	 */
-	memcpy(x86_boot_params, __va(real_mode_data), sizeof(x86_boot_params));
-	memcpy(lwk_command_line, find_command_line(), sizeof(lwk_command_line));
-	
-	/*
- 	 * Tell the VGA driver the starting line number... this avoids
-	 * overwriting BIOS and bootloader messages. 
-	 */
-	param_set_by_name_int("vga.row", SCREEN_INFO.orig_y);
+    /*
+     * Make a copy data passed by the bootloader.
+     * real_mode_data will get clobbered eventually when the memory
+     * subsystem is initialized.
+     */
+    memcpy(x86_boot_params, __va(real_mode_data), sizeof(x86_boot_params));
+    memcpy(lwk_command_line, find_command_line(), sizeof(lwk_command_line));
 
-	/* 
- 	 * Okay... we've done the bare essentials. Call into the 
- 	 * platform-independent bootstrap function. This will in turn
- 	 * call back into architecture dependent code to do things like
- 	 * initialize interrupts and boot CPUs. 
- 	 */
-	start_kernel();
+    /*
+     * Tell the VGA driver the starting line number... this avoids
+     * overwriting BIOS and bootloader messages. 
+     */
+    param_set_by_name_int("vga.row", SCREEN_INFO.orig_y);
+
+    /* 
+     * Okay... we've done the bare essentials. Call into the 
+     * platform-independent bootstrap function. This will in turn
+     * call back into architecture dependent code to do things like
+     * initialize interrupts and boot CPUs. 
+     */
+    start_kernel();
 }
 

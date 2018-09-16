@@ -67,7 +67,7 @@ static void *percpu_populate(void *__pdata, size_t size, int cpu)
 
 
     memset( pdata->ptrs[cpu], 0, size); 
-    
+
     return pdata->ptrs[cpu];
 }
 

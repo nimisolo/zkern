@@ -65,8 +65,8 @@ static unsigned long kmem_bytes_allocated = 0;
  *          Do not change this unless you really know what you are doing.
  */
 struct kmem_block_hdr {
-	uint64_t order;  /* order of the block allocated from buddy system */
-	uint64_t magic;  /* magic value used as sanity check */
+    uint64_t order;  /* order of the block allocated from buddy system */
+    uint64_t magic;  /* magic value used as sanity check */
 } __attribute__((packed));
 
 
@@ -83,18 +83,18 @@ struct kmem_block_hdr {
  * NOTE: Currently only one zone is supported. Calling kmem_create_zone() more
  *       than once will result in a panic.
  */
-void
+    void
 kmem_create_zone(unsigned long base_addr, size_t size)
 {
-	unsigned long pool_order = ilog2(roundup_pow_of_two(size));
-	unsigned long min_order  = MIN_ORDER;
+    unsigned long pool_order = ilog2(roundup_pow_of_two(size));
+    unsigned long min_order  = MIN_ORDER;
 
-	/* For now, protect against calling kmem_create_zone() more than once */
-	BUG_ON(kmem != NULL);
+    /* For now, protect against calling kmem_create_zone() more than once */
+    BUG_ON(kmem != NULL);
 
-	/* Initialize the underlying buddy allocator */
-	if ((kmem = buddy_init(base_addr, pool_order, min_order)) == NULL)
-		panic("buddy_init() failed.");
+    /* Initialize the underlying buddy allocator */
+    if ((kmem = buddy_init(base_addr, pool_order, min_order)) == NULL)
+        panic("buddy_init() failed.");
 }
 
 
@@ -106,18 +106,18 @@ kmem_create_zone(unsigned long base_addr, size_t size)
  *       [IN] base_addr: Base address of the memory region to add.
  *       [IN] size:      Size of the memory region in bytes.
  */
-void
+    void
 kmem_add_memory(unsigned long base_addr, size_t size)
 {
-	/*
-	 * kmem buddy allocator is initially empty.
-	 * Memory is added to it via buddy_free().
-	 * buddy_free() will panic if there are any problems with the args.
-	 */
-	buddy_free(kmem, (void *)base_addr, ilog2(size));
+    /*
+     * kmem buddy allocator is initially empty.
+     * Memory is added to it via buddy_free().
+     * buddy_free() will panic if there are any problems with the args.
+     */
+    buddy_free(kmem, (void *)base_addr, ilog2(size));
 
-	/* Update statistics */
-	kmem_bytes_managed += size;
+    /* Update statistics */
+    kmem_bytes_managed += size;
 }
 
 
@@ -132,39 +132,39 @@ kmem_add_memory(unsigned long base_addr, size_t size)
  *       Success: Pointer to the start of the allocated memory.
  *       Failure: NULL
  */
-void *
+    void *
 kmem_alloc(size_t size)
 {
-	unsigned long order;
-	struct kmem_block_hdr *hdr;
-	unsigned long flags;
+    unsigned long order;
+    struct kmem_block_hdr *hdr;
+    unsigned long flags;
 
-	/* Make room for block header */
-	size += sizeof(struct kmem_block_hdr);
+    /* Make room for block header */
+    size += sizeof(struct kmem_block_hdr);
 
-	/* Calculate the block order needed */
-	order = ilog2(roundup_pow_of_two(size));
-	if (order < MIN_ORDER)
-		order = MIN_ORDER;
+    /* Calculate the block order needed */
+    order = ilog2(roundup_pow_of_two(size));
+    if (order < MIN_ORDER)
+        order = MIN_ORDER;
 
-	/* Allocate memory from the underlying buddy system */
-	spin_lock_irqsave(&kmem_lock, flags);
-	hdr = buddy_alloc(kmem, order);
-	if (hdr)
-		kmem_bytes_allocated += (1UL << order);
-	spin_unlock_irqrestore(&kmem_lock, flags);
-	if (hdr == NULL)
-		return NULL;
+    /* Allocate memory from the underlying buddy system */
+    spin_lock_irqsave(&kmem_lock, flags);
+    hdr = buddy_alloc(kmem, order);
+    if (hdr)
+        kmem_bytes_allocated += (1UL << order);
+    spin_unlock_irqrestore(&kmem_lock, flags);
+    if (hdr == NULL)
+        return NULL;
 
-	/* Zero the block */
-	memset(hdr, 0, (1UL << order));
+    /* Zero the block */
+    memset(hdr, 0, (1UL << order));
 
-	/* Initialize the block header */
-	hdr->order = order;       /* kmem_free() needs this to free the block */
-	hdr->magic = KMEM_MAGIC;  /* used for sanity check */
+    /* Initialize the block header */
+    hdr->order = order;       /* kmem_free() needs this to free the block */
+    hdr->magic = KMEM_MAGIC;  /* used for sanity check */
 
-	/* Return address of first byte after block header to caller */
-	return hdr + 1;
+    /* Return address of first byte after block header to caller */
+    return hdr + 1;
 }
 
 
@@ -179,28 +179,28 @@ kmem_alloc(size_t size)
  *       passed in by the caller. This header is created and initialized by
  *       kmem_alloc().
  */
-void
+    void
 kmem_free(
-	const void *		addr
-)
+        const void *		addr
+        )
 {
-	struct kmem_block_hdr *hdr;
-	unsigned long flags;
+    struct kmem_block_hdr *hdr;
+    unsigned long flags;
 
-	if( !addr )
-		return;
+    if( !addr )
+        return;
 
-	BUG_ON((unsigned long)addr < sizeof(struct kmem_block_hdr));
+    BUG_ON((unsigned long)addr < sizeof(struct kmem_block_hdr));
 
-	/* Find the block header */
-	hdr = (struct kmem_block_hdr *)addr - 1;
-	BUG_ON(hdr->magic != KMEM_MAGIC);
+    /* Find the block header */
+    hdr = (struct kmem_block_hdr *)addr - 1;
+    BUG_ON(hdr->magic != KMEM_MAGIC);
 
-	/* Return block to the underlying buddy system */
-	spin_lock_irqsave(&kmem_lock, flags);
-	kmem_bytes_allocated -= (1UL << hdr->order);
-	buddy_free(kmem, hdr, hdr->order);
-	spin_unlock_irqrestore(&kmem_lock, flags);
+    /* Return block to the underlying buddy system */
+    spin_lock_irqsave(&kmem_lock, flags);
+    kmem_bytes_allocated -= (1UL << hdr->order);
+    buddy_free(kmem, hdr, hdr->order);
+    spin_unlock_irqrestore(&kmem_lock, flags);
 }
 
 
@@ -214,35 +214,35 @@ kmem_free(
  */
 void *
 kmem_get_pages(
-	/** Number of pages to allocated, 2^order:
-	 * - 0 = 1 page
-	 * - 1 = 2 pages
-	 * - 2 = 4 pages
-	 * - 3 = 8 pages
-	 * - ...
-	 */
-	unsigned long order
-)
+        /** Number of pages to allocated, 2^order:
+         * - 0 = 1 page
+         * - 1 = 2 pages
+         * - 2 = 4 pages
+         * - 3 = 8 pages
+         * - ...
+         */
+        unsigned long order
+        )
 {
-	unsigned long block_order;
-	void *addr;
-	unsigned long flags;
+    unsigned long block_order;
+    void *addr;
+    unsigned long flags;
 
-	/* Calculate the block size needed; convert page order to byte order */
-	block_order = order + ilog2(PAGE_SIZE);
+    /* Calculate the block size needed; convert page order to byte order */
+    block_order = order + ilog2(PAGE_SIZE);
 
-	/* Allocate memory from the underlying buddy system */
-	spin_lock_irqsave(&kmem_lock, flags);
-	addr = buddy_alloc(kmem, block_order);
-	if (addr)
-		kmem_bytes_allocated += (1UL << block_order);
-	spin_unlock_irqrestore(&kmem_lock, flags);
-	if (addr == NULL)
-		return NULL;
+    /* Allocate memory from the underlying buddy system */
+    spin_lock_irqsave(&kmem_lock, flags);
+    addr = buddy_alloc(kmem, block_order);
+    if (addr)
+        kmem_bytes_allocated += (1UL << block_order);
+    spin_unlock_irqrestore(&kmem_lock, flags);
+    if (addr == NULL)
+        return NULL;
 
-	/* Zero the block and return its address */
-	memset(addr, 0, (1UL << block_order));
-	return addr;
+    /* Zero the block and return its address */
+    memset(addr, 0, (1UL << block_order));
+    return addr;
 }
 
 
@@ -251,36 +251,36 @@ kmem_get_pages(
  */
 void
 kmem_free_pages(
-	/**  Address of the memory region to free. */
-	const void *		addr,
+        /**  Address of the memory region to free. */
+        const void *		addr,
 
-	/** Number of pages to free, 2^order.
-	 * The order must match the value passed to kmem_get_pages()
-	 * when the pages were allocated.
-	 */
-	unsigned long		order
-)
+        /** Number of pages to free, 2^order.
+         * The order must match the value passed to kmem_get_pages()
+         * when the pages were allocated.
+         */
+        unsigned long		order
+        )
 {
-	unsigned long flags;
+    unsigned long flags;
 
-	spin_lock_irqsave(&kmem_lock, flags);
-	kmem_bytes_allocated -= (1UL << order);
-	buddy_free(kmem, addr, order + ilog2(PAGE_SIZE));
-	spin_unlock_irqrestore(&kmem_lock, flags);
+    spin_lock_irqsave(&kmem_lock, flags);
+    kmem_bytes_allocated -= (1UL << order);
+    buddy_free(kmem, addr, order + ilog2(PAGE_SIZE));
+    spin_unlock_irqrestore(&kmem_lock, flags);
 }
 
 
 /**
  * Returns true if the physical addr passed in is kmem, false otherwise.
  */
-bool
+    bool
 paddr_is_kmem(
-	const paddr_t		paddr
-) 
+        const paddr_t		paddr
+        ) 
 {
-	return (((unsigned long)__va(paddr) >= kmem->base_addr) && 
-	       ((unsigned long)__va(paddr) - kmem->base_addr) < (1 << (kmem->pool_order)));
+    return (((unsigned long)__va(paddr) >= kmem->base_addr) && 
+            ((unsigned long)__va(paddr) - kmem->base_addr) < (1 << (kmem->pool_order)));
 }
 
 
- 
+

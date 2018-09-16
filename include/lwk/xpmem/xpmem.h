@@ -29,8 +29,8 @@ typedef int64_t xpmem_apid_t;	/* apid returned from xpmem_get() */
 typedef int64_t xpmem_domid_t;
 
 struct xpmem_addr {
-	xpmem_apid_t apid;	/* apid that represents memory */
-	off_t offset;		/* offset into apid's memory */
+    xpmem_apid_t apid;	/* apid that represents memory */
+    off_t offset;		/* offset into apid's memory */
 };
 
 #define XPMEM_MAXADDR_SIZE	(size_t)(-1L)
@@ -86,50 +86,50 @@ struct xpmem_addr {
  * Structures used with the preceding ioctl() commands to pass data.
  */
 struct xpmem_cmd_make {
-	uint64_t vaddr;
-	size_t size;
-	int flags;
-	int permit_type;
-	int64_t permit_value;
-	xpmem_segid_t segid;	/* returned on success */
-	int fd;
+    uint64_t vaddr;
+    size_t size;
+    int flags;
+    int permit_type;
+    int64_t permit_value;
+    xpmem_segid_t segid;	/* returned on success */
+    int fd;
 };
 
 struct xpmem_cmd_remove {
-	xpmem_segid_t segid;
+    xpmem_segid_t segid;
 };
 
 struct xpmem_cmd_get {
-	xpmem_segid_t segid;
-	int flags;
-	int permit_type;
-	int64_t permit_value;
-	xpmem_apid_t apid;	/* returned on success */
+    xpmem_segid_t segid;
+    int flags;
+    int permit_type;
+    int64_t permit_value;
+    xpmem_apid_t apid;	/* returned on success */
 };
 
 struct xpmem_cmd_release {
-	xpmem_apid_t apid;
+    xpmem_apid_t apid;
 };
 
 struct xpmem_cmd_signal {
-	xpmem_apid_t apid;
+    xpmem_apid_t apid;
 };
 
 struct xpmem_cmd_attach {
-	xpmem_apid_t apid;
-	off_t offset;
-	size_t size;
-	uint64_t vaddr;
-	int fd;
-	int flags;
+    xpmem_apid_t apid;
+    off_t offset;
+    size_t size;
+    uint64_t vaddr;
+    int fd;
+    int flags;
 };
 
 struct xpmem_cmd_detach {
-	uint64_t vaddr;
+    uint64_t vaddr;
 };
 
 struct xpmem_cmd_domid {
-	xpmem_domid_t domid;
+    xpmem_domid_t domid;
 };
 
 
@@ -140,9 +140,9 @@ struct xpmem_cmd_domid {
 
 /* Export the xpmem interface in kernel */
 /*
-extern int kernel_xpmem_init(void);
-extern int kernel_xpmem_finish(void);
-*/
+   extern int kernel_xpmem_init(void);
+   extern int kernel_xpmem_finish(void);
+   */
 extern int xpmem_make(vaddr_t, size_t, int, void *, int, xpmem_segid_t, xpmem_segid_t *, int *);
 extern int xpmem_remove(xpmem_segid_t);
 extern int xpmem_get(xpmem_segid_t, int, int, void *, xpmem_apid_t *);

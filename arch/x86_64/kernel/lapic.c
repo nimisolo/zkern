@@ -24,9 +24,9 @@ unsigned long lapic_phys_addr = APIC_DEFAULT_PHYS_BASE;
  * Resource entry for the local APIC memory mapping.
  */
 static struct resource lapic_resource = {
-	.name  = "Local APIC",
-	.flags = IORESOURCE_MEM | IORESOURCE_BUSY,
-	/* .start and .end filled in later based on detected address */
+    .name  = "Local APIC",
+    .flags = IORESOURCE_MEM | IORESOURCE_BUSY,
+    /* .start and .end filled in later based on detected address */
 };
 
 /**
@@ -39,194 +39,194 @@ static struct resource lapic_resource = {
  * at compile time, local APIC registers can be accessed directly, without
  * any pointer dereferencing.
  */
-void __init
+    void __init
 lapic_map(void)
 {
-	if (!cpu_has_apic)
-		panic("No local APIC.");
+    if (!cpu_has_apic)
+        panic("No local APIC.");
 
-	/*
-	 * If CPU supports X2APIC mode, we use it. In X2APIC mode,
-	 * LAPIC registers are accessed via MSR accesses rather than memory
-	 * mapped I/O, so there is no need to setup the APIC memory mapping.
-	 */
-	if (cpu_has_x2apic) {
-		printk(KERN_INFO "Using X2APIC mode.\n");
-		return;
-	}
+    /*
+     * If CPU supports X2APIC mode, we use it. In X2APIC mode,
+     * LAPIC registers are accessed via MSR accesses rather than memory
+     * mapped I/O, so there is no need to setup the APIC memory mapping.
+     */
+    if (cpu_has_x2apic) {
+        printk(KERN_INFO "Using X2APIC mode.\n");
+        return;
+    }
 
-	/* Reserve physical memory used by the local APIC */
-	lapic_resource.start = lapic_phys_addr;
-	lapic_resource.end   = lapic_phys_addr + 4096 - 1;
-	request_resource(&iomem_resource, &lapic_resource);
+    /* Reserve physical memory used by the local APIC */
+    lapic_resource.start = lapic_phys_addr;
+    lapic_resource.end   = lapic_phys_addr + 4096 - 1;
+    request_resource(&iomem_resource, &lapic_resource);
 
-	/* Map local APIC into the kernel */ 
-	set_fixmap_nocache(FIX_APIC_BASE, lapic_phys_addr);
+    /* Map local APIC into the kernel */ 
+    set_fixmap_nocache(FIX_APIC_BASE, lapic_phys_addr);
 
-	printk(KERN_DEBUG "Local APIC mapped to virtual address 0x%016lx\n",
-	                  fix_to_virt(FIX_APIC_BASE));
+    printk(KERN_DEBUG "Local APIC mapped to virtual address 0x%016lx\n",
+            fix_to_virt(FIX_APIC_BASE));
 }
 
 /**
  * Initializes the calling CPU's local APIC.
  */
-void __init
+    void __init
 lapic_init(void)
 {
-	uint32_t val;
+    uint32_t val;
 
-	/*
-	 * If CPU has X2APIC mode, we use it.
-	 * Enable X2APIC mode by setting bit 10 in APIC_BASE MSR.
-	 */
-	if (cpu_has_x2apic) {
-		rdmsrl(MSR_IA32_APICBASE, val);
-		wrmsrl(MSR_IA32_APICBASE, val | MSR_IA32_APICBASE_X2APIC);
-	}
+    /*
+     * If CPU has X2APIC mode, we use it.
+     * Enable X2APIC mode by setting bit 10 in APIC_BASE MSR.
+     */
+    if (cpu_has_x2apic) {
+        rdmsrl(MSR_IA32_APICBASE, val);
+        wrmsrl(MSR_IA32_APICBASE, val | MSR_IA32_APICBASE_X2APIC);
+    }
 
-	if (!cpu_has_x2apic) {
-		/*
-		 * Initialize Destination Format Register.
-		 * When using logical destination mode, we want to use the flat model.
-		 */
-		apic_write(APIC_DFR, APIC_DFR_FLAT);
+    if (!cpu_has_x2apic) {
+        /*
+         * Initialize Destination Format Register.
+         * When using logical destination mode, we want to use the flat model.
+         */
+        apic_write(APIC_DFR, APIC_DFR_FLAT);
 
-		/*
-		 * Initialize the Logical Destination Register.
-		 * The LWK never uses logical destination mode, so just set it to zero.
-		 */
-		val = apic_read(APIC_LDR) & ~APIC_LDR_MASK;
-		val |= SET_APIC_LOGICAL_ID(0);
-		apic_write(APIC_LDR, val);
-	}
+        /*
+         * Initialize the Logical Destination Register.
+         * The LWK never uses logical destination mode, so just set it to zero.
+         */
+        val = apic_read(APIC_LDR) & ~APIC_LDR_MASK;
+        val |= SET_APIC_LOGICAL_ID(0);
+        apic_write(APIC_LDR, val);
+    }
 
-	/*
-	 * Initialize the Task Priority Register.
-	 * We set this to accept all (0) and never touch it again.
-	 */
-	val = apic_read(APIC_TASKPRI) & ~APIC_TPRI_MASK;
-	apic_write(APIC_TASKPRI, val);
+    /*
+     * Initialize the Task Priority Register.
+     * We set this to accept all (0) and never touch it again.
+     */
+    val = apic_read(APIC_TASKPRI) & ~APIC_TPRI_MASK;
+    apic_write(APIC_TASKPRI, val);
 
-	/*
-	 * Intialize the Spurious-Interrupt Vector Register.
-	 * This also enables the local APIC.
- 	 */
-	val = apic_read(APIC_SPIV) & ~APIC_VECTOR_MASK;
-	val |= (APIC_SPIV_APIC_ENABLED | APIC_SPURIOUS_VECTOR);
-	apic_write(APIC_SPIV, val);
+    /*
+     * Intialize the Spurious-Interrupt Vector Register.
+     * This also enables the local APIC.
+     */
+    val = apic_read(APIC_SPIV) & ~APIC_VECTOR_MASK;
+    val |= (APIC_SPIV_APIC_ENABLED | APIC_SPURIOUS_VECTOR);
+    apic_write(APIC_SPIV, val);
 
-	/* Setup LVT[0] = APIC Timer Interrupt */
-	apic_write(APIC_LVTT, 0
-	             | APIC_DM_FIXED       /* route to fixed IDT vector */
-	             | APIC_TIMER_VECTOR   /* IDT vector to route to */
-	             | APIC_LVT_MASKED     /* initially disable */
-	);
+    /* Setup LVT[0] = APIC Timer Interrupt */
+    apic_write(APIC_LVTT, 0
+            | APIC_DM_FIXED       /* route to fixed IDT vector */
+            | APIC_TIMER_VECTOR   /* IDT vector to route to */
+            | APIC_LVT_MASKED     /* initially disable */
+            );
 
-	/* Setup LVT[1] = Thermal Sensor Interrupt */
-	apic_write(APIC_LVTTHMR, 0
-	             | APIC_DM_FIXED       /* route to fixed IDT vector */     
-	             | APIC_THERMAL_VECTOR /* IDT vector to route to */
-	);
+    /* Setup LVT[1] = Thermal Sensor Interrupt */
+    apic_write(APIC_LVTTHMR, 0
+            | APIC_DM_FIXED       /* route to fixed IDT vector */     
+            | APIC_THERMAL_VECTOR /* IDT vector to route to */
+            );
 
-	/* Setup LVT[2] = Performance Counter Interrupt */
-	apic_write(APIC_LVTPC, 0
-	             | APIC_DM_NMI         /* treat as non-maskable interrupt */
-	                                   /* NMIs are routed to IDT vector 2 */
-	             | APIC_LVT_MASKED     /* initially disable */
-	);
+    /* Setup LVT[2] = Performance Counter Interrupt */
+    apic_write(APIC_LVTPC, 0
+            | APIC_DM_NMI         /* treat as non-maskable interrupt */
+            /* NMIs are routed to IDT vector 2 */
+            | APIC_LVT_MASKED     /* initially disable */
+            );
 
-	/* Setup LVT[3] = Local Interrupt Pin 0 */
-	apic_write(APIC_LVT0, 0
-	             | APIC_DM_EXTINT      /* hooked up to old 8259A PIC   */
-	                                   /* IDT vector provided by 8259A */
-	             | APIC_LVT_MASKED     /* disable */
-	);
+    /* Setup LVT[3] = Local Interrupt Pin 0 */
+    apic_write(APIC_LVT0, 0
+            | APIC_DM_EXTINT      /* hooked up to old 8259A PIC   */
+            /* IDT vector provided by 8259A */
+            | APIC_LVT_MASKED     /* disable */
+            );
 
-	/* Setup LVT[4] = Local Interrupt Pin 1 */
-	apic_write(APIC_LVT1, 0
-	             | APIC_DM_NMI         /* treat as non-maskable interrupt */
-	                                   /* NMIs are routed to IDT vector 2 */
-	             | ((this_cpu != 0)
-	                 ? APIC_LVT_MASKED /* mask on all but bootstrap CPU */
-	                 : 0)              /* bootstrap CPU (0) receives NMIs */
-	);
+    /* Setup LVT[4] = Local Interrupt Pin 1 */
+    apic_write(APIC_LVT1, 0
+            | APIC_DM_NMI         /* treat as non-maskable interrupt */
+            /* NMIs are routed to IDT vector 2 */
+            | ((this_cpu != 0)
+                ? APIC_LVT_MASKED /* mask on all but bootstrap CPU */
+                : 0)              /* bootstrap CPU (0) receives NMIs */
+            );
 
-	/* Setup LVT[5] = Internal APIC Error Detector Interrupt */
-	apic_write(APIC_LVTERR, 0
-	             | APIC_DM_FIXED       /* route to fixed IDT vector */
-	             | APIC_ERROR_VECTOR   /* IDT vector to route to */
-	);
-	apic_write(APIC_ESR, 0); /* spec says to clear after enabling LVTERR */
+    /* Setup LVT[5] = Internal APIC Error Detector Interrupt */
+    apic_write(APIC_LVTERR, 0
+            | APIC_DM_FIXED       /* route to fixed IDT vector */
+            | APIC_ERROR_VECTOR   /* IDT vector to route to */
+            );
+    apic_write(APIC_ESR, 0); /* spec says to clear after enabling LVTERR */
 }
 
 /**
  * Returns the caller's local APIC ID.
  */
-unsigned int
+    unsigned int
 lapic_read_id(void)
 {
-	return GET_APIC_ID(apic_read(APIC_ID));
+    return GET_APIC_ID(apic_read(APIC_ID));
 }
 
-static void 
+    static void 
 lapic_set_timer_count(uint32_t count, int periodic)
 {
-	uint32_t lvt;
+    uint32_t lvt;
 
-	/* Setup Divide Count Register to use the bus frequency directly. */
-	apic_write(APIC_TDCR, APIC_TDR_DIV_1);
+    /* Setup Divide Count Register to use the bus frequency directly. */
+    apic_write(APIC_TDCR, APIC_TDR_DIV_1);
 
-	/* Program the initial count register */
-	apic_write(APIC_TMICT, count);
+    /* Program the initial count register */
+    apic_write(APIC_TMICT, count);
 
-	/* Enable the local APIC timer */
-	lvt = apic_read(APIC_LVTT);
-	lvt &= ~APIC_LVT_MASKED;
-	if (periodic)
-		lvt |= APIC_LVT_TIMER_PERIODIC;
-	else
-		lvt &= ~APIC_LVT_TIMER_PERIODIC;
+    /* Enable the local APIC timer */
+    lvt = apic_read(APIC_LVTT);
+    lvt &= ~APIC_LVT_MASKED;
+    if (periodic)
+        lvt |= APIC_LVT_TIMER_PERIODIC;
+    else
+        lvt &= ~APIC_LVT_TIMER_PERIODIC;
 
-	apic_write(APIC_LVTT, lvt);
+    apic_write(APIC_LVTT, lvt);
 }
 
 /**
  * Configures the APIC timer to fire at 'hz' times per second.
  */
-void
+    void
 lapic_set_timer_freq(unsigned int hz)
 {
-	uint64_t count = cpu_info[this_cpu].arch.lapic_khz * 1000ul / hz;
-	lapic_set_timer_count((uint32_t)count, 1);
+    uint64_t count = cpu_info[this_cpu].arch.lapic_khz * 1000ul / hz;
+    lapic_set_timer_count((uint32_t)count, 1);
 
-	printk(KERN_DEBUG
-	       "CPU %u: LAPIC timer set to %u Hz (count=%llu).\n",
-               this_cpu, hz, count);
+    printk(KERN_DEBUG
+            "CPU %u: LAPIC timer set to %u Hz (count=%llu).\n",
+            this_cpu, hz, count);
 }
 
-void
+    void
 lapic_set_timer_oneshot(unsigned int nsec)
 {
-	uint64_t lapic_khz = cpu_info[this_cpu].arch.lapic_khz;
-	uint64_t count = (lapic_khz * nsec) / 1000000ul;
+    uint64_t lapic_khz = cpu_info[this_cpu].arch.lapic_khz;
+    uint64_t count = (lapic_khz * nsec) / 1000000ul;
 
-	lapic_set_timer_count((uint32_t)count, 0);
+    lapic_set_timer_count((uint32_t)count, 0);
 
-	return;
+    return;
 }
 
-void
+    void
 lapic_stop_timer(void)
 {
-	uint32_t lvt;
+    uint32_t lvt;
 
-	/* Set the initial count to 0 */
-	apic_write(APIC_TMICT, 0);
+    /* Set the initial count to 0 */
+    apic_write(APIC_TMICT, 0);
 
-	/* Disable the local APIC timer */
-	lvt = apic_read(APIC_LVTT);
-	lvt |= APIC_LVT_MASKED;
-	apic_write(APIC_LVTT, lvt);
+    /* Disable the local APIC timer */
+    lvt = apic_read(APIC_LVTT);
+    lvt |= APIC_LVT_MASKED;
+    apic_write(APIC_LVTT, lvt);
 }
 
 /**
@@ -237,51 +237,51 @@ lapic_stop_timer(void)
  * NOTE: This assumes that the CPU's clock frequency has already been detected.
  *       (i.e., cpu_info[cpu_id()].arch.tsc_khz has been initialized.
  */
-unsigned int __init
+    unsigned int __init
 lapic_calibrate_timer(void)
 {
-	const unsigned int tick_count = 100000000;
-	cycles_t tsc_start, tsc_now;
-	uint32_t apic_start, apic_now;
-	unsigned int apic_Hz;
+    const unsigned int tick_count = 100000000;
+    cycles_t tsc_start, tsc_now;
+    uint32_t apic_start, apic_now;
+    unsigned int apic_Hz;
 
-	/* Start the APIC counter running for calibration */
-	lapic_set_timer_count(4000000000, 1);
+    /* Start the APIC counter running for calibration */
+    lapic_set_timer_count(4000000000, 1);
 
-	apic_start = apic_read(APIC_TMCCT);
-	tsc_start  = get_cycles_sync();
+    apic_start = apic_read(APIC_TMCCT);
+    tsc_start  = get_cycles_sync();
 
-	/* Spin until enough ticks for a meaningful result have elapsed */
-	do {
-		apic_now = apic_read(APIC_TMCCT);
-		tsc_now  = get_cycles_sync();
-	} while ( ((tsc_now    - tsc_start) < tick_count) &&
-	          ((apic_start - apic_now)  < tick_count) );
+    /* Spin until enough ticks for a meaningful result have elapsed */
+    do {
+        apic_now = apic_read(APIC_TMCCT);
+        tsc_now  = get_cycles_sync();
+    } while ( ((tsc_now    - tsc_start) < tick_count) &&
+            ((apic_start - apic_now)  < tick_count) );
 
-	apic_Hz = (apic_start - apic_now) * 1000L *
-	          cpu_info[this_cpu].arch.tsc_khz / (tsc_now - tsc_start);
+    apic_Hz = (apic_start - apic_now) * 1000L *
+        cpu_info[this_cpu].arch.tsc_khz / (tsc_now - tsc_start);
 
-	lapic_stop_timer();
+    lapic_stop_timer();
 
-	return (apic_Hz / 1000);
+    return (apic_Hz / 1000);
 }
 
-static uint32_t
+    static uint32_t
 lapic_wait4_icr_idle(void)
 {
-	uint32_t send_status;
-	int timeout;
+    uint32_t send_status;
+    int timeout;
 
-	/* Wait up to 100 milliseconds */
-	timeout = 0;
-	do {
-		send_status = apic_read(APIC_ICR) & APIC_ICR_BUSY;
-		if (!send_status)
-			break;
-		udelay(100);
-	} while (timeout++ < 1000);
+    /* Wait up to 100 milliseconds */
+    timeout = 0;
+    do {
+        send_status = apic_read(APIC_ICR) & APIC_ICR_BUSY;
+        if (!send_status)
+            break;
+        udelay(100);
+    } while (timeout++ < 1000);
 
-	return send_status;
+    return send_status;
 }
 
 /**
@@ -290,81 +290,81 @@ lapic_wait4_icr_idle(void)
  * This should return 5 or higher on all x86_64 CPUs.
  * 6 is returned if the APIC Thermal Interrupt is supported, 5 otherwise.
  */
-static uint32_t
+    static uint32_t
 lapic_get_maxlvt(void)
 {
-	return GET_APIC_MAXLVT(apic_read(APIC_LVR));
+    return GET_APIC_MAXLVT(apic_read(APIC_LVR));
 }
 
 /**
  * Sends an INIT inter-processor interrupt.
  * This is used during bootstrap to wakeup the AP CPUs.
  */
-void __init
+    void __init
 lapic_send_init_ipi(unsigned int cpu)
 {
-	uint32_t status;
-	unsigned int apic_id = cpu_info[cpu].arch.apic_id;
+    uint32_t status;
+    unsigned int apic_id = cpu_info[cpu].arch.apic_id;
 
-	/* Turn on INIT at target CPU */
-	apic_write_icr(((uint64_t)apic_id << 32) | APIC_INT_LEVELTRIG | APIC_INT_ASSERT | APIC_DM_INIT);
+    /* Turn on INIT at target CPU */
+    apic_write_icr(((uint64_t)apic_id << 32) | APIC_INT_LEVELTRIG | APIC_INT_ASSERT | APIC_DM_INIT);
 
-	/* If using X2APIC mode, we are done... it is fire and forget. */
-	if (cpu_has_x2apic)
-		return;
+    /* If using X2APIC mode, we are done... it is fire and forget. */
+    if (cpu_has_x2apic)
+        return;
 
-	status = lapic_wait4_icr_idle();
-	if (status)
-		panic("INIT IPI ERROR: failed to assert INIT. (%x)", status);
-	mdelay(10);
+    status = lapic_wait4_icr_idle();
+    if (status)
+        panic("INIT IPI ERROR: failed to assert INIT. (%x)", status);
+    mdelay(10);
 
-	/* Turn off INIT at target CPU */
-	apic_write(APIC_ICR2, SET_APIC_DEST_FIELD(apic_id));
-	apic_write(APIC_ICR, APIC_INT_LEVELTRIG | APIC_DM_INIT);
-	status = lapic_wait4_icr_idle();
-	if (status)
-		panic("INIT IPI ERROR: failed to deassert INIT. (%x)", status);
+    /* Turn off INIT at target CPU */
+    apic_write(APIC_ICR2, SET_APIC_DEST_FIELD(apic_id));
+    apic_write(APIC_ICR, APIC_INT_LEVELTRIG | APIC_DM_INIT);
+    status = lapic_wait4_icr_idle();
+    if (status)
+        panic("INIT IPI ERROR: failed to deassert INIT. (%x)", status);
 }
 
 /**
  * Send a STARTUP inter-processor interrupt.
  * This is used during bootstrap to wakeup the AP CPUs.
  */
-void __init
+    void __init
 lapic_send_startup_ipi(
-	unsigned int	cpu,		/* Logical CPU ID */
-	unsigned long	start_rip	/* Physical addr  */
-)
+        unsigned int	cpu,		/* Logical CPU ID */
+        unsigned long	start_rip	/* Physical addr  */
+        )
 {
-	uint32_t status;
-	unsigned int maxlvt  = lapic_get_maxlvt();
-	unsigned int apic_id = cpu_info[cpu].arch.apic_id;
+    uint32_t status;
+    unsigned int maxlvt  = lapic_get_maxlvt();
+    unsigned int apic_id = cpu_info[cpu].arch.apic_id;
 
-	/* Clear errors */
-	apic_write(APIC_ESR, 0);
-	apic_read(APIC_ESR);
+    /* Clear errors */
+    apic_write(APIC_ESR, 0);
+    apic_read(APIC_ESR);
 
-	/* Send Startup IPI to target CPU */
-	apic_write_icr(((uint64_t)apic_id << 32) | APIC_DM_STARTUP | (start_rip >> 12));
+    /* Send Startup IPI to target CPU */
+    apic_write_icr(((uint64_t)apic_id << 32) | APIC_DM_STARTUP | (start_rip >> 12));
 
-	/* If using X2APIC mode, we are done... it is fire and forget. */
-	if (cpu_has_x2apic)
-		return;
+    /* If using X2APIC mode, we are done... it is fire and forget. */
+    if (cpu_has_x2apic)
+        return;
 
-	udelay(300);  /* Give AP CPU some time to accept the IPI */
-	status = lapic_wait4_icr_idle();
-	if (status)
-		panic("STARTUP IPI ERROR: failed to send. (%x)", status);
-	udelay(300);  /* Give AP CPU some time to accept the IPI */
+    udelay(300);  /* Give AP CPU some time to accept the IPI */
+    status = lapic_wait4_icr_idle();
+    if (status)
+        panic("STARTUP IPI ERROR: failed to send. (%x)", status);
+    udelay(300);  /* Give AP CPU some time to accept the IPI */
 
-	/* Fixup for Pentium erratum 3AP, clear errors */
-	if (maxlvt > 3)
-		apic_write(APIC_ESR, 0);
+    /* Fixup for Pentium erratum 3AP, clear errors */
+    if (maxlvt > 3)
+        apic_write(APIC_ESR, 0);
 
-	/* Verify that IPI was accepted */
-	status = (apic_read(APIC_ESR) & 0xEF);
-	if (status)
-		panic("STARTUP IPI ERROR: failed to accept. (%x)", status);
+    /* Verify that IPI was accepted */
+    status = (apic_read(APIC_ESR) & 0xEF);
+    if (status)
+        panic("STARTUP IPI ERROR: failed to accept. (%x)", status);
 }
 
 /**
@@ -372,18 +372,18 @@ lapic_send_startup_ipi(
  * Note that the IPI has not necessarily been delivered when this function
  * returns.
  */
-void
+    void
 lapic_send_ipi(
-	unsigned int	cpu,		/* Logical CPU ID */
-	unsigned int	vector		/* Interrupt vector to send */
-)
+        unsigned int	cpu,		/* Logical CPU ID */
+        unsigned int	vector		/* Interrupt vector to send */
+        )
 {
-	unsigned int apic_id;
+    unsigned int apic_id;
 
-	/* Find target APIC */
-	apic_id = cpu_info[cpu].arch.apic_id;
+    /* Find target APIC */
+    apic_id = cpu_info[cpu].arch.apic_id;
 
-	lapic_send_ipi_to_apic(apic_id, vector);
+    lapic_send_ipi_to_apic(apic_id, vector);
 }
 
 /**
@@ -395,179 +395,179 @@ lapic_send_ipi(
  * Note that the IPI has not necessarily been delivered when this function
  * returns.
  */
-void
+    void
 lapic_send_ipi_to_apic(
-	unsigned int	apic_id,	/* APIC ID */
-	unsigned int	vector		/* Interrupt vector to send */
-)
+        unsigned int	apic_id,	/* APIC ID */
+        unsigned int	vector		/* Interrupt vector to send */
+        )
 {
-	/* Wait for idle */
-	if (!cpu_has_x2apic) {
-		uint32_t status = lapic_wait4_icr_idle();
-		if (status)
-			panic("lapic_wait4_icr_idle() timed out. (%x)", status);
-	}
+    /* Wait for idle */
+    if (!cpu_has_x2apic) {
+        uint32_t status = lapic_wait4_icr_idle();
+        if (status)
+            panic("lapic_wait4_icr_idle() timed out. (%x)", status);
+    }
 
-	/* Send the IPI */
-	if (unlikely(vector == NMI_VECTOR))
-		apic_write_icr(((uint64_t)apic_id << 32) | APIC_DEST_PHYSICAL | APIC_DM_NMI);
-	else
-		apic_write_icr(((uint64_t)apic_id << 32) | APIC_DEST_PHYSICAL | APIC_DM_FIXED | vector);
+    /* Send the IPI */
+    if (unlikely(vector == NMI_VECTOR))
+        apic_write_icr(((uint64_t)apic_id << 32) | APIC_DEST_PHYSICAL | APIC_DM_NMI);
+    else
+        apic_write_icr(((uint64_t)apic_id << 32) | APIC_DEST_PHYSICAL | APIC_DM_FIXED | vector);
 }
 
 
 /**
  * Writes a value directly to the APIC IPI Register (ICR).
  */
-void
+    void
 lapic_issue_raw_ipi (
-	unsigned int	apic_id,
-	unsigned int    icr
-)
+        unsigned int	apic_id,
+        unsigned int    icr
+        )
 {
-	/* Wait for idle */
-	if (!cpu_has_x2apic) {
-		uint32_t status = lapic_wait4_icr_idle();
-		if (status)
-			panic("lapic_wait4_icr_idle() timed out. (%x)", status);
-	}
+    /* Wait for idle */
+    if (!cpu_has_x2apic) {
+        uint32_t status = lapic_wait4_icr_idle();
+        if (status)
+            panic("lapic_wait4_icr_idle() timed out. (%x)", status);
+    }
 
-	/* Send the IPI */
-	apic_write_icr(((uint64_t)apic_id << 32) | icr);
+    /* Send the IPI */
+    apic_write_icr(((uint64_t)apic_id << 32) | icr);
 }
 
 /**
  * Converts an entry in a local APIC's Local Vector Table to a
  * human-readable string.
  */
-static char *
+    static char *
 lvt_stringify(uint32_t entry, char *buf)
 {
-	uint32_t delivery_mode = GET_APIC_DELIVERY_MODE(entry);
+    uint32_t delivery_mode = GET_APIC_DELIVERY_MODE(entry);
 
-	if (delivery_mode == APIC_MODE_FIXED) {
-		sprintf(buf, "FIXED -> IDT_VECTOR %d",
-			entry & APIC_VECTOR_MASK
-		);
-	} else if (delivery_mode == APIC_MODE_NMI) {
-		sprintf(buf, "NMI   -> IDT VECTOR 2"); 
-	} else if (delivery_mode == APIC_MODE_EXTINT) {
-		sprintf(buf, "ExtINT, hooked to old 8259A PIC");
-	} else {
-		sprintf(buf, "UNKNOWN");
-	}
+    if (delivery_mode == APIC_MODE_FIXED) {
+        sprintf(buf, "FIXED -> IDT_VECTOR %d",
+                entry & APIC_VECTOR_MASK
+               );
+    } else if (delivery_mode == APIC_MODE_NMI) {
+        sprintf(buf, "NMI   -> IDT VECTOR 2"); 
+    } else if (delivery_mode == APIC_MODE_EXTINT) {
+        sprintf(buf, "ExtINT, hooked to old 8259A PIC");
+    } else {
+        sprintf(buf, "UNKNOWN");
+    }
 
-	if (entry & APIC_LVT_MASKED)
-		strcat(buf, ", MASKED");
+    if (entry & APIC_LVT_MASKED)
+        strcat(buf, ", MASKED");
 
-	return buf;
+    return buf;
 }
 
 /**
  * Prints various local APIC registers of interest to the console.
  */
-void
+    void
 lapic_dump(void)
 {
-	char buf[128];
+    char buf[128];
 
-	printk(KERN_DEBUG "LOCAL APIC DUMP (LOGICAL CPU #%d):\n", this_cpu);
+    printk(KERN_DEBUG "LOCAL APIC DUMP (LOGICAL CPU #%d):\n", this_cpu);
 
-	/*
- 	 * Lead off with the important stuff...
- 	 */
-	printk(KERN_DEBUG
-		"  ID:  0x%08x (id=%d)\n",
-		apic_read(APIC_ID),
-		GET_APIC_ID(apic_read(APIC_ID))
-	);
-	printk(KERN_DEBUG
-		"  VER: 0x%08x (version=0x%x, max_lvt=%d)\n",
-		apic_read(APIC_LVR),
-		GET_APIC_VERSION(apic_read(APIC_LVR)),
-		GET_APIC_MAXLVT(apic_read(APIC_LVR))
-	);
-	printk(KERN_DEBUG
-		"  ESR: 0x%08x (Error Status Reg, non-zero is bad)\n",
-		apic_read(APIC_ESR)
-	);
-	printk(KERN_DEBUG
-		"  SVR: 0x%08x (Spurious vector=%d, %s)\n",
-		apic_read(APIC_SPIV),
-		apic_read(APIC_SPIV) & APIC_VECTOR_MASK,
-		(apic_read(APIC_SPIV) & APIC_SPIV_APIC_ENABLED)
-			? "APIC IS ENABLED"
-			: "APIC IS DISABLED"
-	);
+    /*
+     * Lead off with the important stuff...
+     */
+    printk(KERN_DEBUG
+            "  ID:  0x%08x (id=%d)\n",
+            apic_read(APIC_ID),
+            GET_APIC_ID(apic_read(APIC_ID))
+          );
+    printk(KERN_DEBUG
+            "  VER: 0x%08x (version=0x%x, max_lvt=%d)\n",
+            apic_read(APIC_LVR),
+            GET_APIC_VERSION(apic_read(APIC_LVR)),
+            GET_APIC_MAXLVT(apic_read(APIC_LVR))
+          );
+    printk(KERN_DEBUG
+            "  ESR: 0x%08x (Error Status Reg, non-zero is bad)\n",
+            apic_read(APIC_ESR)
+          );
+    printk(KERN_DEBUG
+            "  SVR: 0x%08x (Spurious vector=%d, %s)\n",
+            apic_read(APIC_SPIV),
+            apic_read(APIC_SPIV) & APIC_VECTOR_MASK,
+            (apic_read(APIC_SPIV) & APIC_SPIV_APIC_ENABLED)
+            ? "APIC IS ENABLED"
+            : "APIC IS DISABLED"
+          );
 
-	/*
- 	 * Local Vector Table
- 	 */
-	printk(KERN_DEBUG "  Local Vector Table Entries:\n");
-	printk(KERN_DEBUG "      LVT[0] Timer:     0x%08x (%s)\n",
-		apic_read(APIC_LVTT),
-		lvt_stringify(apic_read(APIC_LVTT), buf)
-	);
-	printk(KERN_DEBUG "      LVT[1] Thermal:   0x%08x (%s)\n",
-		apic_read(APIC_LVTTHMR),
-		lvt_stringify(apic_read(APIC_LVTTHMR), buf)
-	);
-	printk(KERN_DEBUG "      LVT[2] Perf Cnt:  0x%08x (%s)\n",
-		apic_read(APIC_LVTPC),
-		lvt_stringify(apic_read(APIC_LVTPC), buf)
-	);
-	printk(KERN_DEBUG "      LVT[3] LINT0 Pin: 0x%08x (%s)\n",
-		apic_read(APIC_LVT0),
-		lvt_stringify(apic_read(APIC_LVT0), buf)
-	);
-	printk(KERN_DEBUG "      LVT[4] LINT1 Pin: 0x%08x (%s)\n",
-		apic_read(APIC_LVT1),
-		lvt_stringify(apic_read(APIC_LVT1), buf)
-	);
-	printk(KERN_DEBUG "      LVT[5] Error:     0x%08x (%s)\n",
-		apic_read(APIC_LVTERR),
-		lvt_stringify(apic_read(APIC_LVTERR), buf)
-	);
+    /*
+     * Local Vector Table
+     */
+    printk(KERN_DEBUG "  Local Vector Table Entries:\n");
+    printk(KERN_DEBUG "      LVT[0] Timer:     0x%08x (%s)\n",
+            apic_read(APIC_LVTT),
+            lvt_stringify(apic_read(APIC_LVTT), buf)
+          );
+    printk(KERN_DEBUG "      LVT[1] Thermal:   0x%08x (%s)\n",
+            apic_read(APIC_LVTTHMR),
+            lvt_stringify(apic_read(APIC_LVTTHMR), buf)
+          );
+    printk(KERN_DEBUG "      LVT[2] Perf Cnt:  0x%08x (%s)\n",
+            apic_read(APIC_LVTPC),
+            lvt_stringify(apic_read(APIC_LVTPC), buf)
+          );
+    printk(KERN_DEBUG "      LVT[3] LINT0 Pin: 0x%08x (%s)\n",
+            apic_read(APIC_LVT0),
+            lvt_stringify(apic_read(APIC_LVT0), buf)
+          );
+    printk(KERN_DEBUG "      LVT[4] LINT1 Pin: 0x%08x (%s)\n",
+            apic_read(APIC_LVT1),
+            lvt_stringify(apic_read(APIC_LVT1), buf)
+          );
+    printk(KERN_DEBUG "      LVT[5] Error:     0x%08x (%s)\n",
+            apic_read(APIC_LVTERR),
+            lvt_stringify(apic_read(APIC_LVTERR), buf)
+          );
 
-	/*
- 	 * APIC timer configuration registers
- 	 */
-	printk(KERN_DEBUG "  Local APIC Timer:\n");
-	printk(KERN_DEBUG "      DCR (Divide Config Reg): 0x%08x\n",
-		apic_read(APIC_TDCR)
-	);
-	printk(KERN_DEBUG "      ICT (Initial Count Reg): 0x%08x\n",
-		apic_read(APIC_TMICT)
-	);
-	printk(KERN_DEBUG "      CCT (Current Count Reg): 0x%08x\n",
-		apic_read(APIC_TMCCT)
-	);
+    /*
+     * APIC timer configuration registers
+     */
+    printk(KERN_DEBUG "  Local APIC Timer:\n");
+    printk(KERN_DEBUG "      DCR (Divide Config Reg): 0x%08x\n",
+            apic_read(APIC_TDCR)
+          );
+    printk(KERN_DEBUG "      ICT (Initial Count Reg): 0x%08x\n",
+            apic_read(APIC_TMICT)
+          );
+    printk(KERN_DEBUG "      CCT (Current Count Reg): 0x%08x\n",
+            apic_read(APIC_TMCCT)
+          );
 
-	/*
- 	 * Logical APIC addressing mode registers
- 	 */
-	printk(KERN_DEBUG "  Logical Addressing Mode Information:\n");
-	printk(KERN_DEBUG "      LDR (Logical Dest Reg):  0x%08x (id=%d)\n",
-		apic_read(APIC_LDR),
-		GET_APIC_LOGICAL_ID(apic_read(APIC_LDR))
-	);
-	printk(KERN_DEBUG "      DFR (Dest Format Reg):   0x%08x (%s)\n",
-		apic_read(APIC_DFR),
-		(apic_read(APIC_DFR) == APIC_DFR_FLAT) ? "FLAT" : "CLUSTER"
-	);
+    /*
+     * Logical APIC addressing mode registers
+     */
+    printk(KERN_DEBUG "  Logical Addressing Mode Information:\n");
+    printk(KERN_DEBUG "      LDR (Logical Dest Reg):  0x%08x (id=%d)\n",
+            apic_read(APIC_LDR),
+            GET_APIC_LOGICAL_ID(apic_read(APIC_LDR))
+          );
+    printk(KERN_DEBUG "      DFR (Dest Format Reg):   0x%08x (%s)\n",
+            apic_read(APIC_DFR),
+            (apic_read(APIC_DFR) == APIC_DFR_FLAT) ? "FLAT" : "CLUSTER"
+          );
 
-	/*
- 	 * Task/processor/arbitration priority registers
- 	 */
-	printk(KERN_DEBUG "  Task/Processor/Arbitration Priorities:\n");
-	printk(KERN_DEBUG "      TPR (Task Priority Reg):        0x%08x\n",
-		apic_read(APIC_TASKPRI)
-	);
-	printk(KERN_DEBUG "      PPR (Processor Priority Reg):   0x%08x\n",
-		apic_read(APIC_PROCPRI)
-	);
-	printk(KERN_DEBUG "      APR (Arbitration Priority Reg): 0x%08x\n",
-		apic_read(APIC_ARBPRI)
-	);
+    /*
+     * Task/processor/arbitration priority registers
+     */
+    printk(KERN_DEBUG "  Task/Processor/Arbitration Priorities:\n");
+    printk(KERN_DEBUG "      TPR (Task Priority Reg):        0x%08x\n",
+            apic_read(APIC_TASKPRI)
+          );
+    printk(KERN_DEBUG "      PPR (Processor Priority Reg):   0x%08x\n",
+            apic_read(APIC_PROCPRI)
+          );
+    printk(KERN_DEBUG "      APR (Arbitration Priority Reg): 0x%08x\n",
+            apic_read(APIC_ARBPRI)
+          );
 }
 

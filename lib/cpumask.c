@@ -4,12 +4,12 @@
 
 int __first_cpu(const cpumask_t *srcp)
 {
-	return min_t(int, NR_CPUS, find_first_bit(srcp->bits, NR_CPUS));
+    return min_t(int, NR_CPUS, find_first_bit(srcp->bits, NR_CPUS));
 }
 
 int __next_cpu(int n, const cpumask_t *srcp)
 {
-	return min_t(int, NR_CPUS, find_next_bit(srcp->bits, NR_CPUS, n+1));
+    return min_t(int, NR_CPUS, find_next_bit(srcp->bits, NR_CPUS, n+1));
 }
 
 /*
@@ -20,21 +20,21 @@ int __next_cpu(int n, const cpumask_t *srcp)
  */
 int highest_possible_cpu_id(void)
 {
-	unsigned int cpu;
-	unsigned highest = 0;
+    unsigned int cpu;
+    unsigned highest = 0;
 
-	for_each_cpu_mask(cpu, cpu_present_map)
-		highest = cpu;
-	return highest;
+    for_each_cpu_mask(cpu, cpu_present_map)
+        highest = cpu;
+    return highest;
 }
 
 int __any_online_cpu(const cpumask_t *mask)
 {
-	int cpu;
+    int cpu;
 
-	for_each_cpu_mask(cpu, *mask) {
-		if (cpu_online(cpu))
-			break;
-	}
-	return cpu;
+    for_each_cpu_mask(cpu, *mask) {
+        if (cpu_online(cpu))
+            break;
+    }
+    return cpu;
 }

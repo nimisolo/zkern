@@ -2,9 +2,9 @@
 #define _ASM_X86_64_VSYSCALL_H_
 
 enum vsyscall_num {
-	__NR_vgettimeofday,
-	__NR_vtime,
-	__NR_vgetcpu,
+    __NR_vgettimeofday,
+    __NR_vtime,
+    __NR_vgetcpu,
 };
 
 #define VSYSCALL_START (-10UL << 20)
@@ -37,9 +37,9 @@ typedef long (*syscall_ptr_t)(void);
  */
 extern void
 syscall_register(
-	unsigned		nr,
-	syscall_ptr_t		handler
-);
+        unsigned		nr,
+        syscall_ptr_t		handler
+        );
 
 #endif /* __KERNEL__ */
 

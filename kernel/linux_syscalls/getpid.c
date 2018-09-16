@@ -2,8 +2,8 @@
 #include <lwk/task.h>
 #include <lwk/aspace.h>
 
-int
+    int
 sys_getpid(void)
 {
-	return (int)current->aspace->id;
+    return (int)current->aspace->id;
 }

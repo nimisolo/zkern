@@ -30,54 +30,54 @@
 #define __vsyscall(nr) __attribute__ ((unused,__section__(".vsyscall_" #nr)))
 #define __syscall_clobber "r11","cx","memory"
 
-int __vsyscall(0)
+    int __vsyscall(0)
 vgettimeofday(struct timeval *tv, struct timezone *tz)
 {
-	int ret;
-	asm volatile("syscall"
-		: "=a" (ret)
-		: "0" (__NR_gettimeofday),"D" (tv),"S" (tz)
-		: __syscall_clobber );
-	return ret;
+    int ret;
+    asm volatile("syscall"
+            : "=a" (ret)
+            : "0" (__NR_gettimeofday),"D" (tv),"S" (tz)
+            : __syscall_clobber );
+    return ret;
 }
 
-time_t __vsyscall(1)
+    time_t __vsyscall(1)
 vtime(time_t *t)
 {
-	int ret;
-	asm volatile("syscall"
-		: "=a" (ret)
-		: "0" (__NR_time),"D" (t)
-		: __syscall_clobber );
-	return ret;
+    int ret;
+    asm volatile("syscall"
+            : "=a" (ret)
+            : "0" (__NR_time),"D" (t)
+            : __syscall_clobber );
+    return ret;
 }
 
-long __vsyscall(2)
+    long __vsyscall(2)
 vgetcpu(unsigned *cpu, unsigned *node, void *tcache)
 {
-	asm volatile("syscall"
-		:
-		: "a" (__NR_getcpu),"D" (cpu)
-		: __syscall_clobber );
-	return 0;
+    asm volatile("syscall"
+            :
+            : "a" (__NR_getcpu),"D" (cpu)
+            : __syscall_clobber );
+    return 0;
 }
 
-void __init
+    void __init
 vsyscall_map(void)
 {
-	extern char __vsyscall_0;
-	unsigned long physaddr_page0 = __pa_symbol(&__vsyscall_0);
+    extern char __vsyscall_0;
+    unsigned long physaddr_page0 = __pa_symbol(&__vsyscall_0);
 
-	/* Setup the virtual syscall fixmap entry */
-	__set_fixmap(VSYSCALL_FIRST_PAGE, physaddr_page0, PAGE_KERNEL_VSYSCALL);
+    /* Setup the virtual syscall fixmap entry */
+    __set_fixmap(VSYSCALL_FIRST_PAGE, physaddr_page0, PAGE_KERNEL_VSYSCALL);
 
-	BUG_ON((VSYSCALL_ADDR(0) != __fix_to_virt(VSYSCALL_FIRST_PAGE)));
+    BUG_ON((VSYSCALL_ADDR(0) != __fix_to_virt(VSYSCALL_FIRST_PAGE)));
 
-	BUG_ON((unsigned long) &vgettimeofday !=
-			VSYSCALL_ADDR(__NR_vgettimeofday));
-	BUG_ON((unsigned long) &vtime !=
-			VSYSCALL_ADDR(__NR_vtime));
-	BUG_ON((unsigned long) &vgetcpu !=
-			VSYSCALL_ADDR(__NR_vgetcpu));
+    BUG_ON((unsigned long) &vgettimeofday !=
+            VSYSCALL_ADDR(__NR_vgettimeofday));
+    BUG_ON((unsigned long) &vtime !=
+            VSYSCALL_ADDR(__NR_vtime));
+    BUG_ON((unsigned long) &vgetcpu !=
+            VSYSCALL_ADDR(__NR_vgetcpu));
 }
 

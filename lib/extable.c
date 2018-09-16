@@ -23,21 +23,21 @@
  */
 static int cmp_ex(const void *a, const void *b)
 {
-	const struct exception_table_entry *x = a, *y = b;
+    const struct exception_table_entry *x = a, *y = b;
 
-	/* avoid overflow */
-	if (x->insn > y->insn)
-		return 1;
-	if (x->insn < y->insn)
-		return -1;
-	return 0;
+    /* avoid overflow */
+    if (x->insn > y->insn)
+        return 1;
+    if (x->insn < y->insn)
+        return -1;
+    return 0;
 }
 
 void sort_extable(struct exception_table_entry *start,
-		  struct exception_table_entry *finish)
+        struct exception_table_entry *finish)
 {
-	sort(start, finish - start, sizeof(struct exception_table_entry),
-	     cmp_ex, NULL);
+    sort(start, finish - start, sizeof(struct exception_table_entry),
+            cmp_ex, NULL);
 }
 #endif
 
@@ -49,26 +49,26 @@ void sort_extable(struct exception_table_entry *start,
  * We use a binary search, and thus we assume that the table is
  * already sorted.
  */
-const struct exception_table_entry *
+    const struct exception_table_entry *
 search_extable(const struct exception_table_entry *first,
-	       const struct exception_table_entry *last,
-	       unsigned long value)
+        const struct exception_table_entry *last,
+        unsigned long value)
 {
-	while (first <= last) {
-		const struct exception_table_entry *mid;
+    while (first <= last) {
+        const struct exception_table_entry *mid;
 
-		mid = (last - first) / 2 + first;
-		/*
-		 * careful, the distance between entries can be
-		 * larger than 2GB:
-		 */
-		if (mid->insn < value)
-			first = mid + 1;
-		else if (mid->insn > value)
-			last = mid - 1;
-		else
-			return mid;
-        }
-        return NULL;
+        mid = (last - first) / 2 + first;
+        /*
+         * careful, the distance between entries can be
+         * larger than 2GB:
+         */
+        if (mid->insn < value)
+            first = mid + 1;
+        else if (mid->insn > value)
+            last = mid - 1;
+        else
+            return mid;
+    }
+    return NULL;
 }
 #endif

@@ -2,24 +2,24 @@
 #include <lwk/pmem.h>
 #include <arch/uaccess.h>
 
-int
+    int
 sys_pmem_update(
-	const struct pmem_region __user *    update
-)
+        const struct pmem_region __user *    update
+        )
 {
-	struct pmem_region _update;
-	int status;
+    struct pmem_region _update;
+    int status;
 
-	if (current->uid != 0)
-		return -EPERM;
+    if (current->uid != 0)
+        return -EPERM;
 
-	if (copy_from_user(&_update, update, sizeof(_update)))
-		return -EINVAL;
+    if (copy_from_user(&_update, update, sizeof(_update)))
+        return -EINVAL;
 
-	/* Only allow user-space to update user memory */
-	get_cpu_var(umem_only) = true;
-	status = pmem_update(&_update);
-	get_cpu_var(umem_only) = false;
+    /* Only allow user-space to update user memory */
+    get_cpu_var(umem_only) = true;
+    status = pmem_update(&_update);
+    get_cpu_var(umem_only) = false;
 
-	return status;
+    return status;
 }

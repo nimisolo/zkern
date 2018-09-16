@@ -1,10 +1,10 @@
 #include <lwk/sched_control.h>
 
-void
+    void
 sys_sched_yield_task_to(
-	int __user                    pid,
-	int __user                    tid
-)
+        int __user                    pid,
+        int __user                    tid
+        )
 {
-	sched_yield_task_to(pid, tid);
+    sched_yield_task_to(pid, tid);
 }

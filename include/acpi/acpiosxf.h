@@ -53,12 +53,12 @@
 /* Types for acpi_os_execute */
 
 typedef enum {
-	OSL_GLOBAL_LOCK_HANDLER,
-	OSL_NOTIFY_HANDLER,
-	OSL_GPE_HANDLER,
-	OSL_DEBUGGER_THREAD,
-	OSL_EC_POLL_HANDLER,
-	OSL_EC_BURST_HANDLER
+    OSL_GLOBAL_LOCK_HANDLER,
+    OSL_NOTIFY_HANDLER,
+    OSL_GPE_HANDLER,
+    OSL_DEBUGGER_THREAD,
+    OSL_EC_POLL_HANDLER,
+    OSL_EC_BURST_HANDLER
 } acpi_execute_type;
 
 #define ACPI_NO_UNIT_LIMIT          ((u32) -1)
@@ -70,9 +70,9 @@ typedef enum {
 #define ACPI_SIGNAL_BREAKPOINT      1
 
 struct acpi_signal_fatal_info {
-	u32 type;
-	u32 code;
-	u32 argument;
+    u32 type;
+    u32 code;
+    u32 argument;
 };
 
 /*
@@ -89,11 +89,11 @@ acpi_physical_address acpi_os_get_root_pointer(void);
 
 acpi_status
 acpi_os_predefined_override(const struct acpi_predefined_names *init_val,
-			    acpi_string * new_val);
+        acpi_string * new_val);
 
 acpi_status
 acpi_os_table_override(struct acpi_table_header *existing_table,
-		       struct acpi_table_header **new_table);
+        struct acpi_table_header **new_table);
 
 /*
  * Spinlock primitives
@@ -115,7 +115,7 @@ void acpi_os_release_lock(acpi_spinlock handle, acpi_cpu_flags flags);
  */
 acpi_status
 acpi_os_create_semaphore(u32 max_units,
-			 u32 initial_units, acpi_semaphore * out_handle);
+        u32 initial_units, acpi_semaphore * out_handle);
 
 acpi_status acpi_os_delete_semaphore(acpi_semaphore handle);
 
@@ -145,7 +145,7 @@ void acpi_os_release_mutex(acpi_mutex handle);
 void *acpi_os_allocate(acpi_size size);
 
 void __iomem *acpi_os_map_memory(acpi_physical_address where,
-				acpi_size length);
+        acpi_size length);
 
 void acpi_os_unmap_memory(void __iomem * logical_address, acpi_size size);
 void early_acpi_os_unmap_memory(void __iomem * virt, acpi_size size);
@@ -153,7 +153,7 @@ void early_acpi_os_unmap_memory(void __iomem * virt, acpi_size size);
 #ifdef ACPI_FUTURE_USAGE
 acpi_status
 acpi_os_get_physical_address(void *logical_address,
-			     acpi_physical_address * physical_address);
+        acpi_physical_address * physical_address);
 #endif
 
 /*
@@ -161,8 +161,8 @@ acpi_os_get_physical_address(void *logical_address,
  */
 acpi_status
 acpi_os_create_cache(char *cache_name,
-		     u16 object_size,
-		     u16 max_depth, acpi_cache_t ** return_cache);
+        u16 object_size,
+        u16 max_depth, acpi_cache_t ** return_cache);
 
 acpi_status acpi_os_delete_cache(acpi_cache_t * cache);
 
@@ -177,8 +177,8 @@ acpi_status acpi_os_release_object(acpi_cache_t * cache, void *object);
  */
 acpi_status
 acpi_os_install_interrupt_handler(u32 gsi,
-				  acpi_osd_handler service_routine,
-				  void *context);
+        acpi_osd_handler service_routine,
+        void *context);
 
 acpi_status
 acpi_os_remove_interrupt_handler(u32 gsi, acpi_osd_handler service_routine);
@@ -193,7 +193,7 @@ acpi_thread_id acpi_os_get_thread_id(void);
 
 acpi_status
 acpi_os_execute(acpi_execute_type type,
-		acpi_osd_exec_callback function, void *context);
+        acpi_osd_exec_callback function, void *context);
 
 acpi_status
 acpi_os_hotplug_execute(acpi_osd_exec_callback function, void *context);
@@ -227,21 +227,21 @@ acpi_os_write_memory(acpi_physical_address address, u32 value, u32 width);
  */
 acpi_status
 acpi_os_read_pci_configuration(struct acpi_pci_id *pci_id,
-			       u32 reg, u64 *value, u32 width);
+        u32 reg, u64 *value, u32 width);
 
 acpi_status
 acpi_os_write_pci_configuration(struct acpi_pci_id *pci_id,
-				u32 reg, u64 value, u32 width);
+        u32 reg, u64 value, u32 width);
 
 /*
  * Miscellaneous
  */
 acpi_status
 acpi_os_validate_address(u8 space_id, acpi_physical_address address,
-			 acpi_size length, char *name);
+        acpi_size length, char *name);
 acpi_status
 acpi_os_invalidate_address(u8 space_id, acpi_physical_address address,
-			 acpi_size length);
+        acpi_size length);
 
 u64 acpi_os_get_timer(void);
 
@@ -267,7 +267,7 @@ u32 acpi_os_get_line(char *buffer);
  * Directory manipulation
  */
 void *acpi_os_open_directory(char *pathname,
-			     char *wildcard_spec, char requested_file_type);
+        char *wildcard_spec, char requested_file_type);
 
 /* requeste_file_type values */
 

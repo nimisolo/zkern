@@ -12,7 +12,7 @@
  * This tag identifies where the SMP configuration
  * information is. 
  */
- 
+
 #define SMP_MAGIC_IDENT	(('_'<<24)|('P'<<16)|('M'<<8)|'_')
 
 /*
@@ -22,33 +22,33 @@
 
 struct intel_mp_floating
 {
-	char mpf_signature[4];		/* "_MP_" 			*/
-	unsigned int mpf_physptr;	/* Configuration table address	*/
-	unsigned char mpf_length;	/* Our length (paragraphs)	*/
-	unsigned char mpf_specification;/* Specification version	*/
-	unsigned char mpf_checksum;	/* Checksum (makes sum 0)	*/
-	unsigned char mpf_feature1;	/* Standard or configuration ? 	*/
-	unsigned char mpf_feature2;	/* Bit7 set for IMCR|PIC	*/
-	unsigned char mpf_feature3;	/* Unused (0)			*/
-	unsigned char mpf_feature4;	/* Unused (0)			*/
-	unsigned char mpf_feature5;	/* Unused (0)			*/
+    char mpf_signature[4];		/* "_MP_" 			*/
+    unsigned int mpf_physptr;	/* Configuration table address	*/
+    unsigned char mpf_length;	/* Our length (paragraphs)	*/
+    unsigned char mpf_specification;/* Specification version	*/
+    unsigned char mpf_checksum;	/* Checksum (makes sum 0)	*/
+    unsigned char mpf_feature1;	/* Standard or configuration ? 	*/
+    unsigned char mpf_feature2;	/* Bit7 set for IMCR|PIC	*/
+    unsigned char mpf_feature3;	/* Unused (0)			*/
+    unsigned char mpf_feature4;	/* Unused (0)			*/
+    unsigned char mpf_feature5;	/* Unused (0)			*/
 };
 sizecheck_struct(intel_mp_floating, 16);
 
 struct mp_config_table
 {
-	char mpc_signature[4];
+    char mpc_signature[4];
 #define MPC_SIGNATURE "PCMP"
-	unsigned short mpc_length;	/* Size of table */
-	char  mpc_spec;			/* 0x01 */
-	char  mpc_checksum;
-	char  mpc_oem[8];
-	char  mpc_productid[12];
-	unsigned int mpc_oemptr;	/* 0 if not present */
-	unsigned short mpc_oemsize;	/* 0 if not present */
-	unsigned short mpc_oemcount;
-	unsigned int mpc_lapic;	/* APIC address */
-	unsigned int reserved;
+    unsigned short mpc_length;	/* Size of table */
+    char  mpc_spec;			/* 0x01 */
+    char  mpc_checksum;
+    char  mpc_oem[8];
+    char  mpc_productid[12];
+    unsigned int mpc_oemptr;	/* 0 if not present */
+    unsigned short mpc_oemsize;	/* 0 if not present */
+    unsigned short mpc_oemcount;
+    unsigned int mpc_lapic;	/* APIC address */
+    unsigned int reserved;
 };
 
 /* Followed by entries */
@@ -61,25 +61,25 @@ struct mp_config_table
 
 struct mpc_config_processor
 {
-	unsigned char mpc_type;
-	unsigned char mpc_apicid;	/* Local APIC number */
-	unsigned char mpc_apicver;	/* Its versions */
-	unsigned char mpc_cpuflag;
+    unsigned char mpc_type;
+    unsigned char mpc_apicid;	/* Local APIC number */
+    unsigned char mpc_apicver;	/* Its versions */
+    unsigned char mpc_cpuflag;
 #define CPU_ENABLED		1	/* Processor is available */
 #define CPU_BOOTPROCESSOR	2	/* Processor is the BP */
-	unsigned int mpc_cpufeature;		
+    unsigned int mpc_cpufeature;		
 #define CPU_STEPPING_MASK 0x0F
 #define CPU_MODEL_MASK	0xF0
 #define CPU_FAMILY_MASK	0xF00
-	unsigned int mpc_featureflag;	/* CPUID feature value */
-	unsigned int mpc_reserved[2];
+    unsigned int mpc_featureflag;	/* CPUID feature value */
+    unsigned int mpc_reserved[2];
 };
 
 struct mpc_config_bus
 {
-	unsigned char mpc_type;
-	unsigned char mpc_busid;
-	unsigned char mpc_bustype[6];
+    unsigned char mpc_type;
+    unsigned char mpc_busid;
+    unsigned char mpc_bustype[6];
 };
 
 /* List of Bus Type string values, Intel MP Spec. */
@@ -104,30 +104,30 @@ struct mpc_config_bus
 
 struct mpc_config_ioapic
 {
-	unsigned char mpc_type;
-	unsigned char mpc_apicid;
-	unsigned char mpc_apicver;
-	unsigned char mpc_flags;
+    unsigned char mpc_type;
+    unsigned char mpc_apicid;
+    unsigned char mpc_apicver;
+    unsigned char mpc_flags;
 #define MPC_APIC_USABLE		0x01
-	unsigned int mpc_apicaddr;
+    unsigned int mpc_apicaddr;
 };
 
 struct mpc_config_intsrc
 {
-	unsigned char mpc_type;
-	unsigned char mpc_irqtype;
-	unsigned short mpc_irqflag;
-	unsigned char mpc_srcbus;
-	unsigned char mpc_srcbusirq;
-	unsigned char mpc_dstapic;
-	unsigned char mpc_dstirq;
+    unsigned char mpc_type;
+    unsigned char mpc_irqtype;
+    unsigned short mpc_irqflag;
+    unsigned char mpc_srcbus;
+    unsigned char mpc_srcbusirq;
+    unsigned char mpc_dstapic;
+    unsigned char mpc_dstirq;
 };
 
 enum mp_irq_source_types {
-	mp_INT = 0,
-	mp_NMI = 1,
-	mp_SMI = 2,
-	mp_ExtINT = 3
+    mp_INT = 0,
+    mp_NMI = 1,
+    mp_SMI = 2,
+    mp_ExtINT = 3
 };
 
 #define MP_IRQDIR_DEFAULT	0
@@ -137,14 +137,14 @@ enum mp_irq_source_types {
 
 struct mpc_config_lintsrc
 {
-	unsigned char mpc_type;
-	unsigned char mpc_irqtype;
-	unsigned short mpc_irqflag;
-	unsigned char mpc_srcbusid;
-	unsigned char mpc_srcbusirq;
-	unsigned char mpc_destapic;	
+    unsigned char mpc_type;
+    unsigned char mpc_irqtype;
+    unsigned short mpc_irqflag;
+    unsigned char mpc_srcbusid;
+    unsigned char mpc_srcbusirq;
+    unsigned char mpc_destapic;	
 #define MP_APIC_ALL	0xFF
-	unsigned char mpc_destapiclint;
+    unsigned char mpc_destapiclint;
 };
 
 /*
@@ -163,10 +163,10 @@ struct mpc_config_lintsrc
 /* Each PCI slot may be a combo card with its own bus.  4 IRQ pins per slot. */
 #define MAX_IRQ_SOURCES (MAX_MP_BUSSES * 4)
 enum mp_bustype {
-	MP_BUS_ISA = 1,
-	MP_BUS_EISA,
-	MP_BUS_PCI,
-	MP_BUS_MCA
+    MP_BUS_ISA = 1,
+    MP_BUS_EISA,
+    MP_BUS_PCI,
+    MP_BUS_MCA
 };
 extern unsigned char mp_bus_id_to_type [MAX_MP_BUSSES];
 extern int mp_bus_id_to_pci_bus [MAX_MP_BUSSES];
@@ -195,7 +195,7 @@ extern int using_apic_timer;
 
 struct physid_mask
 {
-	unsigned long mask[PHYSID_ARRAY_SIZE];
+    unsigned long mask[PHYSID_ARRAY_SIZE];
 };
 
 typedef struct physid_mask physid_mask_t;
@@ -217,18 +217,18 @@ typedef struct physid_mask physid_mask_t;
 #define physids_coerce(map)			((map).mask[0])
 
 #define physids_promote(physids)						\
-	({									\
-		physid_mask_t __physid_mask = PHYSID_MASK_NONE;			\
-		__physid_mask.mask[0] = physids;				\
-		__physid_mask;							\
-	})
+    ({									\
+     physid_mask_t __physid_mask = PHYSID_MASK_NONE;			\
+     __physid_mask.mask[0] = physids;				\
+     __physid_mask;							\
+     })
 
 #define physid_mask_of_physid(physid)						\
-	({									\
-		physid_mask_t __physid_mask = PHYSID_MASK_NONE;			\
-		physid_set(physid, __physid_mask);				\
-		__physid_mask;							\
-	})
+    ({									\
+     physid_mask_t __physid_mask = PHYSID_MASK_NONE;			\
+     physid_set(physid, __physid_mask);				\
+     __physid_mask;							\
+     })
 
 #define PHYSID_MASK_ALL		{ {[0 ... PHYSID_ARRAY_SIZE-1] = ~0UL} }
 #define PHYSID_MASK_NONE	{ {[0 ... PHYSID_ARRAY_SIZE-1] = 0UL} }

@@ -18,12 +18,12 @@
  */
 long probe_kernel_read(void *dst, void *src, size_t size)
 {
-	long ret; 
+    long ret; 
 
-       	ret = __copy_from_user_inatomic(dst,
-                        (__force const void __user *)src, size);
-	
-	return ret ? -EFAULT : 0;
+    ret = __copy_from_user_inatomic(dst,
+            (__force const void __user *)src, size);
+
+    return ret ? -EFAULT : 0;
 }
 EXPORT_SYMBOL_GPL(probe_kernel_read);
 
@@ -38,10 +38,10 @@ EXPORT_SYMBOL_GPL(probe_kernel_read);
  */
 long probe_kernel_write(void *dst, void *src, size_t size)
 {
-	long ret; 
+    long ret; 
 
-	ret = __copy_to_user_inatomic((__force void __user *)dst, src, size);
+    ret = __copy_to_user_inatomic((__force void __user *)dst, src, size);
 
-	return ret ? -EFAULT : 0; 
+    return ret ? -EFAULT : 0; 
 }
 EXPORT_SYMBOL_GPL(probe_kernel_write);

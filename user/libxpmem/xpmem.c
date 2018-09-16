@@ -9,7 +9,7 @@
 /* Pretend we are XPMEM version 2.2 */
 int xpmem_version(void)
 {
-	return 0x00022000;
+    return 0x00022000;
 }
 
 
@@ -21,14 +21,14 @@ int xpmem_version(void)
  */
 static unsigned long make_xpmem_addr(pid_t src, void *vaddr)
 {
-	unsigned long slot;
+    unsigned long slot;
 
-	if (src == INIT_ASPACE_ID)
-		slot = 0;
-	else
-		slot = src - 0x1000 + 1;
+    if (src == INIT_ASPACE_ID)
+        slot = 0;
+    else
+        slot = src - 0x1000 + 1;
 
-	return (((slot + 1) << SMARTMAP_SHIFT) | ((unsigned long) vaddr));
+    return (((slot + 1) << SMARTMAP_SHIFT) | ((unsigned long) vaddr));
 }
 
 
@@ -39,14 +39,14 @@ static unsigned long make_xpmem_addr(pid_t src, void *vaddr)
  */
 xpmem_segid_t xpmem_make(void *vaddr, size_t size, int permit_type, void *permit_value)
 {
-	return (xpmem_segid_t) make_xpmem_addr(getpid(), vaddr);
+    return (xpmem_segid_t) make_xpmem_addr(getpid(), vaddr);
 }
 
 
 int xpmem_remove(xpmem_segid_t segid)
 {
-	/* This is a NOP on Kitten */
-	return 0;
+    /* This is a NOP on Kitten */
+    return 0;
 }
 
 
@@ -56,14 +56,14 @@ int xpmem_remove(xpmem_segid_t segid)
  */
 xpmem_apid_t xpmem_get(xpmem_segid_t segid, int flags, int permit_type, void *permit_value)
 {
-	return segid;
+    return segid;
 }
 
 
 int xpmem_release(xpmem_apid_t apid)
 {
-	/* This is a NOP on Kitten */
-	return 0;
+    /* This is a NOP on Kitten */
+    return 0;
 }
 
 
@@ -74,17 +74,17 @@ int xpmem_release(xpmem_apid_t apid)
  */
 void *xpmem_attach(struct xpmem_addr addr, size_t size, void *vaddr)
 {
-	if (vaddr != NULL) {
-		printf("%s: ERROR -- Kitten does not support user-specified target vaddr.\n", __FUNCTION__);
-		return (void *) -1;
-	}
+    if (vaddr != NULL) {
+        printf("%s: ERROR -- Kitten does not support user-specified target vaddr.\n", __FUNCTION__);
+        return (void *) -1;
+    }
 
-	return (void *)(addr.apid + addr.offset);
+    return (void *)(addr.apid + addr.offset);
 }
 
 
 int xpmem_detach(void *vaddr)
 {
-	/* This is a NOP on Kitten */
-	return 0;
+    /* This is a NOP on Kitten */
+    return 0;
 }

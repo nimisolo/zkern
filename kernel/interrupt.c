@@ -19,183 +19,183 @@
 #include <arch/proto.h>
 
 struct irq_desc {
-	spinlock_t		lock;
-	struct list_head	handlers;
+    spinlock_t		lock;
+    struct list_head	handlers;
 };
 
 struct handler_desc {
-	struct list_head	link;
-	irq_handler_t		handler;
-	unsigned long		irqflags;
-	const char *		devname;
-	void *			dev_id;
+    struct list_head	link;
+    irq_handler_t		handler;
+    unsigned long		irqflags;
+    const char *		devname;
+    void *			dev_id;
 };
 
 static struct irq_desc irqs[NUM_IRQS];
 
-static void
+    static void
 irq_dispatch(
-	struct pt_regs *	regs,
-	unsigned int		irq
-)
+        struct pt_regs *	regs,
+        unsigned int		irq
+        )
 {
-	struct irq_desc *irq_desc = &irqs[irq];
-	struct handler_desc *handler_desc;
-	unsigned long irq_state;
-	irqreturn_t status = IRQ_NONE;
+    struct irq_desc *irq_desc = &irqs[irq];
+    struct handler_desc *handler_desc;
+    unsigned long irq_state;
+    irqreturn_t status = IRQ_NONE;
 
-	spin_lock_irqsave(&irq_desc->lock, irq_state);
+    spin_lock_irqsave(&irq_desc->lock, irq_state);
 
-	list_for_each_entry(handler_desc, &irq_desc->handlers, link) {
-		status = handler_desc->handler(irq, handler_desc->dev_id);
-		if (status == IRQ_HANDLED)
-			break;
-	}
+    list_for_each_entry(handler_desc, &irq_desc->handlers, link) {
+        status = handler_desc->handler(irq, handler_desc->dev_id);
+        if (status == IRQ_HANDLED)
+            break;
+    }
 
-	spin_unlock_irqrestore(&irq_desc->lock, irq_state);
+    spin_unlock_irqrestore(&irq_desc->lock, irq_state);
 }
 
 
-int
+    int
 irq_request_free_vector(
-	irq_handler_t		handler,
-	unsigned long		irqflags,
-	const char *		devname,
-	void  *			dev_id
-)
+        irq_handler_t		handler,
+        unsigned long		irqflags,
+        const char *		devname,
+        void  *			dev_id
+        )
 {
-	struct irq_desc     * irq_desc = NULL;
-	struct handler_desc * handler_desc;
-	unsigned long irqstate;
-	int irq;
+    struct irq_desc     * irq_desc = NULL;
+    struct handler_desc * handler_desc;
+    unsigned long irqstate;
+    int irq;
 
-	handler_desc = kmem_alloc(sizeof(struct handler_desc));
-	if (!handler_desc)
-		return -1;
-	
-	*handler_desc = (typeof(*handler_desc)){
-		.link		= LIST_HEAD_INIT(handler_desc->link),
-		.handler	= handler,
-		.irqflags	= irqflags,
-		.devname	= devname,
-		.dev_id		= dev_id,
-	};
+    handler_desc = kmem_alloc(sizeof(struct handler_desc));
+    if (!handler_desc)
+        return -1;
 
-	for (irq  = FIRST_AVAIL_VECTOR;
-	     irq  < FIRST_SYSTEM_VECTOR; 
-	     irq += 1) {
-		int allocated = 0;
+    *handler_desc = (typeof(*handler_desc)){
+        .link		= LIST_HEAD_INIT(handler_desc->link),
+            .handler	= handler,
+            .irqflags	= irqflags,
+            .devname	= devname,
+            .dev_id		= dev_id,
+    };
 
-		irq_desc = &irqs[irq];
+    for (irq  = FIRST_AVAIL_VECTOR;
+            irq  < FIRST_SYSTEM_VECTOR; 
+            irq += 1) {
+        int allocated = 0;
 
-		spin_lock_irqsave(&irq_desc->lock, irqstate);
-		{
-			if (list_empty(&irq_desc->handlers)) {
-				list_add_tail(&handler_desc->link, &irq_desc->handlers);
-				allocated = 1;
-			}
-		}
-		spin_unlock_irqrestore(&irq_desc->lock, irqstate);
+        irq_desc = &irqs[irq];
 
-		if (allocated) break;
-	}
+        spin_lock_irqsave(&irq_desc->lock, irqstate);
+        {
+            if (list_empty(&irq_desc->handlers)) {
+                list_add_tail(&handler_desc->link, &irq_desc->handlers);
+                allocated = 1;
+            }
+        }
+        spin_unlock_irqrestore(&irq_desc->lock, irqstate);
+
+        if (allocated) break;
+    }
 
 
-	/* Abort if we failed to find a free vector */
-	if (irq >= FIRST_SYSTEM_VECTOR) {
-		kmem_free(handler_desc);
-		return -1;
-	}
+    /* Abort if we failed to find a free vector */
+    if (irq >= FIRST_SYSTEM_VECTOR) {
+        kmem_free(handler_desc);
+        return -1;
+    }
 
-	set_idtvec_handler(irq, irq_dispatch);
+    set_idtvec_handler(irq, irq_dispatch);
 
-	return irq;
+    return irq;
 }
 
-int
+    int
 irq_request(
-	unsigned int		irq,
-	irq_handler_t		handler,
-	unsigned long		irqflags,
-	const char *		devname,
-	void  *			dev_id
-)
+        unsigned int		irq,
+        irq_handler_t		handler,
+        unsigned long		irqflags,
+        const char *		devname,
+        void  *			dev_id
+        )
 {
-	struct irq_desc     * irq_desc = &irqs[irq];
-	struct handler_desc * handler_desc;
-	unsigned long irqstate;
+    struct irq_desc     * irq_desc = &irqs[irq];
+    struct handler_desc * handler_desc;
+    unsigned long irqstate;
 
-	if (irq >= NUM_IRQS)
-		return -1;
+    if (irq >= NUM_IRQS)
+        return -1;
 
-	set_idtvec_handler(irq, irq_dispatch);
+    set_idtvec_handler(irq, irq_dispatch);
 
-	handler_desc = kmem_alloc(sizeof(struct handler_desc));
-	if (!handler_desc)
-		return -1;
+    handler_desc = kmem_alloc(sizeof(struct handler_desc));
+    if (!handler_desc)
+        return -1;
 
-	*handler_desc = (typeof(*handler_desc)){
-		.link		= LIST_HEAD_INIT(handler_desc->link),
-		.handler	= handler,
-		.irqflags	= irqflags,
-		.devname	= devname,
-		.dev_id		= dev_id,
-	};
+    *handler_desc = (typeof(*handler_desc)){
+        .link		= LIST_HEAD_INIT(handler_desc->link),
+            .handler	= handler,
+            .irqflags	= irqflags,
+            .devname	= devname,
+            .dev_id		= dev_id,
+    };
 
-	spin_lock_irqsave(&irq_desc->lock, irqstate);
-	list_add_tail(&handler_desc->link, &irq_desc->handlers);
-	spin_unlock_irqrestore(&irq_desc->lock, irqstate);
+    spin_lock_irqsave(&irq_desc->lock, irqstate);
+    list_add_tail(&handler_desc->link, &irq_desc->handlers);
+    spin_unlock_irqrestore(&irq_desc->lock, irqstate);
 
-	return 0;
+    return 0;
 }
 
-void
+    void
 irq_free(
-	unsigned int		irq,
-	void *			dev_id
-)
+        unsigned int		irq,
+        void *			dev_id
+        )
 {
-	struct irq_desc *irq_desc = &irqs[irq];
-	struct handler_desc *handler_desc;
-	unsigned long irqstate;
+    struct irq_desc *irq_desc = &irqs[irq];
+    struct handler_desc *handler_desc;
+    unsigned long irqstate;
 
-	if (irq >= NUM_IRQS)
-		return;
+    if (irq >= NUM_IRQS)
+        return;
 
-	spin_lock_irqsave(&irq_desc->lock, irqstate);
+    spin_lock_irqsave(&irq_desc->lock, irqstate);
 
-	list_for_each_entry(handler_desc, &irq_desc->handlers, link) {
-		if (handler_desc->dev_id != dev_id)
-			continue;
-		list_del(&handler_desc->link);
-		kmem_free(handler_desc);
-		break;
-	}
+    list_for_each_entry(handler_desc, &irq_desc->handlers, link) {
+        if (handler_desc->dev_id != dev_id)
+            continue;
+        list_del(&handler_desc->link);
+        kmem_free(handler_desc);
+        break;
+    }
 
-	spin_unlock_irqrestore(&irq_desc->lock, irqstate);
+    spin_unlock_irqrestore(&irq_desc->lock, irqstate);
 }
 
-void
+    void
 irq_synchronize(
-	unsigned int		irq
-)
+        unsigned int		irq
+        )
 {
-	struct irq_desc *irq_desc = &irqs[irq];
-	unsigned long irqstate;
+    struct irq_desc *irq_desc = &irqs[irq];
+    unsigned long irqstate;
 
-	spin_lock_irqsave(&irq_desc->lock, irqstate);
-	spin_unlock_irqrestore(&irq_desc->lock, irqstate);
+    spin_lock_irqsave(&irq_desc->lock, irqstate);
+    spin_unlock_irqrestore(&irq_desc->lock, irqstate);
 }
 
-void __init
+    void __init
 irq_init(void)
 {
-	struct irq_desc *irq_desc;
-	int i;
+    struct irq_desc *irq_desc;
+    int i;
 
-	for (i = 0; i < NUM_IRQS; i++) {
-		irq_desc = &irqs[i];
-		spin_lock_init(&irq_desc->lock);
-		list_head_init(&irq_desc->handlers);
-	}
+    for (i = 0; i < NUM_IRQS; i++) {
+        irq_desc = &irqs[i];
+        spin_lock_init(&irq_desc->lock);
+        list_head_init(&irq_desc->handlers);
+    }
 }

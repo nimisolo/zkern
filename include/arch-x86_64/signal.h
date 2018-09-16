@@ -67,7 +67,7 @@
 
 // Signal set type
 typedef struct {
-	unsigned long bitmap[BITS_TO_LONGS(NUM_SIGNALS)];
+    unsigned long bitmap[BITS_TO_LONGS(NUM_SIGNALS)];
 } sigset_t;
 
 
@@ -78,10 +78,10 @@ typedef void sigrestorer_func_t(void);
 
 // Signal action type
 struct sigaction {
-	sighandler_func_t *	sa_handler;
-	unsigned long		sa_flags;
-	sigrestorer_func_t *	sa_restorer;
-	sigset_t		sa_mask;
+    sighandler_func_t *	sa_handler;
+    unsigned long		sa_flags;
+    sigrestorer_func_t *	sa_restorer;
+    sigset_t		sa_mask;
 };
 
 

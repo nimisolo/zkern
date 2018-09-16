@@ -65,503 +65,503 @@
  */
 #define FLAGS_SHARED    0x1
 
-void
+    void
 futex_queue_init(
-	struct futex_queue *		queue
-)
+        struct futex_queue *		queue
+        )
 {
-	spin_lock_init(&queue->lock);
-	list_head_init(&queue->futex_list);
+    spin_lock_init(&queue->lock);
+    list_head_init(&queue->futex_list);
 }
 
-static bool
+    static bool
 uaddr_is_valid(
-	uint32_t __user *		uaddr
-)
+        uint32_t __user *		uaddr
+        )
 {
-	return access_ok(VERIFY_WRITE, uaddr, sizeof(uint32_t));
+    return access_ok(VERIFY_WRITE, uaddr, sizeof(uint32_t));
 }
 
-static addr_t
+    static addr_t
 get_futex_key(
-	uint32_t __user *		uaddr,
-	unsigned int			flags
-)
+        uint32_t __user *		uaddr,
+        unsigned int			flags
+        )
 {
-	addr_t key;
+    addr_t key;
 
-	if (!(flags & FLAGS_SHARED)) {
-		/* The easy case, this is a aspace-private futex so
-		 * we can use the user-space address directly. */
-		key = (addr_t) uaddr;
-	} else {
-		/* The harder case, this futex can be shared between address
-		 * spaces so we need to use the physical address. */
-		if (aspace_virt_to_phys(MY_ID, (vaddr_t)uaddr, &key))
-			panic("aspace_virt_to_phys() failed, uaddr=%p", uaddr);
-	}
+    if (!(flags & FLAGS_SHARED)) {
+        /* The easy case, this is a aspace-private futex so
+         * we can use the user-space address directly. */
+        key = (addr_t) uaddr;
+    } else {
+        /* The harder case, this futex can be shared between address
+         * spaces so we need to use the physical address. */
+        if (aspace_virt_to_phys(MY_ID, (vaddr_t)uaddr, &key))
+            panic("aspace_virt_to_phys() failed, uaddr=%p", uaddr);
+    }
 
-	return key;
+    return key;
 }
 
-static int
+    static int
 futex_init(
-	struct futex *			futex,
-	uint32_t __user *		uaddr,
-	uint32_t			bitset,
-	unsigned int			flags
-)
+        struct futex *			futex,
+        uint32_t __user *		uaddr,
+        uint32_t			bitset,
+        unsigned int			flags
+        )
 {
-	if (!uaddr_is_valid(uaddr))
-		return -EINVAL;
-	futex->key = get_futex_key(uaddr, flags);
-	futex->bitset = bitset;
-	waitq_init(&futex->waitq);
-	return 0;
+    if (!uaddr_is_valid(uaddr))
+        return -EINVAL;
+    futex->key = get_futex_key(uaddr, flags);
+    futex->bitset = bitset;
+    waitq_init(&futex->waitq);
+    return 0;
 }
 
-static struct futex_queue *
+    static struct futex_queue *
 get_queue(
-	uint32_t __user *		uaddr,
-	unsigned int			flags,
-	addr_t *			key_out
-)
+        uint32_t __user *		uaddr,
+        unsigned int			flags,
+        addr_t *			key_out
+        )
 {
-	addr_t   key  = get_futex_key(uaddr, flags);
-	uint64_t hash = hash_64((uint64_t)key, FUTEX_HASHBITS);
+    addr_t   key  = get_futex_key(uaddr, flags);
+    uint64_t hash = hash_64((uint64_t)key, FUTEX_HASHBITS);
 
-	if (key_out)
-		*key_out = key;
+    if (key_out)
+        *key_out = key;
 
-	if (flags & FLAGS_SHARED)
-		return &(aspace_acquire(KERNEL_ASPACE_ID)->futex_queues[hash]);
+    if (flags & FLAGS_SHARED)
+        return &(aspace_acquire(KERNEL_ASPACE_ID)->futex_queues[hash]);
 
-	return &current->aspace->futex_queues[hash];
+    return &current->aspace->futex_queues[hash];
 }
 
-static struct futex_queue *
+    static struct futex_queue *
 queue_lock(
-	uint32_t __user *		uaddr,
-	unsigned int			flags,
-	struct futex *			futex
-)
+        uint32_t __user *		uaddr,
+        unsigned int			flags,
+        struct futex *			futex
+        )
 {
-	struct futex_queue *queue = get_queue(uaddr, flags, NULL);
-	futex->lock_ptr = &queue->lock;
-	spin_lock(&queue->lock);
-	return queue;
+    struct futex_queue *queue = get_queue(uaddr, flags, NULL);
+    futex->lock_ptr = &queue->lock;
+    spin_lock(&queue->lock);
+    return queue;
 }
 
-static void
+    static void
 queue_unlock(
-	struct futex_queue *		futex_queue
-)
+        struct futex_queue *		futex_queue
+        )
 {
-	spin_unlock(&futex_queue->lock);
+    spin_unlock(&futex_queue->lock);
 }
 
-static void
+    static void
 queue_me(
-	struct futex *			futex,
-	struct futex_queue *		futex_queue
-)
+        struct futex *			futex,
+        struct futex_queue *		futex_queue
+        )
 {
-	list_add_tail(&futex->link, &futex_queue->futex_list);
+    list_add_tail(&futex->link, &futex_queue->futex_list);
 }
 
-static int
+    static int
 unqueue_me(
-	struct futex *			futex
-)
+        struct futex *			futex
+        )
 {
-	spinlock_t *lock_ptr;
-	int status = 0;
+    spinlock_t *lock_ptr;
+    int status = 0;
 
-	/* In the common case we don't take the spinlock, which is nice. */
+    /* In the common case we don't take the spinlock, which is nice. */
 retry:
-	lock_ptr = futex->lock_ptr;
-	barrier();
-	if (lock_ptr != NULL) {
-		spin_lock(lock_ptr);
-		/*
-		 * q->lock_ptr can change between reading it and
-		 * spin_lock(), causing us to take the wrong lock.  This
-		 * corrects the race condition.
-		 *
-		 * Reasoning goes like this: if we have the wrong lock,
-		 * q->lock_ptr must have changed (maybe several times)
-		 * between reading it and the spin_lock().  It can
-		 * change again after the spin_lock() but only if it was
-		 * already changed before the spin_lock().  It cannot,
-		 * however, change back to the original value.  Therefore
-		 * we can detect whether we acquired the correct lock.
-		 */
-		if (unlikely(lock_ptr != futex->lock_ptr)) {
-			spin_unlock(lock_ptr);
-			goto retry;
-		}
-		WARN_ON(list_empty(&futex->link));
-		list_del(&futex->link);
-		spin_unlock(lock_ptr);
-		status = 1;
-	}
+    lock_ptr = futex->lock_ptr;
+    barrier();
+    if (lock_ptr != NULL) {
+        spin_lock(lock_ptr);
+        /*
+         * q->lock_ptr can change between reading it and
+         * spin_lock(), causing us to take the wrong lock.  This
+         * corrects the race condition.
+         *
+         * Reasoning goes like this: if we have the wrong lock,
+         * q->lock_ptr must have changed (maybe several times)
+         * between reading it and the spin_lock().  It can
+         * change again after the spin_lock() but only if it was
+         * already changed before the spin_lock().  It cannot,
+         * however, change back to the original value.  Therefore
+         * we can detect whether we acquired the correct lock.
+         */
+        if (unlikely(lock_ptr != futex->lock_ptr)) {
+            spin_unlock(lock_ptr);
+            goto retry;
+        }
+        WARN_ON(list_empty(&futex->link));
+        list_del(&futex->link);
+        spin_unlock(lock_ptr);
+        status = 1;
+    }
 
-	return status;
+    return status;
 }
 
-static void
+    static void
 lock_two_queues(
-	struct futex_queue *		queue1,
-	struct futex_queue *		queue2
-)
+        struct futex_queue *		queue1,
+        struct futex_queue *		queue2
+        )
 {
-	if (queue1 < queue2)
-		spin_lock(&queue1->lock);
-	spin_lock(&queue2->lock);
-	if (queue1 > queue2)
-		spin_lock(&queue1->lock);
+    if (queue1 < queue2)
+        spin_lock(&queue1->lock);
+    spin_lock(&queue2->lock);
+    if (queue1 > queue2)
+        spin_lock(&queue1->lock);
 }
 
-static void
+    static void
 unlock_two_queues(
-	struct futex_queue *		queue1,
-	struct futex_queue *		queue2
-)
+        struct futex_queue *		queue1,
+        struct futex_queue *		queue2
+        )
 {
-	spin_unlock(&queue1->lock);
-	if (queue1 != queue2)
-		spin_unlock(&queue2->lock);
+    spin_unlock(&queue1->lock);
+    if (queue1 != queue2)
+        spin_unlock(&queue2->lock);
 }
 
 /** Puts a task to sleep waiting on a futex. */
-static int
+    static int
 futex_wait(
-	uint32_t __user *		uaddr,
-	unsigned int			flags,
-	uint32_t			val,
-	uint64_t			timeout,
-	uint32_t			bitset
-)
+        uint32_t __user *		uaddr,
+        unsigned int			flags,
+        uint32_t			val,
+        uint64_t			timeout,
+        uint32_t			bitset
+        )
 {
-	DECLARE_WAITQ_ENTRY(wait, current);
-	int status;
-	uint32_t uval;
-	struct futex futex;
-	struct futex_queue *queue;
-	uint64_t time_remain = 0;
+    DECLARE_WAITQ_ENTRY(wait, current);
+    int status;
+    uint32_t uval;
+    struct futex futex;
+    struct futex_queue *queue;
+    uint64_t time_remain = 0;
 
-	if (!bitset)
-		return -EINVAL;
+    if (!bitset)
+        return -EINVAL;
 
-	/* This verifies that uaddr is sane */
-	if ((status = futex_init(&futex, uaddr, bitset, flags)) != 0)
-		return status;
+    /* This verifies that uaddr is sane */
+    if ((status = futex_init(&futex, uaddr, bitset, flags)) != 0)
+        return status;
 
-	/* Lock the futex queue corresponding to uaddr */
-	queue = queue_lock(uaddr, flags, &futex);
+    /* Lock the futex queue corresponding to uaddr */
+    queue = queue_lock(uaddr, flags, &futex);
 
-	/* Get the value from user-space. Since we don't have
- 	 * paging, the only options are for this to succeed (with no
- 	 * page faults) or fail, returning -EFAULT. There is no way
- 	 * for us to be put to sleep, so holding the queue's spinlock
- 	 * is fine. */
-	if ((status = get_user(uval, uaddr)) != 0)
-		goto error;
+    /* Get the value from user-space. Since we don't have
+     * paging, the only options are for this to succeed (with no
+     * page faults) or fail, returning -EFAULT. There is no way
+     * for us to be put to sleep, so holding the queue's spinlock
+     * is fine. */
+    if ((status = get_user(uval, uaddr)) != 0)
+        goto error;
 
-	/* The user-space value must match the value passed in */
-	if (uval != val) {
-		status = -EWOULDBLOCK;
-		goto error;
-	}
+    /* The user-space value must match the value passed in */
+    if (uval != val) {
+        status = -EWOULDBLOCK;
+        goto error;
+    }
 
-	/* Add ourself to the futex queue and drop our lock on it */
-	queue_me(&futex, queue);
-	queue_unlock(queue);
+    /* Add ourself to the futex queue and drop our lock on it */
+    queue_me(&futex, queue);
+    queue_unlock(queue);
 
-	/* Add ourself to the futex's waitq and go to sleep */
-	current->state = TASK_INTERRUPTIBLE;
-	waitq_add_entry(&futex.waitq, &wait);
+    /* Add ourself to the futex's waitq and go to sleep */
+    current->state = TASK_INTERRUPTIBLE;
+    waitq_add_entry(&futex.waitq, &wait);
 
-	if (!list_empty(&futex.link))
-		time_remain = schedule_timeout(timeout);
+    if (!list_empty(&futex.link))
+        time_remain = schedule_timeout(timeout);
 
-	current->state = TASK_RUNNING;
+    current->state = TASK_RUNNING;
 
-	/*
- 	 * NOTE: We don't remove ourself from the waitq because
- 	 *       we are the only user of it.
- 	 */
-	
-	/* If we were woken (and unqueued), we succeeded, whatever. */
-	if (!unqueue_me(&futex))
-		return 0;
-	if (time_remain == 0)
-		return -ETIMEDOUT;
-	/* We expect that there is a signal pending, but another thread
-	 * may have handled it for us already. */
-	return -EINTR;
+    /*
+     * NOTE: We don't remove ourself from the waitq because
+     *       we are the only user of it.
+     */
+
+    /* If we were woken (and unqueued), we succeeded, whatever. */
+    if (!unqueue_me(&futex))
+        return 0;
+    if (time_remain == 0)
+        return -ETIMEDOUT;
+    /* We expect that there is a signal pending, but another thread
+     * may have handled it for us already. */
+    return -EINTR;
 
 error:
-	queue_unlock(queue);
-	return status;
+    queue_unlock(queue);
+    return status;
 }
 
 /*
  * The futex_queue's lock must be held when this is called.
  * Afterwards, the futex_queue must not be accessed.
  */
-static void
+    static void
 wake_futex(
-	struct futex *			futex
-)
+        struct futex *			futex
+        )
 {
-	list_del_init(&futex->link);
-	/*
-	 * The lock in waitq_wakeup() is a crucial memory barrier after the
-	 * list_del_init() and also before assigning to futex->lock_ptr.
-	 */
-	waitq_wakeup(&futex->waitq);
-	/*
-	 * The waiting task can free the futex as soon as this is written,
-	 * without taking any locks.  This must come last.
-	 *
-	 * A memory barrier is required here to prevent the following store
-	 * to lock_ptr from getting ahead of the wakeup. Clearing the lock
-	 * at the end of waitq_wakeup() does not prevent this store from
-	 * moving.
-	 */
-	smp_wmb();
-	futex->lock_ptr = NULL;
+    list_del_init(&futex->link);
+    /*
+     * The lock in waitq_wakeup() is a crucial memory barrier after the
+     * list_del_init() and also before assigning to futex->lock_ptr.
+     */
+    waitq_wakeup(&futex->waitq);
+    /*
+     * The waiting task can free the futex as soon as this is written,
+     * without taking any locks.  This must come last.
+     *
+     * A memory barrier is required here to prevent the following store
+     * to lock_ptr from getting ahead of the wakeup. Clearing the lock
+     * at the end of waitq_wakeup() does not prevent this store from
+     * moving.
+     */
+    smp_wmb();
+    futex->lock_ptr = NULL;
 }
 
 /** Wakes up to nr_wake tasks waiting on a futex. */
-static int
+    static int
 futex_wake(
-	uint32_t __user *		uaddr,
-	unsigned int			flags,
-	int				nr_wake,
-	uint32_t			bitset
-)
+        uint32_t __user *		uaddr,
+        unsigned int			flags,
+        int				nr_wake,
+        uint32_t			bitset
+        )
 {
-	struct futex_queue *queue;
-	addr_t key;
-	struct list_head *head;
-	struct futex *this, *next;
-	int nr_woke = 0;
+    struct futex_queue *queue;
+    addr_t key;
+    struct list_head *head;
+    struct futex *this, *next;
+    int nr_woke = 0;
 
-	if (!bitset)
-		return -EINVAL;
+    if (!bitset)
+        return -EINVAL;
 
-	if (!uaddr_is_valid(uaddr))
-		return -EINVAL;
+    if (!uaddr_is_valid(uaddr))
+        return -EINVAL;
 
-	queue = get_queue(uaddr, flags, &key);
-	spin_lock(&queue->lock);
-	head = &queue->futex_list;
+    queue = get_queue(uaddr, flags, &key);
+    spin_lock(&queue->lock);
+    head = &queue->futex_list;
 
-	list_for_each_entry_safe(this, next, head, link) {
-		if ((this->key == key) && (this->bitset & bitset)) {
-			wake_futex(this);
-			if (++nr_woke >= nr_wake)
-				break;
-		}
-	}
+    list_for_each_entry_safe(this, next, head, link) {
+        if ((this->key == key) && (this->bitset & bitset)) {
+            wake_futex(this);
+            if (++nr_woke >= nr_wake)
+                break;
+        }
+    }
 
-	spin_unlock(&queue->lock);
-	return nr_woke;
+    spin_unlock(&queue->lock);
+    return nr_woke;
 }
 
 /** Conditionally wakes up tasks that are waiting on futexes. */
-static int
+    static int
 futex_wake_op(
-	uint32_t __user *		uaddr1,
-	uint32_t __user *		uaddr2,
-	unsigned int			flags,
-	int				nr_wake1,
-	int				nr_wake2,
-	int				op
-)
+        uint32_t __user *		uaddr1,
+        uint32_t __user *		uaddr2,
+        unsigned int			flags,
+        int				nr_wake1,
+        int				nr_wake2,
+        int				op
+        )
 {
-	struct futex_queue *queue1, *queue2;
-	addr_t key1, key2;
-	struct list_head *head;
-	struct futex *this, *next;
-	int op_result, nr_woke1 = 0, nr_woke2 = 0;
+    struct futex_queue *queue1, *queue2;
+    addr_t key1, key2;
+    struct list_head *head;
+    struct futex *this, *next;
+    int op_result, nr_woke1 = 0, nr_woke2 = 0;
 
-	if (!uaddr_is_valid(uaddr1) || !uaddr_is_valid(uaddr2))
-		return -EINVAL;
+    if (!uaddr_is_valid(uaddr1) || !uaddr_is_valid(uaddr2))
+        return -EINVAL;
 
-	queue1 = get_queue(uaddr1, flags, &key1);
-	queue2 = get_queue(uaddr2, flags, &key2);
-	lock_two_queues(queue1, queue2);
+    queue1 = get_queue(uaddr1, flags, &key1);
+    queue2 = get_queue(uaddr2, flags, &key2);
+    lock_two_queues(queue1, queue2);
 
-	op_result = futex_atomic_op_inuser(op, uaddr2);
-	if (op_result < 0) {
-		unlock_two_queues(queue1, queue2);
-		return op_result;
-	}
+    op_result = futex_atomic_op_inuser(op, uaddr2);
+    if (op_result < 0) {
+        unlock_two_queues(queue1, queue2);
+        return op_result;
+    }
 
-	head = &queue1->futex_list;
-	list_for_each_entry_safe(this, next, head, link) {
-		if (this->key == key1) {
-			wake_futex(this);
-			if (++nr_woke1 >= nr_wake1)
-				break;
-		}
-	}
+    head = &queue1->futex_list;
+    list_for_each_entry_safe(this, next, head, link) {
+        if (this->key == key1) {
+            wake_futex(this);
+            if (++nr_woke1 >= nr_wake1)
+                break;
+        }
+    }
 
-	if (op_result > 0) {
-		head = &queue2->futex_list;
-		list_for_each_entry_safe(this, next, head, link) {
-			if (this->key == key2) {
-				wake_futex(this);
-				if (++nr_woke2 >= nr_wake2)
-					break;
-			}
-		}
-	}
+    if (op_result > 0) {
+        head = &queue2->futex_list;
+        list_for_each_entry_safe(this, next, head, link) {
+            if (this->key == key2) {
+                wake_futex(this);
+                if (++nr_woke2 >= nr_wake2)
+                    break;
+            }
+        }
+    }
 
-	unlock_two_queues(queue1, queue2);
-	return nr_woke1 + nr_woke2;
+    unlock_two_queues(queue1, queue2);
+    return nr_woke1 + nr_woke2;
 }
 
 /** Conditionally wakes up or requeues tasks that are waiting on futexes. */
-static int
+    static int
 futex_cmp_requeue(
-	uint32_t __user *		uaddr1,
-	uint32_t __user *		uaddr2,
-	unsigned int			flags,
-	int				nr_wake,
-	int				nr_requeue,
-	uint32_t			cmpval
-)
+        uint32_t __user *		uaddr1,
+        uint32_t __user *		uaddr2,
+        unsigned int			flags,
+        int				nr_wake,
+        int				nr_requeue,
+        uint32_t			cmpval
+        )
 {
-	struct futex_queue *queue1, *queue2;
-	addr_t key1, key2;
-	struct list_head *head1, *head2;
-	struct futex *this, *next;
-	uint32_t curval;
-	int status, nr_woke = 0;
+    struct futex_queue *queue1, *queue2;
+    addr_t key1, key2;
+    struct list_head *head1, *head2;
+    struct futex *this, *next;
+    uint32_t curval;
+    int status, nr_woke = 0;
 
-	if (!uaddr_is_valid(uaddr1) || !uaddr_is_valid(uaddr2))
-		return -EINVAL;
+    if (!uaddr_is_valid(uaddr1) || !uaddr_is_valid(uaddr2))
+        return -EINVAL;
 
-	queue1 = get_queue(uaddr1, flags, &key1);
-	queue2 = get_queue(uaddr2, flags, &key2);
-	lock_two_queues(queue1, queue2);
+    queue1 = get_queue(uaddr1, flags, &key1);
+    queue2 = get_queue(uaddr2, flags, &key2);
+    lock_two_queues(queue1, queue2);
 
-	if ((status = get_user(curval, uaddr1)) != 0)
-		goto out_unlock;
+    if ((status = get_user(curval, uaddr1)) != 0)
+        goto out_unlock;
 
-	if (curval != cmpval) {
-		status = -EAGAIN;
-		goto out_unlock;
-	}
+    if (curval != cmpval) {
+        status = -EAGAIN;
+        goto out_unlock;
+    }
 
-	head1 = &queue1->futex_list;
-	head2 = &queue2->futex_list;
-	list_for_each_entry_safe(this, next, head1, link) {
-		if (this->key != key1)
-			continue;
-		if (++nr_woke <= nr_wake) {
-			wake_futex(this);
-		} else {
-			/* If uaddr1 and uaddr2 hash to the
-			 * same futex queue, no need to requeue */
-			if (head1 != head2) {
-				list_move_tail(&this->link, head2);
-				this->lock_ptr = &queue2->lock;
-			}
-			this->key = key2;
+    head1 = &queue1->futex_list;
+    head2 = &queue2->futex_list;
+    list_for_each_entry_safe(this, next, head1, link) {
+        if (this->key != key1)
+            continue;
+        if (++nr_woke <= nr_wake) {
+            wake_futex(this);
+        } else {
+            /* If uaddr1 and uaddr2 hash to the
+             * same futex queue, no need to requeue */
+            if (head1 != head2) {
+                list_move_tail(&this->link, head2);
+                this->lock_ptr = &queue2->lock;
+            }
+            this->key = key2;
 
-			if (nr_woke - nr_wake >= nr_requeue)
-				break;
-		}
-	}
-	status = nr_woke;
+            if (nr_woke - nr_wake >= nr_requeue)
+                break;
+        }
+    }
+    status = nr_woke;
 
 out_unlock:
-	unlock_two_queues(queue1, queue2);
-	return status;
+    unlock_two_queues(queue1, queue2);
+    return status;
 }
 
-int
+    int
 futex(
-	uint32_t __user *		uaddr,
-	int				op,
-	uint32_t			val,
-	uint64_t			timeout,
-	uint32_t __user *		uaddr2,
-	uint32_t			val2,
-	uint32_t			val3
-)
+        uint32_t __user *		uaddr,
+        int				op,
+        uint32_t			val,
+        uint64_t			timeout,
+        uint32_t __user *		uaddr2,
+        uint32_t			val2,
+        uint32_t			val3
+     )
 {
-	int cmd;
-	int status;
-	unsigned int flags = 0;
+    int cmd;
+    int status;
+    unsigned int flags = 0;
 
-	if (!(op & FUTEX_PRIVATE_FLAG))
-		flags |= FLAGS_SHARED;
+    if (!(op & FUTEX_PRIVATE_FLAG))
+        flags |= FLAGS_SHARED;
 
-	cmd = (op & FUTEX_CMD_MASK);
+    cmd = (op & FUTEX_CMD_MASK);
 
-	switch (cmd) {
-		case FUTEX_WAIT:
-			val3 = FUTEX_BITSET_MATCH_ANY;
-		case FUTEX_WAIT_BITSET:
-			status = futex_wait(uaddr, flags, val, timeout, val3);
-			break;
-		case FUTEX_WAKE:
-			val3 = FUTEX_BITSET_MATCH_ANY;
-		case FUTEX_WAKE_BITSET:
-			status = futex_wake(uaddr, flags, val, val3);
-			break;
-		case FUTEX_WAKE_OP:
-			status = futex_wake_op(uaddr, uaddr2, flags, val, val2, val3);
-			break;
-		case FUTEX_CMP_REQUEUE:
-			status = futex_cmp_requeue(uaddr, uaddr2, flags, val, val2, val3);
-			break;
-		default:
-			printk(KERN_WARNING
-			       "sys_futex() op=%d not supported (task=%u.%u, %s)\n",
-			       op, current->aspace->id, current->id, current->name);
-			status = -ENOSYS;
-	}
+    switch (cmd) {
+    case FUTEX_WAIT:
+        val3 = FUTEX_BITSET_MATCH_ANY;
+    case FUTEX_WAIT_BITSET:
+        status = futex_wait(uaddr, flags, val, timeout, val3);
+        break;
+    case FUTEX_WAKE:
+        val3 = FUTEX_BITSET_MATCH_ANY;
+    case FUTEX_WAKE_BITSET:
+        status = futex_wake(uaddr, flags, val, val3);
+        break;
+    case FUTEX_WAKE_OP:
+        status = futex_wake_op(uaddr, uaddr2, flags, val, val2, val3);
+        break;
+    case FUTEX_CMP_REQUEUE:
+        status = futex_cmp_requeue(uaddr, uaddr2, flags, val, val2, val3);
+        break;
+    default:
+        printk(KERN_WARNING
+                "sys_futex() op=%d not supported (task=%u.%u, %s)\n",
+                op, current->aspace->id, current->id, current->name);
+        status = -ENOSYS;
+    }
 
-	return status;
+    return status;
 }
 
-long
+    long
 sys_futex(
-	uint32_t __user *		uaddr,
-	int				op,
-	uint32_t			val,
-	struct timespec __user *	utime,
-	uint32_t __user *		uaddr2,
-	uint32_t			val3
-)
+        uint32_t __user *		uaddr,
+        int				op,
+        uint32_t			val,
+        struct timespec __user *	utime,
+        uint32_t __user *		uaddr2,
+        uint32_t			val3
+        )
 {
-	int cmd;
-	struct timespec _utime;
-	uint64_t timeout = MAX_SCHEDULE_TIMEOUT;
-	uint32_t val2 = 0;
+    int cmd;
+    struct timespec _utime;
+    uint64_t timeout = MAX_SCHEDULE_TIMEOUT;
+    uint32_t val2 = 0;
 
-	/* Get the command id, masking off any flags */
-	cmd = (op & FUTEX_CMD_MASK);
+    /* Get the command id, masking off any flags */
+    cmd = (op & FUTEX_CMD_MASK);
 
-	if (utime && (cmd == FUTEX_WAIT || cmd == FUTEX_WAIT_BITSET)) {
-		if (copy_from_user(&_utime, utime, sizeof(_utime)) != 0)
-			return -EFAULT;
-		if (!timespec_valid(&_utime))
-			return -EINVAL;
-		timeout = timespec_to_ns(_utime);
-	}
+    if (utime && (cmd == FUTEX_WAIT || cmd == FUTEX_WAIT_BITSET)) {
+        if (copy_from_user(&_utime, utime, sizeof(_utime)) != 0)
+            return -EFAULT;
+        if (!timespec_valid(&_utime))
+            return -EINVAL;
+        timeout = timespec_to_ns(_utime);
+    }
 
-	/* Requeue parameter in 'utime' if cmd == FUTEX_CMP_REQUEUE.
-	 * number of waiters to wake in 'utime' if cmd == FUTEX_WAKE_OP. */
-	if (cmd == FUTEX_CMP_REQUEUE || cmd == FUTEX_WAKE_OP)
-		val2 = (uint32_t) (unsigned long) utime;
+    /* Requeue parameter in 'utime' if cmd == FUTEX_CMP_REQUEUE.
+     * number of waiters to wake in 'utime' if cmd == FUTEX_WAKE_OP. */
+    if (cmd == FUTEX_CMP_REQUEUE || cmd == FUTEX_WAKE_OP)
+        val2 = (uint32_t) (unsigned long) utime;
 
-	return futex(uaddr, op, val, timeout, uaddr2, val2, val3);
+    return futex(uaddr, op, val, timeout, uaddr2, val2, val3);
 }

@@ -121,28 +121,28 @@ typedef unsigned short Keycode;
  * Translate from scan code to key code, when shift is not pressed.
  */
 static const Keycode codesUnshift[] = {
-	KEY_UNKNOWN, ASCII_ESC, '1', '2',                   /* 0x00 - 0x03 */
-	'3', '4', '5', '6',                                 /* 0x04 - 0x07 */
-	'7', '8', '9', '0',                                 /* 0x08 - 0x0B */
-	'-', '=', ASCII_BS, '\t',                           /* 0x0C - 0x0F */
-	'q', 'w', 'e', 'r',                                 /* 0x10 - 0x13 */
-	't', 'y', 'u', 'i',                                 /* 0x14 - 0x17 */
-	'o', 'p', '[', ']',                                 /* 0x18 - 0x1B */
-	'\n', KEY_LCTRL, 'a', 's',                          /* 0x1C - 0x1F */
-	'd', 'f', 'g', 'h',                                 /* 0x20 - 0x23 */
-	'j', 'k', 'l', ';',                                 /* 0x24 - 0x27 */
-	'\'', '`', KEY_LSHIFT, '\\',                        /* 0x28 - 0x2B */
-	'z', 'x', 'c', 'v',                                 /* 0x2C - 0x2F */
-	'b', 'n', 'm', ',',                                 /* 0x30 - 0x33 */
-	'.', '/', KEY_RSHIFT, KEY_PRINTSCRN,                /* 0x34 - 0x37 */
-	KEY_LALT, ' ', KEY_CAPSLOCK, KEY_F1,                /* 0x38 - 0x3B */
-	KEY_F2, KEY_F3, KEY_F4, KEY_F5,                     /* 0x3C - 0x3F */
-	KEY_F6, KEY_F7, KEY_F8, KEY_F9,                     /* 0x40 - 0x43 */
-	KEY_F10, KEY_NUMLOCK, KEY_SCRLOCK, KEY_KPHOME,      /* 0x44 - 0x47 */
-	KEY_KPUP, KEY_KPPGUP, KEY_KPMINUS, KEY_KPLEFT,      /* 0x48 - 0x4B */
-	KEY_KPCENTER, KEY_KPRIGHT, KEY_KPPLUS, KEY_KPEND,   /* 0x4C - 0x4F */
-	KEY_KPDOWN, KEY_KPPGDN, KEY_KPINSERT, KEY_KPDEL,    /* 0x50 - 0x53 */
-	KEY_SYSREQ, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,  /* 0x54 - 0x57 */
+    KEY_UNKNOWN, ASCII_ESC, '1', '2',                   /* 0x00 - 0x03 */
+    '3', '4', '5', '6',                                 /* 0x04 - 0x07 */
+    '7', '8', '9', '0',                                 /* 0x08 - 0x0B */
+    '-', '=', ASCII_BS, '\t',                           /* 0x0C - 0x0F */
+    'q', 'w', 'e', 'r',                                 /* 0x10 - 0x13 */
+    't', 'y', 'u', 'i',                                 /* 0x14 - 0x17 */
+    'o', 'p', '[', ']',                                 /* 0x18 - 0x1B */
+    '\n', KEY_LCTRL, 'a', 's',                          /* 0x1C - 0x1F */
+    'd', 'f', 'g', 'h',                                 /* 0x20 - 0x23 */
+    'j', 'k', 'l', ';',                                 /* 0x24 - 0x27 */
+    '\'', '`', KEY_LSHIFT, '\\',                        /* 0x28 - 0x2B */
+    'z', 'x', 'c', 'v',                                 /* 0x2C - 0x2F */
+    'b', 'n', 'm', ',',                                 /* 0x30 - 0x33 */
+    '.', '/', KEY_RSHIFT, KEY_PRINTSCRN,                /* 0x34 - 0x37 */
+    KEY_LALT, ' ', KEY_CAPSLOCK, KEY_F1,                /* 0x38 - 0x3B */
+    KEY_F2, KEY_F3, KEY_F4, KEY_F5,                     /* 0x3C - 0x3F */
+    KEY_F6, KEY_F7, KEY_F8, KEY_F9,                     /* 0x40 - 0x43 */
+    KEY_F10, KEY_NUMLOCK, KEY_SCRLOCK, KEY_KPHOME,      /* 0x44 - 0x47 */
+    KEY_KPUP, KEY_KPPGUP, KEY_KPMINUS, KEY_KPLEFT,      /* 0x48 - 0x4B */
+    KEY_KPCENTER, KEY_KPRIGHT, KEY_KPPLUS, KEY_KPEND,   /* 0x4C - 0x4F */
+    KEY_KPDOWN, KEY_KPPGDN, KEY_KPINSERT, KEY_KPDEL,    /* 0x50 - 0x53 */
+    KEY_SYSREQ, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,  /* 0x54 - 0x57 */
 };
 
 /*
@@ -189,82 +189,82 @@ static const Keycode codesShift[] = {
 /**
  * Handles a keyboard key press.
  */
-static char
+    static char
 handle_key(uint8_t key)
 {
-	static unsigned int mask;
-	bool release = (key & 0x80);  // is this a key release?
-	key &= 0x7f;  // remove the "release" flag if it's set
-	unsigned flag = 0;
+    static unsigned int mask;
+    bool release = (key & 0x80);  // is this a key release?
+    key &= 0x7f;  // remove the "release" flag if it's set
+    unsigned flag = 0;
 
-	// Process the key
-	unsigned keycode = ((mask & SHIFT_MASK) != 0) ? codesShift[key] : codesUnshift[key];
+    // Process the key
+    unsigned keycode = ((mask & SHIFT_MASK) != 0) ? codesShift[key] : codesUnshift[key];
 
-	switch (keycode) {
-		case KEY_LSHIFT:
-			flag = LEFT_SHIFT;
-			break;
-		case KEY_RSHIFT:
-			flag = RIGHT_SHIFT;
-			break;
-		case KEY_LCTRL:
-			flag = LEFT_CTRL;
-			break;
-		case KEY_RCTRL:
-			flag = RIGHT_CTRL;
-			break;
-		case KEY_LALT:
-			flag = LEFT_ALT;
-			break;
-		case KEY_RALT:
-			flag = RIGHT_ALT;
-			break;
-		default:
-			// if this a keypress, and the key is not a special key,
-			// return the character
-			if (!release && !(keycode & KEY_SPECIAL_FLAG))
-				return keycode;
-			else
-				return 0;
-	}
+    switch (keycode) {
+    case KEY_LSHIFT:
+        flag = LEFT_SHIFT;
+        break;
+    case KEY_RSHIFT:
+        flag = RIGHT_SHIFT;
+        break;
+    case KEY_LCTRL:
+        flag = LEFT_CTRL;
+        break;
+    case KEY_RCTRL:
+        flag = RIGHT_CTRL;
+        break;
+    case KEY_LALT:
+        flag = LEFT_ALT;
+        break;
+    case KEY_RALT:
+        flag = RIGHT_ALT;
+        break;
+    default:
+        // if this a keypress, and the key is not a special key,
+        // return the character
+        if (!release && !(keycode & KEY_SPECIAL_FLAG))
+            return keycode;
+        else
+            return 0;
+    }
 
-	// update the current mask status
-	if (release)
-		mask &= ~(flag);
-	else
-		mask |= flag;
+    // update the current mask status
+    if (release)
+        mask &= ~(flag);
+    else
+        mask |= flag;
 
-	// return 0 if it's a special key
-	return 0;
+    // return 0 if it's a special key
+    return 0;
 }
 
 
 /**
  * Keyboard interrupt handler.
  */
-static irqreturn_t
+    static irqreturn_t
 do_keyboard_interrupt(
-	int			vector,
-	void *			unused
-)
+        int			vector,
+        void *			unused
+        )
 {
-	const uint8_t KB_STATUS_PORT = 0x64;
-	const uint8_t KB_DATA_PORT   = 0x60;
-	const uint8_t KB_OUTPUT_FULL = 0x01;
+    const uint8_t KB_STATUS_PORT = 0x64;
+    const uint8_t KB_DATA_PORT   = 0x60;
+    const uint8_t KB_OUTPUT_FULL = 0x01;
 
-	uint8_t status = inb(KB_STATUS_PORT);
+    uint8_t status = inb(KB_STATUS_PORT);
 
-	if ((status & KB_OUTPUT_FULL) == 0)
-		return IRQ_NONE;
+    if ((status & KB_OUTPUT_FULL) == 0)
+        return IRQ_NONE;
 
-	uint8_t key = inb(KB_DATA_PORT);
-	//printk("Keyboard Interrupt: status=%u, key=%u\n", status, key);
+    uint8_t key = inb(KB_DATA_PORT);
+    //printk("Keyboard Interrupt: status=%u, key=%u\n", status, key);
 
-	char c = handle_key(key);
-	if (c != 0)
-		console_inbuf_add(c);
+    char c = handle_key(key);
+    if (c != 0)
+        console_inbuf_add(c);
 
-	return IRQ_HANDLED;
+    return IRQ_HANDLED;
 }
 
 
@@ -272,18 +272,18 @@ do_keyboard_interrupt(
  * Initializes the keyboard driver.
  * Called once at boot time.
  */
-int
+    int
 keyboard_init(void)
 {
-	irq_request(
-		IRQ1_VECTOR,
-		&do_keyboard_interrupt,
-		0,
-		"keyboard",
-		NULL
-	);
+    irq_request(
+            IRQ1_VECTOR,
+            &do_keyboard_interrupt,
+            0,
+            "keyboard",
+            NULL
+            );
 
-	return 0;
+    return 0;
 }
 
 

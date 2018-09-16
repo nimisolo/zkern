@@ -94,9 +94,9 @@
  * Adding 32768 instead of 32767 just makes for round numbers.
  * Adding the decompressor_size is necessary as it musht live after all
  * of the data as well.  Last I measured the decompressor is about 14K.
- * 10K of actuall data and 4K of bss.
- *
- */
+* 10K of actuall data and 4K of bss.
+*
+*/
 
 /*
  * gzip declarations
@@ -114,12 +114,12 @@ typedef unsigned short ush;
 typedef unsigned long  ulg;
 
 #define WSIZE 0x80000000	/* Window size must be at least 32k,
-				 * and a power of two
-				 * We don't actually have a window just
-				 * a huge output buffer so I report
-				 * a 2G windows size, as that should
-				 * always be larger than our output buffer.
-				 */
+                             * and a power of two
+                             * We don't actually have a window just
+                             * a huge output buffer so I report
+                             * a 2G windows size, as that should
+                             * always be larger than our output buffer.
+                             */
 
 static uch *inbuf;	/* input buffer */
 static uch *window;	/* Sliding window buffer, (and final output buffer) */
@@ -138,7 +138,7 @@ static unsigned outcnt;  /* bytes in output buffer */
 #define RESERVED     0xC0 /* bit 6,7:   reserved */
 
 #define get_byte()  (inptr < insize ? inbuf[inptr++] : fill_inbuf())
-		
+
 /* Diagnostic functions */
 #ifdef DEBUG
 #  define Assert(cond,msg) {if(!(cond)) error(msg);}
@@ -161,7 +161,7 @@ static void flush_window(void);
 static void error(char *m);
 static void gzip_mark(void **);
 static void gzip_release(void **);
-  
+
 /*
  * This is set up by the setup-routine at boot-time
  */
@@ -199,20 +199,20 @@ static int lines, cols;
 
 static void *malloc(int size)
 {
-	void *p;
+    void *p;
 
-	if (size <0) error("Malloc error");
-	if (free_mem_ptr <= 0) error("Memory error");
+    if (size <0) error("Malloc error");
+    if (free_mem_ptr <= 0) error("Memory error");
 
-	free_mem_ptr = (free_mem_ptr + 3) & ~3;	/* Align */
+    free_mem_ptr = (free_mem_ptr + 3) & ~3;	/* Align */
 
-	p = (void *)free_mem_ptr;
-	free_mem_ptr += size;
+    p = (void *)free_mem_ptr;
+    free_mem_ptr += size;
 
-	if (free_mem_ptr >= free_mem_end_ptr)
-		error("Out of memory");
+    if (free_mem_ptr >= free_mem_end_ptr)
+        error("Out of memory");
 
-	return p;
+    return p;
 }
 
 static void free(void *where)
@@ -221,76 +221,76 @@ static void free(void *where)
 
 static void gzip_mark(void **ptr)
 {
-	*ptr = (void *) free_mem_ptr;
+    *ptr = (void *) free_mem_ptr;
 }
 
 static void gzip_release(void **ptr)
 {
-	free_mem_ptr = (long) *ptr;
+    free_mem_ptr = (long) *ptr;
 }
- 
+
 static void scroll(void)
 {
-	int i;
+    int i;
 
-	memcpy ( vidmem, vidmem + cols * 2, ( lines - 1 ) * cols * 2 );
-	for ( i = ( lines - 1 ) * cols * 2; i < lines * cols * 2; i += 2 )
-		vidmem[i] = ' ';
+    memcpy ( vidmem, vidmem + cols * 2, ( lines - 1 ) * cols * 2 );
+    for ( i = ( lines - 1 ) * cols * 2; i < lines * cols * 2; i += 2 )
+        vidmem[i] = ' ';
 }
 
 static void putstr(const char *s)
 {
-	int x,y,pos;
-	char c;
+    int x,y,pos;
+    char c;
 
-	x = RM_SCREEN_INFO.orig_x;
-	y = RM_SCREEN_INFO.orig_y;
+    x = RM_SCREEN_INFO.orig_x;
+    y = RM_SCREEN_INFO.orig_y;
 
-	while ( ( c = *s++ ) != '\0' ) {
-		if ( c == '\n' ) {
-			x = 0;
-			if ( ++y >= lines ) {
-				scroll();
-				y--;
-			}
-		} else {
-			vidmem [ ( x + cols * y ) * 2 ] = c; 
-			if ( ++x >= cols ) {
-				x = 0;
-				if ( ++y >= lines ) {
-					scroll();
-					y--;
-				}
-			}
-		}
-	}
+    while ( ( c = *s++ ) != '\0' ) {
+        if ( c == '\n' ) {
+            x = 0;
+            if ( ++y >= lines ) {
+                scroll();
+                y--;
+            }
+        } else {
+            vidmem [ ( x + cols * y ) * 2 ] = c; 
+            if ( ++x >= cols ) {
+                x = 0;
+                if ( ++y >= lines ) {
+                    scroll();
+                    y--;
+                }
+            }
+        }
+    }
 
-	RM_SCREEN_INFO.orig_x = x;
-	RM_SCREEN_INFO.orig_y = y;
+    RM_SCREEN_INFO.orig_x = x;
+    RM_SCREEN_INFO.orig_y = y;
 
-	pos = (x + cols * y) * 2;	/* Update cursor position */
-	outb_p(14, vidport);
-	outb_p(0xff & (pos >> 9), vidport+1);
-	outb_p(15, vidport);
-	outb_p(0xff & (pos >> 1), vidport+1);
+    pos = (x + cols * y) * 2;	/* Update cursor position */
+    outb_p(14, vidport);
+    outb_p(0xff & (pos >> 9), vidport+1);
+    outb_p(15, vidport);
+    outb_p(0xff & (pos >> 1), vidport+1);
 }
 
 static void* memset(void* s, int c, unsigned n)
 {
-	int i;
-	char *ss = (char*)s;
+    int i;
+    char *ss = (char*)s;
 
-	for (i=0;i<n;i++) ss[i] = c;
-	return s;
+    for (i=0;i<n;i++) ss[i] = c;
+    return s;
 }
 
 static void* memcpy(void* dest, const void* src, unsigned n)
 {
-	int i;
-	char *d = (char *)dest, *s = (char *)src;
+    int i;
+    char *d = (char *)dest, *s = (char *)src;
 
-	for (i=0;i<n;i++) d[i] = s[i];
-	return dest;
+    for (i=0;i<n;i++) d[i] = s[i];
+    return dest;
 }
 
 /* ===========================================================================
@@ -299,8 +299,8 @@ static void* memcpy(void* dest, const void* src, unsigned n)
  */
 static int fill_inbuf(void)
 {
-	error("ran out of input data");
-	return 0;
+    error("ran out of input data");
+    return 0;
 }
 
 /* ===========================================================================
@@ -309,63 +309,63 @@ static int fill_inbuf(void)
  */
 static void flush_window(void)
 {
-	/* With my window equal to my output buffer
-	 * I only need to compute the crc here.
-	 */
-	ulg c = crc;         /* temporary variable */
-	unsigned n;
-	uch *in, ch;
+    /* With my window equal to my output buffer
+     * I only need to compute the crc here.
+     */
+    ulg c = crc;         /* temporary variable */
+    unsigned n;
+    uch *in, ch;
 
-	in = window;
-	for (n = 0; n < outcnt; n++) {
-		ch = *in++;
-		c = crc_32_tab[((int)c ^ ch) & 0xff] ^ (c >> 8);
-	}
-	crc = c;
-	bytes_out += (ulg)outcnt;
-	outcnt = 0;
+    in = window;
+    for (n = 0; n < outcnt; n++) {
+        ch = *in++;
+        c = crc_32_tab[((int)c ^ ch) & 0xff] ^ (c >> 8);
+    }
+    crc = c;
+    bytes_out += (ulg)outcnt;
+    outcnt = 0;
 }
 
 static void error(char *x)
 {
-	putstr("\n\n");
-	putstr(x);
-	putstr("\n\n -- System halted");
+    putstr("\n\n");
+    putstr(x);
+    putstr("\n\n -- System halted");
 
-	while(1);	/* Halt */
+    while(1);	/* Halt */
 }
 
 asmlinkage void decompress_kernel(void *rmode, unsigned long heap,
-	uch *input_data, unsigned long input_len, uch *output)
+        uch *input_data, unsigned long input_len, uch *output)
 {
-	real_mode = rmode;
+    real_mode = rmode;
 
-	if (RM_SCREEN_INFO.orig_video_mode == 7) {
-		vidmem = (char *) 0xb0000;
-		vidport = 0x3b4;
-	} else {
-		vidmem = (char *) 0xb8000;
-		vidport = 0x3d4;
-	}
+    if (RM_SCREEN_INFO.orig_video_mode == 7) {
+        vidmem = (char *) 0xb0000;
+        vidport = 0x3b4;
+    } else {
+        vidmem = (char *) 0xb8000;
+        vidport = 0x3d4;
+    }
 
-	lines = RM_SCREEN_INFO.orig_video_lines;
-	cols = RM_SCREEN_INFO.orig_video_cols;
+    lines = RM_SCREEN_INFO.orig_video_lines;
+    cols = RM_SCREEN_INFO.orig_video_cols;
 
-	window = output;  		/* Output buffer (Normally at 1M) */
-	free_mem_ptr     = heap;	/* Heap  */
-	free_mem_end_ptr = heap + HEAP_SIZE;
-	inbuf  = input_data;		/* Input buffer */
-	insize = input_len;
-	inptr  = 0;
+    window = output;  		/* Output buffer (Normally at 1M) */
+    free_mem_ptr     = heap;	/* Heap  */
+    free_mem_end_ptr = heap + HEAP_SIZE;
+    inbuf  = input_data;		/* Input buffer */
+    insize = input_len;
+    inptr  = 0;
 
-	if ((ulg)output & (__KERNEL_ALIGN - 1))
-		error("Destination address not 2M aligned");
-	if ((ulg)output >= 0xffffffffffUL)
-		error("Destination address too large");
+    if ((ulg)output & (__KERNEL_ALIGN - 1))
+        error("Destination address not 2M aligned");
+    if ((ulg)output >= 0xffffffffffUL)
+        error("Destination address too large");
 
-	makecrc();
-	putstr(".\nDecompressing LWK...");
-	gunzip();
-	putstr("done.\nBooting the kernel.\n");
-	return;
+    makecrc();
+    putstr(".\nDecompressing LWK...");
+    gunzip();
+    putstr("done.\nBooting the kernel.\n");
+    return;
 }

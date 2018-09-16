@@ -17,8 +17,8 @@
  */
 struct exception_table_entry
 {
-        unsigned long insn;	/* Instruction addr that is allowed to fault */
-	unsigned long fixup;	/* Fixup handler address */
+    unsigned long insn;	/* Instruction addr that is allowed to fault */
+    unsigned long fixup;	/* Fixup handler address */
 };
 
 extern int fixup_exception(struct pt_regs *regs);

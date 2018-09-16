@@ -11,13 +11,13 @@
  * one of these structures and passes it to ::console_register().
  */
 struct console {
-	char	name[64];
-	void	(*write)(struct console *, const char *);
-	void    (*poll_put_char)(struct console *, unsigned char);
-	char    (*poll_get_char)(struct console *);
-	void *	private_data;
+    char	name[64];
+    void	(*write)(struct console *, const char *);
+    void    (*poll_put_char)(struct console *, unsigned char);
+    char    (*poll_get_char)(struct console *);
+    void *	private_data;
 
-	struct list_head next;
+    struct list_head next;
 };
 
 extern void console_register(struct console *);

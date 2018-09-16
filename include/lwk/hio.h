@@ -14,9 +14,9 @@
 
 #define SYSCALL_MIN_ID 0     // Do not change this
 #define SYSCALL_MAX_ID 1023  // SYSCALL_MAX_ID+1 must be >= __NR_syscall_max and
-                             // SYSCALL_MAX_ID must be multiple of (sizeof(unsigned long)*8)
+// SYSCALL_MAX_ID must be multiple of (sizeof(unsigned long)*8)
 typedef struct {
-	unsigned long bits[(SYSCALL_MAX_ID+1)/(sizeof(unsigned long)*8)];
+    unsigned long bits[(SYSCALL_MAX_ID+1)/(sizeof(unsigned long)*8)];
 } user_syscall_mask_t;
 
 
@@ -25,27 +25,27 @@ typedef struct {
 
 
 typedef struct {
-	xpmem_segid_t segid;
-	uint64_t      size;
-	uint64_t      page_size;
-	void        * target_vaddr;
+    xpmem_segid_t segid;
+    uint64_t      size;
+    uint64_t      page_size;
+    void        * target_vaddr;
 } hio_segment_t;
 
 typedef struct {
-	uint32_t  uniq_id;
+    uint32_t  uniq_id;
 
-	id_t	  aspace_id;
-	id_t	  thread_id;
-	id_t	  rank_id;
+    id_t	  aspace_id;
+    id_t	  thread_id;
+    id_t	  rank_id;
 
-	uint32_t  syscall_nr;
-	uint32_t  argc;
-	uintptr_t args[HIO_MAX_ARGC];
+    uint32_t  syscall_nr;
+    uint32_t  argc;
+    uintptr_t args[HIO_MAX_ARGC];
 
-	/* Output parameters */
-	uintptr_t     ret_val;
-	uint32_t      segc;
-	hio_segment_t segs[HIO_MAX_SEGC];
+    /* Output parameters */
+    uintptr_t     ret_val;
+    uint32_t      segc;
+    hio_segment_t segs[HIO_MAX_SEGC];
 } hio_syscall_t;
 
 
@@ -72,26 +72,26 @@ typedef struct {
 
 typedef struct syscall_mask { DECLARE_BITMAP(bits, __NR_syscall_max); } syscall_mask_t;
 
-static inline user_syscall_mask_t
+    static inline user_syscall_mask_t
 syscall_mask_kernel2user(const syscall_mask_t *kernel)
 {
-	user_syscall_mask_t user;
+    user_syscall_mask_t user;
 
-	memset(&user, 0, sizeof(user));
-	memcpy(&user, kernel, min(sizeof(syscall_mask_t), sizeof(user_syscall_mask_t)));
+    memset(&user, 0, sizeof(user));
+    memcpy(&user, kernel, min(sizeof(syscall_mask_t), sizeof(user_syscall_mask_t)));
 
-	return user;
+    return user;
 }
 
-static inline syscall_mask_t
+    static inline syscall_mask_t
 syscall_mask_user2kernel(const user_syscall_mask_t *user)
 {
-	syscall_mask_t kernel;
+    syscall_mask_t kernel;
 
-	memset(&kernel, 0, sizeof(kernel));
-	memcpy(&kernel, user, min(sizeof(syscall_mask_t), sizeof(user_syscall_mask_t)));
+    memset(&kernel, 0, sizeof(kernel));
+    memcpy(&kernel, user, min(sizeof(syscall_mask_t), sizeof(user_syscall_mask_t)));
 
-	return kernel;
+    return kernel;
 }
 
 #define syscall_set(s, mask)	set_bit(s, mask.bits)
@@ -101,8 +101,8 @@ syscall_mask_user2kernel(const user_syscall_mask_t *user)
 
 
 struct hio_implementation {
-	int (*init)(void);
-	int (*notify_new_syscall)(void);
+    int (*init)(void);
+    int (*notify_new_syscall)(void);
 };
 
 void __init

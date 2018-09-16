@@ -35,7 +35,7 @@
 
 #ifdef __KERNEL__
 typedef struct {
-	unsigned long fds_bits [__FDSET_LONGS];
+    unsigned long fds_bits [__FDSET_LONGS];
 } __kernel_fd_set;
 #endif
 

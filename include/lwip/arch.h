@@ -47,7 +47,7 @@
 #define SZT_F U32_F
 #endif /* SZT_F */
 /** Temporary upgrade helper: define format string for u8_t as hex if not
-    defined in cc.h */
+  defined in cc.h */
 #ifndef X8_F
 #define X8_F  "02x"
 #endif /* X8_F */
@@ -205,7 +205,7 @@ extern "C" {
 #define  EMEDIUMTYPE    124  /* Wrong medium type */
 
 #ifndef errno
-extern int errno;
+    extern int errno;
 #endif
 
 #endif /* LWIP_PROVIDE_ERRNO */

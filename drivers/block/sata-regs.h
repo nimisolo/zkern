@@ -309,36 +309,36 @@ typedef struct __attribute__((packed)) {
 /* Port x SATA Error */
 typedef struct __attribute__((packed)) {
     union __attribute__((packed)) {
-	u32 err    : 16; /* (RWC) Error */
-	struct __attribute__((packed)) {
-	    u32 err_i      : 1;     /* Recovered Data Integrity Error */
-	    u32 err_m      : 1;     /* Recovered Comm. Error */
-	    u32 err_rsvd1  : 6;     /* Reserved */
-	    u32 err_t      : 1;     /* Transient Data Integrity Error */
-	    u32 err_c      : 1;     /* Persistent Comm. or Data Integrity Error */
-	    u32 err_p      : 1;     /* Protocol Error */
-	    u32 err_e      : 1;     /* Internal Error */
-	    u32 err_rsvd2  : 4;     /* Reserved */
-	};
+        u32 err    : 16; /* (RWC) Error */
+        struct __attribute__((packed)) {
+            u32 err_i      : 1;     /* Recovered Data Integrity Error */
+            u32 err_m      : 1;     /* Recovered Comm. Error */
+            u32 err_rsvd1  : 6;     /* Reserved */
+            u32 err_t      : 1;     /* Transient Data Integrity Error */
+            u32 err_c      : 1;     /* Persistent Comm. or Data Integrity Error */
+            u32 err_p      : 1;     /* Protocol Error */
+            u32 err_e      : 1;     /* Internal Error */
+            u32 err_rsvd2  : 4;     /* Reserved */
+        };
     };
 
     union __attribute__((packed)) {
-	u32 diag   : 16; /* (RWC) Diagnostics */
-	struct __attribute__((packed)) {
-	    u32 diag_n     : 1;     /* PhyRdy Change */
-	    u32 diag_i     : 1;     /* Phy Internal Error */
-	    u32 diag_w     : 1;     /* Comm Wake */
-	    u32 diag_b     : 1;     /* 10B to 8B Error */
-	    u32 diag_d     : 1;     /* Disparity Error */
-	    u32 diag_c     : 1;     /* CRC Error */
-	    u32 diag_h     : 1;     /* Handshake Error */
-	    u32 diag_s     : 1;     /* Link Sequence Error */
-	    u32 diag_t     : 1;     /* Transport State Transition Error */
-	    u32 diag_f     : 1;     /* Unknown FIS Type */
-	    u32 diag_x     : 1;     /* Exchanged */
-	    u32 diag_rsvd  : 5;     /* Reserved */
-	};
-	
+        u32 diag   : 16; /* (RWC) Diagnostics */
+        struct __attribute__((packed)) {
+            u32 diag_n     : 1;     /* PhyRdy Change */
+            u32 diag_i     : 1;     /* Phy Internal Error */
+            u32 diag_w     : 1;     /* Comm Wake */
+            u32 diag_b     : 1;     /* 10B to 8B Error */
+            u32 diag_d     : 1;     /* Disparity Error */
+            u32 diag_c     : 1;     /* CRC Error */
+            u32 diag_h     : 1;     /* Handshake Error */
+            u32 diag_s     : 1;     /* Link Sequence Error */
+            u32 diag_t     : 1;     /* Transport State Transition Error */
+            u32 diag_f     : 1;     /* Unknown FIS Type */
+            u32 diag_x     : 1;     /* Exchanged */
+            u32 diag_rsvd  : 5;     /* Reserved */
+        };
+
     };
 } hba_port_pxserr_t;
 
@@ -400,7 +400,7 @@ typedef struct __attribute__((packed)) {
     /* DW-2+3 */
     u64 ctba;            /* CMD Table Desc. Base Address */
 
-	
+
     /* DW-4 ... DW-7 */
     u32 dw4;
     u32 dw5;
@@ -467,12 +467,12 @@ typedef struct __attribute__((packed)) {
     u32 c          : 1;  /* 1=Cmd, 0=Ctrl */
     u32 cmd        : 8;  /* Command */
     u32 feature_lo : 8;  /* Low 8 bites of Feature Register */
-    
+
 
     /* DWORD 1 */
     u32 lba        : 24; /* Low 24 bits of LBA */
     u32 dev        : 8;  /* Device Register */
-    
+
     /* DWORD 2 */
     u32 lba_hi     : 24; /* High 24 bits of LBA */
     u32 feature_hi : 8;  /* High 8 bits of Feature Register */
@@ -481,7 +481,7 @@ typedef struct __attribute__((packed)) {
     u32 cnt        : 16; /* Sector Count */
     u32 icc        : 8;  /* Isochronous CMD Completion */
     u32 ctrl       : 8;  /* Control Register */
-    
+
     /* DWORD 4 */
     u32 rsvd2;           /* Reserved */
 } fis_reg_h2d_t;
@@ -498,12 +498,12 @@ typedef struct __attribute__((packed)) {
 
     u32 status     : 8;  /* Status Register  */
     u32 error      : 8;  /* Error Register  */
-    
+
 
     /* DWORD 1 */
     u32 lba        : 24; /* Low 24 bits of LBA */
     u32 dev        : 8;  /* Device Register */
-    
+
     /* DWORD 2 */
     u32 lba_hi     : 24; /* High 24 bits of LBA */
     u32 rsvd3      : 8;  /* Reserved */
@@ -511,7 +511,7 @@ typedef struct __attribute__((packed)) {
     /* DWORD 3 */
     u32 cnt        : 16; /* Count */
     u32 rsvd4      : 16; /* Reserved */
-   
+
     /* DWORD 4 */
     u32 rsvd5;           /* Reserved */
 } fis_reg_d2h_t;
@@ -541,12 +541,12 @@ typedef struct __attribute__((packed)) {
 
     u32 status     : 8;  /* Status Register  */
     u32 error      : 8;  /* Error Register  */
-    
+
 
     /* DWORD 1 */
     u32 lba        : 24; /* Low 24 bits of LBA */
     u32 dev        : 8;  /* Device Register */
-    
+
     /* DWORD 2 */
     u32 lba_hi     : 24; /* High 24 bits of LBA */
     u32 rsvd3      : 8;  /* Reserved */
@@ -572,19 +572,19 @@ typedef struct __attribute__((packed)) {
     u32 i          : 1;  /* Interrupt Bit */
     u32 a          : 1;  /* Auto-activate: (If FIS_TYPE_DMA_ACT is needed) */
     u32 rsvd2      : 16; /* Reserved */
-    
+
     /* DWORD 1+2 */
     u64 dma_buf_id;      /* DMA Buffer ID (??) */
-  
+
     /* DWORD 3 */
     u32 rsvd3;           /* Reserved */
 
     /* DWORD 4 */
     u32 dma_buf_off;     /* Byte Offset into Buffer (lo 2 bits MBZ) */
-    
+
     /* DWORD 5 */
     u32 xfer_cnt;        /* Bytes to transfer (bit 0 MBZ) */
-    
+
     /* DWORD 6 */
     u32 rsvd4;           /* Reserved */
 } fis_dma_setup_t;

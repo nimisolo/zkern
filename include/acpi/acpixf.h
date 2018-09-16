@@ -80,7 +80,7 @@ extern u32 acpi_rsdt_forced;
  */
 acpi_status
 acpi_initialize_tables(struct acpi_table_desc *initial_storage,
-		       u32 initial_table_count, u8 allow_resize);
+        u32 initial_table_count, u8 allow_resize);
 
 acpi_status __init acpi_initialize_subsystem(void);
 
@@ -134,20 +134,20 @@ acpi_status acpi_unload_table_id(acpi_owner_id id);
 
 acpi_status
 acpi_get_table_header(acpi_string signature,
-		      u32 instance,
-		      struct acpi_table_header *out_table_header);
+        u32 instance,
+        struct acpi_table_header *out_table_header);
 
 acpi_status
 acpi_get_table_with_size(acpi_string signature,
-	       u32 instance, struct acpi_table_header **out_table,
-	       acpi_size *tbl_size);
+        u32 instance, struct acpi_table_header **out_table,
+        acpi_size *tbl_size);
 acpi_status
 acpi_get_table(acpi_string signature,
-	       u32 instance, struct acpi_table_header **out_table);
+        u32 instance, struct acpi_table_header **out_table);
 
 acpi_status
 acpi_get_table_by_index(u32 table_index,
-			struct acpi_table_header **out_table);
+        struct acpi_table_header **out_table);
 
 acpi_status
 acpi_install_table_handler(acpi_tbl_handler handler, void *context);
@@ -159,24 +159,24 @@ acpi_status acpi_remove_table_handler(acpi_tbl_handler handler);
  */
 acpi_status
 acpi_walk_namespace(acpi_object_type type,
-		    acpi_handle start_object,
-		    u32 max_depth,
-		    acpi_walk_callback pre_order_visit,
-		    acpi_walk_callback post_order_visit,
-		    void *context, void **return_value);
+        acpi_handle start_object,
+        u32 max_depth,
+        acpi_walk_callback pre_order_visit,
+        acpi_walk_callback post_order_visit,
+        void *context, void **return_value);
 
 acpi_status
 acpi_get_devices(const char *HID,
-		 acpi_walk_callback user_function,
-		 void *context, void **return_value);
+        acpi_walk_callback user_function,
+        void *context, void **return_value);
 
 acpi_status
 acpi_get_name(acpi_handle object,
-	      u32 name_type, struct acpi_buffer *ret_path_ptr);
+        u32 name_type, struct acpi_buffer *ret_path_ptr);
 
 acpi_status
 acpi_get_handle(acpi_handle parent,
-		acpi_string pathname, acpi_handle * ret_handle);
+        acpi_string pathname, acpi_handle * ret_handle);
 
 acpi_status
 acpi_attach_data(acpi_handle object, acpi_object_handler handler, void *data);
@@ -194,27 +194,27 @@ acpi_debug_trace(char *name, u32 debug_level, u32 debug_layer, u32 flags);
  */
 acpi_status
 acpi_evaluate_object(acpi_handle object,
-		     acpi_string pathname,
-		     struct acpi_object_list *parameter_objects,
-		     struct acpi_buffer *return_object_buffer);
+        acpi_string pathname,
+        struct acpi_object_list *parameter_objects,
+        struct acpi_buffer *return_object_buffer);
 
 acpi_status
 acpi_evaluate_object_typed(acpi_handle object,
-			   acpi_string pathname,
-			   struct acpi_object_list *external_params,
-			   struct acpi_buffer *return_buffer,
-			   acpi_object_type return_type);
+        acpi_string pathname,
+        struct acpi_object_list *external_params,
+        struct acpi_buffer *return_buffer,
+        acpi_object_type return_type);
 
 acpi_status
 acpi_get_object_info(acpi_handle object,
-		     struct acpi_device_info **return_buffer);
+        struct acpi_device_info **return_buffer);
 
 acpi_status acpi_install_method(u8 *buffer);
 
 acpi_status
 acpi_get_next_object(acpi_object_type type,
-		     acpi_handle parent,
-		     acpi_handle child, acpi_handle * out_handle);
+        acpi_handle parent,
+        acpi_handle child, acpi_handle * out_handle);
 
 acpi_status acpi_get_type(acpi_handle object, acpi_object_type * out_type);
 
@@ -230,43 +230,43 @@ acpi_install_initialization_handler(acpi_init_handler handler, u32 function);
 
 acpi_status
 acpi_install_global_event_handler(ACPI_GBL_EVENT_HANDLER handler,
-				 void *context);
+        void *context);
 
 acpi_status
 acpi_install_fixed_event_handler(u32 acpi_event,
-				 acpi_event_handler handler, void *context);
+        acpi_event_handler handler, void *context);
 
 acpi_status
 acpi_remove_fixed_event_handler(u32 acpi_event, acpi_event_handler handler);
 
 acpi_status
 acpi_install_notify_handler(acpi_handle device,
-			    u32 handler_type,
-			    acpi_notify_handler handler, void *context);
+        u32 handler_type,
+        acpi_notify_handler handler, void *context);
 
 acpi_status
 acpi_remove_notify_handler(acpi_handle device,
-			   u32 handler_type, acpi_notify_handler handler);
+        u32 handler_type, acpi_notify_handler handler);
 
 acpi_status
 acpi_install_address_space_handler(acpi_handle device,
-				   acpi_adr_space_type space_id,
-				   acpi_adr_space_handler handler,
-				   acpi_adr_space_setup setup, void *context);
+        acpi_adr_space_type space_id,
+        acpi_adr_space_handler handler,
+        acpi_adr_space_setup setup, void *context);
 
 acpi_status
 acpi_remove_address_space_handler(acpi_handle device,
-				  acpi_adr_space_type space_id,
-				  acpi_adr_space_handler handler);
+        acpi_adr_space_type space_id,
+        acpi_adr_space_handler handler);
 
 acpi_status
 acpi_install_gpe_handler(acpi_handle gpe_device,
-			 u32 gpe_number,
-			 u32 type, acpi_gpe_handler address, void *context);
+        u32 gpe_number,
+        u32 type, acpi_gpe_handler address, void *context);
 
 acpi_status
 acpi_remove_gpe_handler(acpi_handle gpe_device,
-			u32 gpe_number, acpi_gpe_handler address);
+        u32 gpe_number, acpi_gpe_handler address);
 
 #ifdef ACPI_FUTURE_USAGE
 acpi_status acpi_install_exception_handler(acpi_exception_handler handler);
@@ -300,13 +300,13 @@ acpi_status acpi_clear_gpe(acpi_handle gpe_device, u32 gpe_number);
 
 acpi_status
 acpi_setup_gpe_for_wake(acpi_handle parent_device,
-			acpi_handle gpe_device, u32 gpe_number);
+        acpi_handle gpe_device, u32 gpe_number);
 
 acpi_status acpi_set_gpe_wake_mask(acpi_handle gpe_device, u32 gpe_number, u8 action);
 
 acpi_status
 acpi_get_gpe_status(acpi_handle gpe_device,
-		    u32 gpe_number, acpi_event_status *event_status);
+        u32 gpe_number, acpi_event_status *event_status);
 
 acpi_status acpi_disable_all_gpes(void);
 
@@ -316,8 +316,8 @@ acpi_status acpi_get_gpe_device(u32 gpe_index, acpi_handle *gpe_device);
 
 acpi_status
 acpi_install_gpe_block(acpi_handle gpe_device,
-		       struct acpi_generic_address *gpe_block_address,
-		       u32 register_count, u32 interrupt_number);
+        struct acpi_generic_address *gpe_block_address,
+        u32 register_count, u32 interrupt_number);
 
 acpi_status acpi_remove_gpe_block(acpi_handle gpe_device);
 
@@ -328,13 +328,13 @@ acpi_status acpi_update_all_gpes(void);
  */
 typedef
 acpi_status(*acpi_walk_resource_callback) (struct acpi_resource * resource,
-					   void *context);
+        void *context);
 
 acpi_status
 acpi_get_vendor_resource(acpi_handle device,
-			 char *name,
-			 struct acpi_vendor_uuid *uuid,
-			 struct acpi_buffer *ret_buffer);
+        char *name,
+        struct acpi_vendor_uuid *uuid,
+        struct acpi_buffer *ret_buffer);
 
 acpi_status
 acpi_get_current_resources(acpi_handle device, struct acpi_buffer *ret_buffer);
@@ -346,8 +346,8 @@ acpi_get_possible_resources(acpi_handle device, struct acpi_buffer *ret_buffer);
 
 acpi_status
 acpi_walk_resources(acpi_handle device,
-		    char *name,
-		    acpi_walk_resource_callback user_function, void *context);
+        char *name,
+        acpi_walk_resource_callback user_function, void *context);
 
 acpi_status
 acpi_set_current_resources(acpi_handle device, struct acpi_buffer *in_buffer);
@@ -357,7 +357,7 @@ acpi_get_irq_routing_table(acpi_handle device, struct acpi_buffer *ret_buffer);
 
 acpi_status
 acpi_resource_to_address64(struct acpi_resource *resource,
-			   struct acpi_resource_address64 *out);
+        struct acpi_resource_address64 *out);
 
 /*
  * Hardware (ACPI device) interfaces
@@ -396,20 +396,20 @@ acpi_status acpi_leave_sleep_state(u8 sleep_state);
  */
 void ACPI_INTERNAL_VAR_XFACE
 acpi_error(const char *module_name,
-	   u32 line_number, const char *format, ...) ACPI_PRINTF_LIKE(3);
+        u32 line_number, const char *format, ...) ACPI_PRINTF_LIKE(3);
 
 void ACPI_INTERNAL_VAR_XFACE
 acpi_exception(const char *module_name,
-	       u32 line_number,
-	       acpi_status status, const char *format, ...) ACPI_PRINTF_LIKE(4);
+        u32 line_number,
+        acpi_status status, const char *format, ...) ACPI_PRINTF_LIKE(4);
 
 void ACPI_INTERNAL_VAR_XFACE
 acpi_warning(const char *module_name,
-	     u32 line_number, const char *format, ...) ACPI_PRINTF_LIKE(3);
+        u32 line_number, const char *format, ...) ACPI_PRINTF_LIKE(3);
 
 void ACPI_INTERNAL_VAR_XFACE
 acpi_info(const char *module_name,
-	  u32 line_number, const char *format, ...) ACPI_PRINTF_LIKE(3);
+        u32 line_number, const char *format, ...) ACPI_PRINTF_LIKE(3);
 
 /*
  * Debug output
@@ -418,18 +418,18 @@ acpi_info(const char *module_name,
 
 void ACPI_INTERNAL_VAR_XFACE
 acpi_debug_print(u32 requested_debug_level,
-		 u32 line_number,
-		 const char *function_name,
-		 const char *module_name,
-		 u32 component_id, const char *format, ...) ACPI_PRINTF_LIKE(6);
+        u32 line_number,
+        const char *function_name,
+        const char *module_name,
+        u32 component_id, const char *format, ...) ACPI_PRINTF_LIKE(6);
 
 void ACPI_INTERNAL_VAR_XFACE
 acpi_debug_print_raw(u32 requested_debug_level,
-		     u32 line_number,
-		     const char *function_name,
-		     const char *module_name,
-		     u32 component_id,
-		     const char *format, ...) ACPI_PRINTF_LIKE(6);
+        u32 line_number,
+        const char *function_name,
+        const char *module_name,
+        u32 component_id,
+        const char *format, ...) ACPI_PRINTF_LIKE(6);
 #endif
 
 #endif				/* __ACXFACE_H__ */

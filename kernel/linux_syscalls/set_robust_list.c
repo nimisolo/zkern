@@ -1,10 +1,10 @@
 #include <lwk/kernel.h>
 
-long
+    long
 sys_set_robust_list(
-	void __user *		head,
-	size_t			len
-)
+        void __user *		head,
+        size_t			len
+        )
 {
-	return -ENOSYS;
+    return -ENOSYS;
 }

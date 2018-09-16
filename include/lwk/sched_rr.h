@@ -13,15 +13,15 @@
 #include <lwk/timer.h>
 
 struct rr_rq {
-	struct list_head taskq;
-	struct timer nextint;
+    struct list_head taskq;
+    struct timer nextint;
 };
 
 extern int __init rr_sched_init_runqueue(struct rr_rq *, int cpu_id);
 extern void rr_sched_add_task(struct rr_rq *, struct task_struct *task);
 extern void rr_sched_del_task(struct rr_rq *, struct task_struct *task);
 extern int rr_sched_wakeup_task(struct task_struct *task,
-                             taskstate_t valid_states);
+        taskstate_t valid_states);
 
 extern void rr_sched_cpu_remove(struct rr_rq *, void *);
 extern struct task_struct *rr_schedule(struct rr_rq *, struct list_head *);

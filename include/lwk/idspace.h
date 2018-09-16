@@ -37,17 +37,17 @@ typedef unsigned int id_t;
  */
 extern struct idspace *
 idspace_create(
-	id_t			min_id,
-	id_t			max_id
-);
+        id_t			min_id,
+        id_t			max_id
+        );
 
 /**
  * Destroys and ID space.
  */
 extern void
 idspace_destroy(
-	struct idspace *	spc
-);
+        struct idspace *	spc
+        );
 
 /**
  * Allocates an ID from an ID space.
@@ -60,9 +60,9 @@ idspace_destroy(
  */
 extern id_t
 idspace_alloc_id(
-	struct idspace *	spc,
-	id_t			request
-);
+        struct idspace *	spc,
+        id_t			request
+        );
 
 /**
  * Frees an ID previously allocated from an ID space.
@@ -71,8 +71,8 @@ idspace_alloc_id(
  */
 extern int
 idspace_free_id(
-	struct idspace *	spc,
-	id_t			id
-);
+        struct idspace *	spc,
+        id_t			id
+        );
 
 #endif

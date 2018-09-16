@@ -10,16 +10,16 @@
 
 // Holds info for each pending signal
 struct sigpending {
-	struct list_head	list;	// of sigqueue structs
-	sigset_t 		sigset;
+    struct list_head	list;	// of sigqueue structs
+    sigset_t 		sigset;
 };
 
 
 // Holds information about a pending signal
 struct sigqueue {
-	struct list_head	list;
-	int			flags;
-	siginfo_t		siginfo;
+    struct list_head	list;
+    int			flags;
+    siginfo_t		siginfo;
 };
 
 

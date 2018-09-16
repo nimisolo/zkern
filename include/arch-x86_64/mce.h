@@ -60,25 +60,25 @@ extern void mcheck_init_late(void);
 
 /* Fields are zero when not available */
 struct mce {
-	__u64 status;
-	__u64 misc;
-	__u64 addr;
-	__u64 mcgstatus;
-	__u64 ip;
-	__u64 tsc;	/* cpu time stamp counter */
-	__u64 time;	/* wall time_t when error was detected */
-	__u8  cpuvendor;	/* cpu vendor as encoded in system.h */
-	__u8  inject_flags;	/* software inject flags */
-	__u16  pad;
-	__u32 cpuid;	/* CPUID 1 EAX */
-	__u8  cs;		/* code segment */
-	__u8  bank;	/* machine check bank */
-	__u8  cpu;	/* cpu number; obsolete; use extcpu now */
-	__u8  finished;   /* entry is valid */
-	__u32 extcpu;	/* linux cpu number that detected the error */
-	__u32 socketid;	/* CPU socket ID */
-	__u32 apicid;	/* CPU initial apic ID */
-	__u64 mcgcap;	/* MCGCAP MSR: machine check capabilities of CPU */
+    __u64 status;
+    __u64 misc;
+    __u64 addr;
+    __u64 mcgstatus;
+    __u64 ip;
+    __u64 tsc;	/* cpu time stamp counter */
+    __u64 time;	/* wall time_t when error was detected */
+    __u8  cpuvendor;	/* cpu vendor as encoded in system.h */
+    __u8  inject_flags;	/* software inject flags */
+    __u16  pad;
+    __u32 cpuid;	/* CPUID 1 EAX */
+    __u8  cs;		/* code segment */
+    __u8  bank;	/* machine check bank */
+    __u8  cpu;	/* cpu number; obsolete; use extcpu now */
+    __u8  finished;   /* entry is valid */
+    __u32 extcpu;	/* linux cpu number that detected the error */
+    __u32 socketid;	/* CPU socket ID */
+    __u32 apicid;	/* CPU initial apic ID */
+    __u64 mcgcap;	/* MCGCAP MSR: machine check capabilities of CPU */
 };
 
 /*
@@ -92,12 +92,12 @@ struct mce {
 
 struct mce_log {
     spinlock_t lock;
-	char signature[12]; /* "MACHINECHECK" */
-	unsigned len;	    /* = MCE_LOG_LEN */
-	unsigned next;
-	unsigned flags;
-	unsigned recordlen;	/* length of struct mce */
-	struct mce entry[MCE_LOG_LEN];
+    char signature[12]; /* "MACHINECHECK" */
+    unsigned len;	    /* = MCE_LOG_LEN */
+    unsigned next;
+    unsigned flags;
+    unsigned recordlen;	/* length of struct mce */
+    struct mce entry[MCE_LOG_LEN];
 };
 
 #define MCE_OVERFLOW 0		/* bit 0 in flags means overflow */
@@ -198,9 +198,9 @@ typedef DECLARE_BITMAP(mce_banks_t, MAX_NR_BANKS);
 DECLARE_PER_CPU(mce_banks_t, mce_poll_banks);
 
 enum mcp_flags {
-	MCP_TIMESTAMP = (1 << 0),	/* log time stamp */
-	MCP_UC = (1 << 1),		/* log uncorrected errors */
-	MCP_DONTLOG = (1 << 2),		/* only clear, don't log */
+    MCP_TIMESTAMP = (1 << 0),	/* log time stamp */
+    MCP_UC = (1 << 1),		/* log uncorrected errors */
+    MCP_DONTLOG = (1 << 2),		/* only clear, don't log */
 };
 void machine_check_poll(enum mcp_flags flags, mce_banks_t *b);
 
@@ -210,8 +210,8 @@ void mce_notify_process(void);
 DECLARE_PER_CPU(struct mce, injectm);
 
 extern void register_mce_write_callback(ssize_t (*)(struct file *filp,
-				    const char __user *ubuf,
-				    size_t usize, loff_t *off));
+            const char __user *ubuf,
+            size_t usize, loff_t *off));
 
 /*
  * Exception handler
@@ -251,7 +251,7 @@ static inline void mcheck_intel_therm_init(void) { }
 
 struct cper_sec_mem_err;
 extern void apei_mce_report_mem_error(int corrected,
-				      struct cper_sec_mem_err *mem_err);
+        struct cper_sec_mem_err *mem_err);
 
 #endif /* __KERNEL__ */
 #endif /* _ASM_X86_MCE_H */

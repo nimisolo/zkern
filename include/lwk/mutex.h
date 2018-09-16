@@ -46,10 +46,10 @@
  *   locks and tasks (and only those tasks)
  */
 struct mutex {
-	/* 1: unlocked, 0: locked, negative: locked, possible waiters */
-	atomic_t		count;
-	spinlock_t		wait_lock;
-	struct list_head	wait_list;
+    /* 1: unlocked, 0: locked, negative: locked, possible waiters */
+    atomic_t		count;
+    spinlock_t		wait_lock;
+    struct list_head	wait_list;
 };
 
 /*
@@ -57,24 +57,24 @@ struct mutex {
  * which resides on the blocked task's kernel stack:
  */
 struct mutex_waiter {
-	struct list_head	list;
-	struct task_struct	*task;
+    struct list_head	list;
+    struct task_struct	*task;
 };
 
 # define mutex_init(mutex) \
-do {							\
-	__mutex_init((mutex), #mutex);			\
-} while (0)
+    do {							\
+        __mutex_init((mutex), #mutex);			\
+    } while (0)
 # define mutex_destroy(mutex)				do { } while (0)
 
 #define __MUTEX_INITIALIZER(lockname) \
-		{ .count = ATOMIC_INIT(1) \
-		, .wait_lock = __SPIN_LOCK_UNLOCKED(lockname.wait_lock) \
-		, .wait_list = LIST_HEAD_INIT(lockname.wait_list) \
-		}
+{ .count = ATOMIC_INIT(1) \
+    , .wait_lock = __SPIN_LOCK_UNLOCKED(lockname.wait_lock) \
+    , .wait_list = LIST_HEAD_INIT(lockname.wait_list) \
+}
 
 #define DEFINE_MUTEX(mutexname) \
-	struct mutex mutexname = __MUTEX_INITIALIZER(mutexname)
+    struct mutex mutexname = __MUTEX_INITIALIZER(mutexname)
 
 extern void __mutex_init(struct mutex *lock, const char *name);
 
@@ -86,7 +86,7 @@ extern void __mutex_init(struct mutex *lock, const char *name);
  */
 static inline int mutex_is_locked(struct mutex *lock)
 {
-	return atomic_read(&lock->count) != 1;
+    return atomic_read(&lock->count) != 1;
 }
 
 /*

@@ -11,16 +11,16 @@
  * "unnecessary" pointer comparison.
  */
 #define min(x,y) ({ \
-	typeof(x) _x = (x);	\
-	typeof(y) _y = (y);	\
-	(void) (&_x == &_y);		\
-	_x < _y ? _x : _y; })
+        typeof(x) _x = (x);	\
+        typeof(y) _y = (y);	\
+        (void) (&_x == &_y);		\
+        _x < _y ? _x : _y; })
 
 #define max(x,y) ({ \
-	typeof(x) _x = (x);	\
-	typeof(y) _y = (y);	\
-	(void) (&_x == &_y);		\
-	_x > _y ? _x : _y; })
+        typeof(x) _x = (x);	\
+        typeof(y) _y = (y);	\
+        (void) (&_x == &_y);		\
+        _x > _y ? _x : _y; })
 
 /*
  * ..and if you can't take the strict
@@ -29,9 +29,9 @@
  * Or not use min/max at all, of course.
  */
 #define min_t(type,x,y) \
-	({ type __x = (x); type __y = (y); __x < __y ? __x: __y; })
+    ({ type __x = (x); type __y = (y); __x < __y ? __x: __y; })
 #define max_t(type,x,y) \
-	({ type __x = (x); type __y = (y); __x > __y ? __x: __y; })
+    ({ type __x = (x); type __y = (y); __x > __y ? __x: __y; })
 
 /*
  * Round x up to the nearest y aligned boundary.  y must be a power of two.
@@ -58,26 +58,26 @@
  * Always evaluates to 1 so you may use it easily in comparisons.
  */
 #define typecheck(type,x) \
-({	type __dummy; \
-	typeof(x) __dummy2; \
-	(void)(&__dummy == &__dummy2); \
-	1; \
-})
+    ({	type __dummy; \
+     typeof(x) __dummy2; \
+     (void)(&__dummy == &__dummy2); \
+     1; \
+     })
 
 /*
  * Check at compile time that 'function' is a certain type, or is a pointer
  * to that type (needs to use typedef for the function type.)
  */
 #define typecheck_fn(type,function) \
-({	typeof(type) __tmp = function; \
-	(void)__tmp; \
-})
+    ({	typeof(type) __tmp = function; \
+     (void)__tmp; \
+     })
 
 /*
  * Check at compile time that 'type' is a multiple of align.
  */
 #define aligncheck(type,align) \
-	extern int __align_check[ (sizeof(type) % (align) == 0 ? 0 : 1/0) ]
+    extern int __align_check[ (sizeof(type) % (align) == 0 ? 0 : 1/0) ]
 
 /*
  * Check at compile time that the type 'type' has the expected 'size'.
@@ -85,13 +85,13 @@
  *       For structures, use sizecheck_struct().
  */
 #define sizecheck(type,size) \
-	extern int __size_check_##type[ (sizeof(type) == (size) ? 0 : 1/0) ]
+    extern int __size_check_##type[ (sizeof(type) == (size) ? 0 : 1/0) ]
 
 /*
  * Check at compile time that the structure 'name' has the expected size 'size'.
  */
 #define sizecheck_struct(name,size) \
-	extern int __size_check_struct_##name[ (sizeof(struct name) == (size) ? 0 : 1/0) ]
+    extern int __size_check_struct_##name[ (sizeof(struct name) == (size) ? 0 : 1/0) ]
 
 /*
  * Force a compilation error if condition is true

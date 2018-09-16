@@ -20,7 +20,7 @@
 #include <arch/pda.h>
 
 #define DEFINE(sym, val) \
-        asm volatile("\n->" #sym " %0 " #val : : "i" (val))
+    asm volatile("\n->" #sym " %0 " #val : : "i" (val))
 
 #define BLANK() asm volatile("\n->" : : )
 
@@ -41,40 +41,40 @@ int main(void)
 {
 #define ENTRY(entry) DEFINE(tsk_ ## entry, offsetof(struct task_struct, entry))
 #if 0
-	ENTRY(state);
-	ENTRY(flags); 
-	ENTRY(thread); 
+    ENTRY(state);
+    ENTRY(flags); 
+    ENTRY(thread); 
 #endif
-	ENTRY(id);
-	BLANK();
+    ENTRY(id);
+    BLANK();
 #undef ENTRY
 #define ENTRY(entry) DEFINE(tsk_arch_ ## entry, offsetof(struct task_struct, arch) + offsetof(struct arch_task, entry))
-	ENTRY(flags);
-	ENTRY(addr_limit);
-	BLANK();
+    ENTRY(flags);
+    ENTRY(addr_limit);
+    BLANK();
 #undef ENTRY
 #define ENTRY(entry) DEFINE(tsk_arch_ ## entry, offsetof(struct task_struct, arch) + offsetof(struct arch_task, thread) + offsetof(struct thread_struct, entry))
-	ENTRY(rsp);
-	BLANK();
+    ENTRY(rsp);
+    BLANK();
 #undef ENTRY
 #define ENTRY(entry) DEFINE(pda_ ## entry, offsetof(struct x8664_pda, entry))
-	ENTRY(kernelstack); 
-	ENTRY(oldrsp); 
-	ENTRY(pcurrent); 
-	ENTRY(irqcount);
-	ENTRY(cpunumber);
-	ENTRY(irqstackptr);
-	ENTRY(data_offset);
-	BLANK();
+    ENTRY(kernelstack); 
+    ENTRY(oldrsp); 
+    ENTRY(pcurrent); 
+    ENTRY(irqcount);
+    ENTRY(cpunumber);
+    ENTRY(irqstackptr);
+    ENTRY(data_offset);
+    BLANK();
 #undef ENTRY
 #if 0
-	DEFINE(pbe_address, offsetof(struct pbe, address));
-	DEFINE(pbe_orig_address, offsetof(struct pbe, orig_address));
-	DEFINE(pbe_next, offsetof(struct pbe, next));
-	BLANK();
-	DEFINE(TSS_ist, offsetof(struct tss_struct, ist));
+    DEFINE(pbe_address, offsetof(struct pbe, address));
+    DEFINE(pbe_orig_address, offsetof(struct pbe, orig_address));
+    DEFINE(pbe_next, offsetof(struct pbe, next));
+    BLANK();
+    DEFINE(TSS_ist, offsetof(struct tss_struct, ist));
 #endif
-	BLANK();
-	DEFINE(__NR_syscall_max, sizeof(syscalls) - 1);
-	return 0;
+    BLANK();
+    DEFINE(__NR_syscall_max, sizeof(syscalls) - 1);
+    return 0;
 }

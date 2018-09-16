@@ -29,24 +29,24 @@ extern long syscall_not_implemented(void);
  * system call.  The table is indexed by system call number.
  */
 syscall_ptr_t sys_call_table[__NR_syscall_max+1] = {
-	[0 ... __NR_syscall_max] = syscall_not_implemented,
-	#include <arch/unistd.h>
+    [0 ... __NR_syscall_max] = syscall_not_implemented,
+    #include <arch/unistd.h>
 };
 
 
-void
+    void
 syscall_register(
-	unsigned		nr,
-	syscall_ptr_t		handler
-)
+        unsigned		nr,
+        syscall_ptr_t		handler
+        )
 {
-	if( sys_call_table[ nr ] != syscall_not_implemented
-	&&  sys_call_table[ nr ] != syscall_not_implemented_silent )
-		printk( KERN_WARNING
-			"%s: Overwriting syscall %d\n",
-			__func__,
-			nr
-		);
+    if( sys_call_table[ nr ] != syscall_not_implemented
+            &&  sys_call_table[ nr ] != syscall_not_implemented_silent )
+        printk( KERN_WARNING
+                "%s: Overwriting syscall %d\n",
+                __func__,
+                nr
+              );
 
-	sys_call_table[ nr ] = handler;
+    sys_call_table[ nr ] = handler;
 }

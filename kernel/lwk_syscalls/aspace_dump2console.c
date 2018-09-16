@@ -1,9 +1,9 @@
 #include <lwk/aspace.h>
 
-int
+    int
 sys_aspace_dump2console(
-	id_t    id
-)
+        id_t    id
+        )
 {
-	return aspace_dump2console(id);
+    return aspace_dump2console(id);
 }

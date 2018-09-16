@@ -12,7 +12,7 @@
 #define MSI_DATA_VECTOR_SHIFT		0
 #define  MSI_DATA_VECTOR_MASK		0x000000ff
 #define	 MSI_DATA_VECTOR(v)		(((v) << MSI_DATA_VECTOR_SHIFT) & \
-					 MSI_DATA_VECTOR_MASK)
+        MSI_DATA_VECTOR_MASK)
 
 #define MSI_DATA_DELIVERY_MODE_SHIFT	8
 #define  MSI_DATA_DELIVERY_FIXED	(0 << MSI_DATA_DELIVERY_MODE_SHIFT)
@@ -39,14 +39,14 @@
 
 #define MSI_ADDR_REDIRECTION_SHIFT	3
 #define  MSI_ADDR_REDIRECTION_CPU	(0 << MSI_ADDR_REDIRECTION_SHIFT)
-					/* dedicated cpu */
+/* dedicated cpu */
 #define  MSI_ADDR_REDIRECTION_LOWPRI	(1 << MSI_ADDR_REDIRECTION_SHIFT)
-					/* lowest priority */
+/* lowest priority */
 
 #define MSI_ADDR_DEST_ID_SHIFT		12
 #define	 MSI_ADDR_DEST_ID_MASK		0x00ffff0
 #define  MSI_ADDR_DEST_ID(dest)		(((dest) << MSI_ADDR_DEST_ID_SHIFT) & \
-					 MSI_ADDR_DEST_ID_MASK)
+        MSI_ADDR_DEST_ID_MASK)
 #define MSI_ADDR_EXT_DEST_ID(dest)	((dest) & 0xffffff00)
 
 #define MSI_ADDR_IR_EXT_INT		(1 << 4)

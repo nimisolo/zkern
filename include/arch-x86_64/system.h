@@ -17,30 +17,30 @@
 #define RESTORE_CONTEXT "movq %%rbp,%%rsi ; popq %%rbp\n\t"
 
 #define __EXTRA_CLOBBER  \
-	,"rcx","rbx","rdx","r8","r9","r10","r11","r12","r13","r14","r15"
+    ,"rcx","rbx","rdx","r8","r9","r10","r11","r12","r13","r14","r15"
 
 #define switch_to(prev,next,last) \
-	asm volatile(SAVE_CONTEXT						    \
-		     "movq %%rsp,%P[threadrsp](%[prev])\n\t" /* save RSP */	  \
-		     "movq %P[threadrsp](%[next]),%%rsp\n\t" /* restore RSP */	  \
-		     "call __switch_to\n\t"					  \
-		     ".globl thread_return\n"					\
-		     "thread_return:\n\t"					    \
-		     "movq %%gs:%P[pda_pcurrent],%%rsi\n\t"			  \
-		     "movq %P[thread_info](%%rsi),%%r8\n\t"			  \
-		     "lock ; btr  %[tif_fork],%P[ti_flags](%%r8)\n\t"	  \
-		     "movq %%rax,%%rdi\n\t" 					  \
-		     "jc   ret_from_fork\n\t"					  \
-		     RESTORE_CONTEXT						    \
-		     : "=a" (last)					  	  \
-		     : [next] "S" (next), [prev] "D" (prev),			  \
-		       [threadrsp] "i" (offsetof(struct task_struct, thread.rsp)), \
-		       [ti_flags] "i" (offsetof(struct thread_info, flags)),\
-		       [tif_fork] "i" (TIF_FORK),			  \
-		       [thread_info] "i" (offsetof(struct task_struct, thread_info)), \
-		       [pda_pcurrent] "i" (offsetof(struct x8664_pda, pcurrent))   \
-		     : "memory", "cc" __EXTRA_CLOBBER)
-    
+    asm volatile(SAVE_CONTEXT						    \
+            "movq %%rsp,%P[threadrsp](%[prev])\n\t" /* save RSP */	  \
+            "movq %P[threadrsp](%[next]),%%rsp\n\t" /* restore RSP */	  \
+            "call __switch_to\n\t"					  \
+            ".globl thread_return\n"					\
+            "thread_return:\n\t"					    \
+            "movq %%gs:%P[pda_pcurrent],%%rsi\n\t"			  \
+            "movq %P[thread_info](%%rsi),%%r8\n\t"			  \
+            "lock ; btr  %[tif_fork],%P[ti_flags](%%r8)\n\t"	  \
+            "movq %%rax,%%rdi\n\t" 					  \
+            "jc   ret_from_fork\n\t"					  \
+            RESTORE_CONTEXT						    \
+            : "=a" (last)					  	  \
+            : [next] "S" (next), [prev] "D" (prev),			  \
+            [threadrsp] "i" (offsetof(struct task_struct, thread.rsp)), \
+            [ti_flags] "i" (offsetof(struct thread_info, flags)),\
+            [tif_fork] "i" (TIF_FORK),			  \
+            [thread_info] "i" (offsetof(struct task_struct, thread_info)), \
+            [pda_pcurrent] "i" (offsetof(struct x8664_pda, pcurrent))   \
+            : "memory", "cc" __EXTRA_CLOBBER)
+
 extern void load_gs_index(unsigned); 
 
 /*
@@ -48,20 +48,20 @@ extern void load_gs_index(unsigned);
  * segment if something goes wrong..
  */
 #define loadsegment(seg,value)	\
-	asm volatile("\n"			\
-		"1:\t"				\
-		"movl %k0,%%" #seg "\n"		\
-		"2:\n"				\
-		".section .fixup,\"ax\"\n"	\
-		"3:\t"				\
-		"movl %1,%%" #seg "\n\t" 	\
-		"jmp 2b\n"			\
-		".previous\n"			\
-		".section __ex_table,\"a\"\n\t"	\
-		".align 8\n\t"			\
-		".quad 1b,3b\n"			\
-		".previous"			\
-		: :"r" (value), "r" (0))
+    asm volatile("\n"			\
+            "1:\t"				\
+            "movl %k0,%%" #seg "\n"		\
+            "2:\n"				\
+            ".section .fixup,\"ax\"\n"	\
+            "3:\t"				\
+            "movl %1,%%" #seg "\n\t" 	\
+            "jmp 2b\n"			\
+            ".previous\n"			\
+            ".section __ex_table,\"a\"\n\t"	\
+            ".align 8\n\t"			\
+            ".quad 1b,3b\n"			\
+            ".previous"			\
+            : :"r" (value), "r" (0))
 
 /*
  * Clear and set 'TS' bit respectively
@@ -70,60 +70,60 @@ extern void load_gs_index(unsigned);
 
 static inline unsigned long read_cr0(void)
 { 
-	unsigned long cr0;
-	asm volatile("movq %%cr0,%0" : "=r" (cr0));
-	return cr0;
+    unsigned long cr0;
+    asm volatile("movq %%cr0,%0" : "=r" (cr0));
+    return cr0;
 } 
 
 static inline void write_cr0(unsigned long val) 
 { 
-	asm volatile("movq %0,%%cr0" :: "r" (val));
+    asm volatile("movq %0,%%cr0" :: "r" (val));
 } 
 
 static inline unsigned long read_cr2(void)
 { 
-	unsigned long cr2;
-	asm("movq %%cr2,%0" : "=r" (cr2));
-	return cr2;
+    unsigned long cr2;
+    asm("movq %%cr2,%0" : "=r" (cr2));
+    return cr2;
 } 
 
 static inline unsigned long read_cr3(void)
 { 
-	unsigned long cr3;
-	asm("movq %%cr3,%0" : "=r" (cr3));
-	return cr3;
+    unsigned long cr3;
+    asm("movq %%cr3,%0" : "=r" (cr3));
+    return cr3;
 } 
 
 static inline unsigned long read_cr4(void)
 { 
-	unsigned long cr4;
-	asm("movq %%cr4,%0" : "=r" (cr4));
-	return cr4;
+    unsigned long cr4;
+    asm("movq %%cr4,%0" : "=r" (cr4));
+    return cr4;
 } 
 
 static inline void write_cr4(unsigned long val)
 { 
-	asm volatile("movq %0,%%cr4" :: "r" (val));
+    asm volatile("movq %0,%%cr4" :: "r" (val));
 } 
 
 #define stts() write_cr0(8 | read_cr0())
 
 #define wbinvd() \
-	__asm__ __volatile__ ("wbinvd": : :"memory");
+    __asm__ __volatile__ ("wbinvd": : :"memory");
 
 static inline unsigned long read_eflags(void)
 { 
-	unsigned long eflags;
+    unsigned long eflags;
 
-	__asm__ __volatile__(
-		"# __raw_save_flags\n\t"
-		"pushf ; pop %0"
-		: "=g" (eflags)
-		: /* no input */
-		: "memory"
-	);
+    __asm__ __volatile__(
+            "# __raw_save_flags\n\t"
+            "pushf ; pop %0"
+            : "=g" (eflags)
+            : /* no input */
+            : "memory"
+            );
 
-	return eflags;
+    return eflags;
 } 
 
 /*
@@ -132,7 +132,7 @@ static inline unsigned long read_eflags(void)
  */
 static inline void sched_cacheflush(void)
 {
-	wbinvd();
+    wbinvd();
 }
 
 #endif	/* __KERNEL__ */
@@ -147,7 +147,7 @@ static inline void sched_cacheflush(void)
 
 static inline void set_64bit(volatile unsigned long *ptr, unsigned long val)
 {
-	*ptr = val;
+    *ptr = val;
 }
 
 #define _set_64bit set_64bit
@@ -159,33 +159,33 @@ static inline void set_64bit(volatile unsigned long *ptr, unsigned long val)
  */
 static inline unsigned long __xchg(unsigned long x, volatile void * ptr, int size)
 {
-	switch (size) {
-		case 1:
-			__asm__ __volatile__("xchgb %b0,%1"
-				:"=q" (x)
-				:"m" (*__xg(ptr)), "0" (x)
-				:"memory");
-			break;
-		case 2:
-			__asm__ __volatile__("xchgw %w0,%1"
-				:"=r" (x)
-				:"m" (*__xg(ptr)), "0" (x)
-				:"memory");
-			break;
-		case 4:
-			__asm__ __volatile__("xchgl %k0,%1"
-				:"=r" (x)
-				:"m" (*__xg(ptr)), "0" (x)
-				:"memory");
-			break;
-		case 8:
-			__asm__ __volatile__("xchgq %0,%1"
-				:"=r" (x)
-				:"m" (*__xg(ptr)), "0" (x)
-				:"memory");
-			break;
-	}
-	return x;
+    switch (size) {
+    case 1:
+        __asm__ __volatile__("xchgb %b0,%1"
+                :"=q" (x)
+                :"m" (*__xg(ptr)), "0" (x)
+                :"memory");
+        break;
+    case 2:
+        __asm__ __volatile__("xchgw %w0,%1"
+                :"=r" (x)
+                :"m" (*__xg(ptr)), "0" (x)
+                :"memory");
+        break;
+    case 4:
+        __asm__ __volatile__("xchgl %k0,%1"
+                :"=r" (x)
+                :"m" (*__xg(ptr)), "0" (x)
+                :"memory");
+        break;
+    case 8:
+        __asm__ __volatile__("xchgq %0,%1"
+                :"=r" (x)
+                :"m" (*__xg(ptr)), "0" (x)
+                :"memory");
+        break;
+    }
+    return x;
 }
 
 /*
@@ -197,47 +197,47 @@ static inline unsigned long __xchg(unsigned long x, volatile void * ptr, int siz
 #define __HAVE_ARCH_CMPXCHG 1
 
 static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
-				      unsigned long new, int size)
+        unsigned long new, int size)
 {
-	unsigned long prev;
-	switch (size) {
-	case 1:
-		__asm__ __volatile__("lock ; cmpxchgb %b1,%2"
-				     : "=a"(prev)
-				     : "q"(new), "m"(*__xg(ptr)), "0"(old)
-				     : "memory");
-		return prev;
-	case 2:
-		__asm__ __volatile__("lock ; cmpxchgw %w1,%2"
-				     : "=a"(prev)
-				     : "r"(new), "m"(*__xg(ptr)), "0"(old)
-				     : "memory");
-		return prev;
-	case 4:
-		__asm__ __volatile__("lock ; cmpxchgl %k1,%2"
-				     : "=a"(prev)
-				     : "r"(new), "m"(*__xg(ptr)), "0"(old)
-				     : "memory");
-		return prev;
-	case 8:
-		__asm__ __volatile__("lock ; cmpxchgq %1,%2"
-				     : "=a"(prev)
-				     : "r"(new), "m"(*__xg(ptr)), "0"(old)
-				     : "memory");
-		return prev;
-	}
-	return old;
+    unsigned long prev;
+    switch (size) {
+    case 1:
+        __asm__ __volatile__("lock ; cmpxchgb %b1,%2"
+                : "=a"(prev)
+                : "q"(new), "m"(*__xg(ptr)), "0"(old)
+                : "memory");
+        return prev;
+    case 2:
+        __asm__ __volatile__("lock ; cmpxchgw %w1,%2"
+                : "=a"(prev)
+                : "r"(new), "m"(*__xg(ptr)), "0"(old)
+                : "memory");
+        return prev;
+    case 4:
+        __asm__ __volatile__("lock ; cmpxchgl %k1,%2"
+                : "=a"(prev)
+                : "r"(new), "m"(*__xg(ptr)), "0"(old)
+                : "memory");
+        return prev;
+    case 8:
+        __asm__ __volatile__("lock ; cmpxchgq %1,%2"
+                : "=a"(prev)
+                : "r"(new), "m"(*__xg(ptr)), "0"(old)
+                : "memory");
+        return prev;
+    }
+    return old;
 }
 
 #define cmpxchg(ptr,o,n)\
-	((__typeof__(*(ptr)))__cmpxchg((ptr),(unsigned long)(o),\
-					(unsigned long)(n),sizeof(*(ptr))))
+    ((__typeof__(*(ptr)))__cmpxchg((ptr),(unsigned long)(o),\
+        (unsigned long)(n),sizeof(*(ptr))))
 
 #define smp_mb()	mb()
 #define smp_rmb()	rmb()
 #define smp_wmb()	wmb()
 #define smp_read_barrier_depends()	do {} while(0)
-    
+
 
 /*
  * Force strict CPU ordering.
@@ -245,13 +245,13 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
  * to devices.
  */
 #if defined(CONFIG_X86_EARLYMIC)
-  #define mb()  asm volatile ("lock; addl $0,0(%%rsp)" ::: "memory")
-  #define rmb() asm volatile ("lock; addl $0,0(%%rsp)" ::: "memory")
-  #define wmb() asm volatile ("lock; addl $0,0(%%rsp)" ::: "memory")
+#define mb()  asm volatile ("lock; addl $0,0(%%rsp)" ::: "memory")
+#define rmb() asm volatile ("lock; addl $0,0(%%rsp)" ::: "memory")
+#define wmb() asm volatile ("lock; addl $0,0(%%rsp)" ::: "memory")
 #else
-  #define mb()  asm volatile("mfence":::"memory")
-  #define rmb() asm volatile("lfence":::"memory")
-  #define wmb() asm volatile("sfence" ::: "memory")
+#define mb()  asm volatile("mfence":::"memory")
+#define rmb() asm volatile("lfence":::"memory")
+#define wmb() asm volatile("sfence" ::: "memory")
 #endif
 
 #define read_barrier_depends()	do {} while(0)
@@ -268,11 +268,11 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 #define local_irq_enable()	__asm__ __volatile__("sti": : :"memory")
 
 #define irqs_disabled()			\
-({					\
-	unsigned long flags;		\
-	local_save_flags(flags);	\
-	!(flags & (1<<9));		\
-})
+    ({					\
+     unsigned long flags;		\
+     local_save_flags(flags);	\
+     !(flags & (1<<9));		\
+     })
 
 #define irqs_enabled() !irqs_disabled()
 

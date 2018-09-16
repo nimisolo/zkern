@@ -83,5 +83,5 @@ extern int create_init_task(void);
 extern paddr_t init_elf_image;
 
 #endif /* !__ASSEMBLY__ */
-  
+
 #endif /* _LWK_INIT_H */

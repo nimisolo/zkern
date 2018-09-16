@@ -37,37 +37,37 @@
 /**
  * Shutdown LWK. Disable interrupts and halt all cores.
  */
-int 
+    int 
 sys_reboot(
-	int	      magic1, 
-	int	      magic2, 
-	unsigned int  cmd, 
-	void __user * arg)
+        int	      magic1, 
+        int	      magic2, 
+        unsigned int  cmd, 
+        void __user * arg)
 {
-	id_t id;
-	int status;
+    id_t id;
+    int status;
 
-	if (magic1 != LINUX_REBOOT_MAGIC1)
-		return -EINVAL;
+    if (magic1 != LINUX_REBOOT_MAGIC1)
+        return -EINVAL;
 
-	switch(cmd) {
-		case LINUX_REBOOT_CMD_HALT:
-		case LINUX_REBOOT_CMD_POWER_OFF:
-			break;
-			
-		default:
-			return -EINVAL;
-	}
+    switch(cmd) {
+    case LINUX_REBOOT_CMD_HALT:
+    case LINUX_REBOOT_CMD_POWER_OFF:
+        break;
 
-	if ((status = aspace_get_myid(&id)) != 0)
-		return status;
+    default:
+        return -EINVAL;
+    }
 
-	/* Only let the init_task do this */
-	if (id != INIT_ASPACE_ID)
-		return -EPERM;
+    if ((status = aspace_get_myid(&id)) != 0)
+        return status;
 
-	/* For now, just shutdown each core */
-	shutdown_cpus();
+    /* Only let the init_task do this */
+    if (id != INIT_ASPACE_ID)
+        return -EPERM;
 
-	panic("Failed to shutdown system");
+    /* For now, just shutdown each core */
+    shutdown_cpus();
+
+    panic("Failed to shutdown system");
 }

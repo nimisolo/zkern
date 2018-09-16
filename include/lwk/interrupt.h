@@ -11,10 +11,10 @@
 /**
  * Returns true if the caller is in interrupt context, false otherwise.
  */
-static inline bool
+    static inline bool
 in_interrupt(void)
 {
-	return arch_in_interrupt();
+    return arch_in_interrupt();
 }
 
 /**
@@ -41,12 +41,12 @@ typedef irqreturn_t (*irq_handler_t)(int irq, void *dev_id);
  */
 extern int
 irq_request(
-	unsigned int		irq,
-	irq_handler_t		handler,
-	unsigned long		irqflags,
-	const char *		devname,
-	void  *			dev_id
-);
+        unsigned int		irq,
+        irq_handler_t		handler,
+        unsigned long		irqflags,
+        const char *		devname,
+        void  *			dev_id
+        );
 
 /**
  * Requests a free IRQ vector and registers an interrupt handler for it
@@ -55,20 +55,20 @@ irq_request(
  */
 extern int
 irq_request_free_vector(
-	irq_handler_t		handler,
-	unsigned long		irqflags,
-	const char *		devname,
-	void  *			dev_id
-);
+        irq_handler_t		handler,
+        unsigned long		irqflags,
+        const char *		devname,
+        void  *			dev_id
+        );
 
 /**
  * Unregisters an interrupt handler.
  */
 extern void
 irq_free(
-	unsigned int		irq,
-	void *			dev_id
-);
+        unsigned int		irq,
+        void *			dev_id
+        );
 
 /**
  * Synchronizes an IRQ.
@@ -80,8 +80,8 @@ irq_free(
  */
 extern void
 irq_synchronize(
-	unsigned int		irq
-);
+        unsigned int		irq
+        );
 
 extern void
 irq_init( void );

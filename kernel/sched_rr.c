@@ -35,13 +35,13 @@
 
 int
 rr_sched_init_runqueue(struct rr_rq *q, int cpu_id) {
-	list_head_init(&q->taskq);
-	return 0;
+    list_head_init(&q->taskq);
+    return 0;
 }
 
 void rr_adjust_schedule(struct rr_rq *q, struct task_struct *task)
 {
-	list_add_tail(&task->rr.sched_link, &q->taskq);
+    list_add_tail(&task->rr.sched_link, &q->taskq);
 }
 
 /* Migrate all tasks away. Called with the runq lock held and local
@@ -49,64 +49,64 @@ void rr_adjust_schedule(struct rr_rq *q, struct task_struct *task)
  */
 void rr_sched_cpu_remove(struct rr_rq *runq, void * arg)
 {
-	struct task_struct *task, *tmp;
+    struct task_struct *task, *tmp;
 
-	list_for_each_entry_safe(task, tmp, &runq->taskq, rr.sched_link) {
-                kthread_bind(task, 0);
-                cpu_clear(this_cpu, task->aspace->cpu_mask);
-	}
+    list_for_each_entry_safe(task, tmp, &runq->taskq, rr.sched_link) {
+        kthread_bind(task, 0);
+        cpu_clear(this_cpu, task->aspace->cpu_mask);
+    }
 }
 
-void
+    void
 rr_sched_add_task(struct rr_rq *rr, struct task_struct *task)
 {
-	list_add_tail(&task->rr.sched_link, &rr->taskq);
+    list_add_tail(&task->rr.sched_link, &rr->taskq);
 }
 
-void
+    void
 rr_sched_del_task(struct rr_rq *runq, struct task_struct *task)
 {
-	list_del(&task->rr.sched_link);
+    list_del(&task->rr.sched_link);
 }
 
 void
 rr_sched_yield(void){
-	schedule();
+    schedule();
 }
 
 void
 rr_sched_yield_to(struct rr_rq * rr, struct task_struct * task){
 
-	/*Move task to the front of the list*/
-	list_del(&task->rr.sched_link);
-	list_add(&task->rr.sched_link, &rr->taskq);
+    /*Move task to the front of the list*/
+    list_del(&task->rr.sched_link);
+    list_add(&task->rr.sched_link, &rr->taskq);
 
-       schedule();
+    schedule();
 }
 
-struct task_struct *
+    struct task_struct *
 rr_schedule(struct rr_rq *runq, struct list_head *migrate_list)
 {
-	struct task_struct *task, *tmp, *next = NULL;
+    struct task_struct *task, *tmp, *next = NULL;
 
-	/* Look for a ready to execute task */
-	list_for_each_entry_safe(task, tmp, &runq->taskq, rr.sched_link) {
-		/* If the task is migrating, move it to the migrate_list.
-		 * The task will be migrated in the second-half of
-		 * schedule(). */
+    /* Look for a ready to execute task */
+    list_for_each_entry_safe(task, tmp, &runq->taskq, rr.sched_link) {
+        /* If the task is migrating, move it to the migrate_list.
+         * The task will be migrated in the second-half of
+         * schedule(). */
 
-	        if (task->cpu_id != task->cpu_target_id) {
-			list_del(&task->rr.sched_link);
-			list_add_tail(&task->migrate_link, migrate_list);
-			continue;
-		}
+        if (task->cpu_id != task->cpu_target_id) {
+            list_del(&task->rr.sched_link);
+            list_add_tail(&task->migrate_link, migrate_list);
+            continue;
+        }
 
-		/* Pick the first running task */
-		if (task->state == TASK_RUNNING) {
-			next = task;
-			break;
-		}
-	}
+        /* Pick the first running task */
+        if (task->state == TASK_RUNNING) {
+            next = task;
+            break;
+        }
+    }
 
-	return next;
+    return next;
 }

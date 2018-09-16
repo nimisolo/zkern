@@ -12,25 +12,25 @@
  * Each CPU in the system is described by one of these structures.
  */
 struct cpuinfo {
-	/* Identification */
-	uint16_t	logical_id;	   // CPU's kernel assigned ID
-	uint16_t	physical_id;	   // CPU's hardware ID
+    /* Identification */
+    uint16_t	logical_id;	   // CPU's kernel assigned ID
+    uint16_t	physical_id;	   // CPU's hardware ID
 
-	/* Topology information */
-	uint16_t	numa_node_id;	   // NUMA node ID this CPU is in
-	cpumask_t	numa_node_map;	   // CPUs in this CPU's NUMA node
-	cpumask_t	llc_share_map;	   // CPUs sharing last level cache
+    /* Topology information */
+    uint16_t	numa_node_id;	   // NUMA node ID this CPU is in
+    cpumask_t	numa_node_map;	   // CPUs in this CPU's NUMA node
+    cpumask_t	llc_share_map;	   // CPUs sharing last level cache
 
-	/* Physical packaging */
-	uint16_t	phys_socket_id;    // Physical socket/package
-	uint16_t	phys_core_id;      // Core ID in the socket/package
-	uint16_t	phys_hwthread_id;  // Hardware thread ID in core
+    /* Physical packaging */
+    uint16_t	phys_socket_id;    // Physical socket/package
+    uint16_t	phys_core_id;      // Core ID in the socket/package
+    uint16_t	phys_hwthread_id;  // Hardware thread ID in core
 
-	/* Memory management info */
-	vmpagesize_t	pagesz_mask;       // Page sizes supported by the CPU
+    /* Memory management info */
+    vmpagesize_t	pagesz_mask;       // Page sizes supported by the CPU
 
-	/* Architecture specific */
-	struct arch_cpuinfo arch;
+    /* Architecture specific */
+    struct arch_cpuinfo arch;
 } ____cacheline_aligned;
 
 extern struct cpuinfo	cpu_info[NR_CPUS];

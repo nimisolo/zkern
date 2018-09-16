@@ -37,12 +37,12 @@
 
 /* FUTEX_WAKE_OP will perform atomically
    int oldval = *(int *)UADDR2;
-   *(int *)UADDR2 = oldval OP OPARG;
-   if (oldval CMP CMPARG)
-     wake UADDR2;  */
+ *(int *)UADDR2 = oldval OP OPARG;
+ if (oldval CMP CMPARG)
+ wake UADDR2;  */
 #define FUTEX_OP(op, oparg, cmp, cmparg) \
-  (((op & 0xf) << 28) | ((cmp & 0xf) << 24)		\
-   | ((oparg & 0xfff) << 12) | (cmparg & 0xfff))
+    (((op & 0xf) << 28) | ((cmp & 0xf) << 24)		\
+     | ((oparg & 0xfff) << 12) | (cmparg & 0xfff))
 
 /*
  * bitset with all bits set for the FUTEX_xxx_BITSET OPs to request a
@@ -67,43 +67,43 @@
  * wake up futex->waitq, then make the second condition true.
  */
 struct futex {
-	struct list_head		link;
-	struct waitq			waitq;
-	spinlock_t *			lock_ptr;
-	addr_t				key;
-	uint32_t			bitset;
+    struct list_head		link;
+    struct waitq			waitq;
+    spinlock_t *			lock_ptr;
+    addr_t				key;
+    uint32_t			bitset;
 };
 
 struct futex_queue {
-	spinlock_t			lock;
-	struct list_head		futex_list;
+    spinlock_t			lock;
+    struct list_head		futex_list;
 };
 
 extern void
 futex_queue_init(
-	struct futex_queue *		queue
-);
+        struct futex_queue *		queue
+        );
 
 extern int
 futex(
-	uint32_t __user *		uaddr,
-	int				op,
-	uint32_t			val,
-	uint64_t			timeout,
-	uint32_t __user *		uaddr2,
-	uint32_t			val2,
-	uint32_t			val3
-);
+        uint32_t __user *		uaddr,
+        int				op,
+        uint32_t			val,
+        uint64_t			timeout,
+        uint32_t __user *		uaddr2,
+        uint32_t			val2,
+        uint32_t			val3
+     );
 
 extern long
 sys_futex(
-	uint32_t __user *		uaddr,
-	int				op,
-	uint32_t			val,
-	struct timespec __user *	utime,
-	uint32_t __user *		uaddr2,
-	uint32_t			val3
-);
+        uint32_t __user *		uaddr,
+        int				op,
+        uint32_t			val,
+        struct timespec __user *	utime,
+        uint32_t __user *		uaddr2,
+        uint32_t			val3
+        );
 
 #endif
 #endif

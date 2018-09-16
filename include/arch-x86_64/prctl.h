@@ -8,9 +8,9 @@
 
 extern long
 do_arch_prctl(
-	struct task_struct *	task,
-	int			code,
-	unsigned long		addr
-);
+        struct task_struct *	task,
+        int			code,
+        unsigned long		addr
+        );
 
 #endif

@@ -77,18 +77,18 @@
 
 static inline acpi_thread_id acpi_os_get_thread_id(void)
 {
-	return (acpi_thread_id)(unsigned long)current;
+    return (acpi_thread_id)(unsigned long)current;
 }
 
 static inline void *acpi_os_allocate(acpi_size size)
 {
-	/* kmem_alloc() returns zero'ed memory */
-	return kmem_alloc(size);
+    /* kmem_alloc() returns zero'ed memory */
+    return kmem_alloc(size);
 }
 
 static inline void *acpi_os_allocate_zeroed(acpi_size size)
 {
-	return acpi_os_allocate(size);
+    return acpi_os_allocate(size);
 }
 
 #define ACPI_ALLOCATE(a)        acpi_os_allocate(a)

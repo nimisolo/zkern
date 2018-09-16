@@ -12,20 +12,20 @@
 #include <arch/spinlock_types.h>
 
 typedef struct {
-	raw_spinlock_t raw_lock;
+    raw_spinlock_t raw_lock;
 #ifdef CONFIG_DEBUG_SPINLOCK
-	unsigned int magic, owner_cpu;
-	void *owner;
+    unsigned int magic, owner_cpu;
+    void *owner;
 #endif
 } spinlock_t;
 
 #define SPINLOCK_MAGIC		0xdead4ead
 
 typedef struct {
-	raw_rwlock_t raw_lock;
+    raw_rwlock_t raw_lock;
 #ifdef CONFIG_DEBUG_SPINLOCK
-	unsigned int magic, owner_cpu;
-	void *owner;
+    unsigned int magic, owner_cpu;
+    void *owner;
 #endif
 } rwlock_t;
 
@@ -35,20 +35,20 @@ typedef struct {
 
 #ifdef CONFIG_DEBUG_SPINLOCK
 # define SPIN_LOCK_UNLOCKED						\
-			{	.raw_lock = __RAW_SPIN_LOCK_UNLOCKED,	\
-				.magic = SPINLOCK_MAGIC,		\
-				.owner = SPINLOCK_OWNER_INIT,		\
-				.owner_cpu = -1 }
+{	.raw_lock = __RAW_SPIN_LOCK_UNLOCKED,	\
+    .magic = SPINLOCK_MAGIC,		\
+    .owner = SPINLOCK_OWNER_INIT,		\
+    .owner_cpu = -1 }
 #define RW_LOCK_UNLOCKED						\
-			{	.raw_lock = __RAW_RW_LOCK_UNLOCKED,	\
-				.magic = RWLOCK_MAGIC,			\
-				.owner = SPINLOCK_OWNER_INIT,		\
-				.owner_cpu = -1 }
+{	.raw_lock = __RAW_RW_LOCK_UNLOCKED,	\
+    .magic = RWLOCK_MAGIC,			\
+    .owner = SPINLOCK_OWNER_INIT,		\
+    .owner_cpu = -1 }
 #else
 # define SPIN_LOCK_UNLOCKED \
-			{	.raw_lock = __RAW_SPIN_LOCK_UNLOCKED }
+{	.raw_lock = __RAW_SPIN_LOCK_UNLOCKED }
 #define RW_LOCK_UNLOCKED \
-			{	.raw_lock = __RAW_RW_LOCK_UNLOCKED }
+{	.raw_lock = __RAW_RW_LOCK_UNLOCKED }
 #endif
 
 #define __SPIN_LOCK_UNLOCKED(name) SPIN_LOCK_UNLOCKED

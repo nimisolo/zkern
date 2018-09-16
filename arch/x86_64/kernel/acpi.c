@@ -42,8 +42,8 @@ int acpi_disabled;
 #endif				/* X86 */
 
 #define BAD_MADT_ENTRY(entry, end) (					    \
-		(!entry) || (unsigned long)entry + sizeof(*entry) > end ||  \
-		((struct acpi_subtable_header *)entry)->length < sizeof(*entry))
+        (!entry) || (unsigned long)entry + sizeof(*entry) > end ||  \
+        ((struct acpi_subtable_header *)entry)->length < sizeof(*entry))
 
 #define PREFIX			"ACPI BOOT: "
 
@@ -69,7 +69,7 @@ static u64 acpi_lapic_addr __initdata = APIC_DEFAULT_PHYS_BASE;
 #endif
 
 /* --------------------------------------------------------------------------
-                              Boot-time Configuration
+   Boot-time Configuration
    -------------------------------------------------------------------------- */
 
 /*
@@ -93,33 +93,33 @@ static u64 acpi_lapic_addr __initdata = APIC_DEFAULT_PHYS_BASE;
 
 void __init acpi_init(void)
 {
-	if (acpi_disabled) {
-		printk(KERN_WARNING PREFIX "ACPI is disabled, cannot initialize.\n");
-		return; 
-	}
+    if (acpi_disabled) {
+        printk(KERN_WARNING PREFIX "ACPI is disabled, cannot initialize.\n");
+        return; 
+    }
 
-	/* Initialize the ACPI boot-time table parser. */
-	if (acpi_table_init()) {
-		printk(KERN_WARNING PREFIX "ACPI initialization failed, disabling ACPI.\n");
-		disable_acpi();
-		return;
-	}
+    /* Initialize the ACPI boot-time table parser. */
+    if (acpi_table_init()) {
+        printk(KERN_WARNING PREFIX "ACPI initialization failed, disabling ACPI.\n");
+        disable_acpi();
+        return;
+    }
 
-	/* Parse the MADT table to get available CPUs */
-	acpi_parse_madt();
+    /* Parse the MADT table to get available CPUs */
+    acpi_parse_madt();
 
-	/* Parse the SRAT/SLIT NUMA-related tables */
-	acpi_numa_init();
+    /* Parse the SRAT/SLIT NUMA-related tables */
+    acpi_numa_init();
 }
 
 #if 0
 int __init acpi_boot_init(void)
 {
-	if (acpi_disabled)
-		return 1;
+    if (acpi_disabled)
+        return 1;
 
-	//acpi_dmar_init();
+    //acpi_dmar_init();
 
-	return 0;
+    return 0;
 }
 #endif
