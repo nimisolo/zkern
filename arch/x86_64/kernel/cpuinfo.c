@@ -606,10 +606,10 @@ intel_turbo_debug(void)
 	    printk("CPU#%u: MSR_IA32_ENERGY_PERF_BIAS = 0x%lx\n", this_cpu, val);
 	}
 
+#if 0
 	rdmsrl(MSR_POWER_CTL, val);
 	printk("CPU#%u: MSR_POWER_CTL             = 0x%lx\n", this_cpu, val);
 
-#if 0
 	// Disable turbo
 	printk("Disabling turbo:\n");
 	rdmsrl(MSR_IA32_PERF_CTL, val);
